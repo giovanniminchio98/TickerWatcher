@@ -1,16 +1,18 @@
 {
   "budget": {
-    "period": "2026-07",
-    "posts_used": 4,
-    "usd_used": 0.615,
     "daily": {
-      "date": null,
-      "posts_used": 0,
-      "usd_used": 0.0
-    }
+      "date": "2026-07-13",
+      "posts_used": 6,
+      "usd_used": 0.645
+    },
+    "period": "2026-07",
+    "posts_used": 10,
+    "usd_used": 1.26
   },
-  "telegram": {
-    "last_report_date": null
+  "filler": {
+    "posted_count_today": 0,
+    "posted_date": null,
+    "shuffled_bag": []
   },
   "flashback": {
     "last_posted_date": null
@@ -19,7 +21,10 @@
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
-      "https://www.coindesk.com/business/2026/07/13/sbi-holdings-blockchain-initiative-pivots-to-solana-for-tokenization-stablecoin-issuance"
+      "https://www.coindesk.com/business/2026/07/13/sbi-holdings-blockchain-initiative-pivots-to-solana-for-tokenization-stablecoin-issuance",
+      "https://www.coindesk.com/markets/2026/07/13/u-s-inflation-second-quarter-earnings-reports-crypto-week-ahead",
+      "https://www.coindesk.com/markets/2026/07/13/bitcoin-slips-below-usd63-000-in-an-asian-session-leverage-flush",
+      "https://www.coindesk.com/markets/2026/07/12/stablecoin-market-cap-has-shrunk-by-usd10-billion-since-may-but-analyst-sees-no-reason-to-panic"
     ]
   },
   "polls": {
@@ -37,11 +42,6 @@
   "retweets": {
     "last_seen_tweet_id": {}
   },
-  "filler": {
-    "shuffled_bag": [],
-    "posted_date": null,
-    "posted_count_today": 0
-  },
   "run": {
     "any_trigger_fired_today": false,
     "last_run_date": null
@@ -53,9 +53,16 @@
   "self_reply": {
     "pending": []
   },
+  "telegram": {
+    "last_report_date": null
+  },
   "whale": {
-    "last_btc_block_height": 957907,
+    "last_btc_block_height": 957912,
     "last_eth_block": null,
-    "seen_btc_txids": []
+    "seen_btc_txids": [
+      "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
+      "c6c5708341f94f764bda90b91dc44f94d473eabf213d1418aecfde1e0d5ddc23",
+      "07c888bcf12d3204661d4c67d79267637d522be8249464d5aba9b3b9778839cb"
+    ]
   }
 }
