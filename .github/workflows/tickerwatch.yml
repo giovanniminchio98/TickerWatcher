@@ -2,9 +2,11 @@ name: TickerWatch
 
 on:
   schedule:
-    # every 3 hours -> 8 runs/day, ~243 runs/month. See README for the
-    # monthly post-count/cost math behind this choice.
-    - cron: "0 */3 * * *"
+    # every hour -> 24 runs/day, ~730 runs/month. See README for why higher
+    # check frequency mostly buys faster alert latency, not proportionally
+    # higher cost (most post types are capped by date/cooldown, not by
+    # how often we check).
+    - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:

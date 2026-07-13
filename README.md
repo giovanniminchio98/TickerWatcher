@@ -44,12 +44,16 @@ in the `ENABLED` dict at the top of `src/main.py`.
 ## Run frequency and cron schedule
 
 ```
-0 */3 * * *
+0 * * * *
 ```
 
-Every 3 hours → **8 runs/day → ~243 runs/month**. This sits in the middle of
-your requested 3–4 hour range: frequent enough that whale/news alerts stay
-timely, infrequent enough to keep API usage (and cost) low.
+Every hour → **24 runs/day → ~730 runs/month**. Note that higher check
+frequency mostly buys faster alert latency and better whale-scan coverage,
+**not** proportionally higher cost: scheduled daily/flashback/polls are
+capped by date regardless of check frequency, and whale/news/price alerts
+are capped by real-world event rate and per-asset cooldowns, not by how
+often the workflow runs. The budget cap and `thresholds.json` cooldowns are
+what actually control spend — see below.
 
 ## Cost math and the budget cap
 
