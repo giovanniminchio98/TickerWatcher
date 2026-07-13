@@ -38,7 +38,9 @@ class XClient:
                 kwargs["poll_options"] = poll_options
                 kwargs["poll_duration_minutes"] = poll_duration_minutes or 1440
             resp = self.client.create_tweet(**kwargs)
-            return str(resp.data["id"])
+            tweet_id = str(resp.data["id"])
+            logger.info("Posted tweet %s: https://x.com/i/web/status/%s\n%s", tweet_id, tweet_id, text)
+            return tweet_id
         except Exception:
             logger.exception("Failed to post tweet")
             return None
@@ -49,7 +51,9 @@ class XClient:
             return "dryrun-reply-id"
         try:
             resp = self.client.create_tweet(text=text, in_reply_to_tweet_id=in_reply_to_tweet_id)
-            return str(resp.data["id"])
+            reply_id = str(resp.data["id"])
+            logger.info("Posted reply %s to %s: https://x.com/i/web/status/%s\n%s", reply_id, in_reply_to_tweet_id, reply_id, text)
+            return reply_id
         except Exception:
             logger.exception("Failed to post reply")
             return None
