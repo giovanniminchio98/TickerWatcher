@@ -22,7 +22,10 @@ MAX_PARAPHRASE_LEN = 200
 
 
 def _mechanical_condense(title):
-    text = re.sub(r"\s*[-|]\s*[A-Za-z0-9. ]+$", "", title)  # drop trailing " - Publisher Name"
+    # drop a trailing " - Publisher Name" / " | Publisher Name" suffix -- requires
+    # whitespace on both sides of the separator so hyphenated words in the title
+    # itself (e.g. "third-party") are never mistaken for a publisher suffix
+    text = re.sub(r"\s+[-|]\s+[A-Za-z0-9. ]{1,40}$", "", title)
     text = text.strip()
     if len(text) > MAX_PARAPHRASE_LEN:
         text = text[: MAX_PARAPHRASE_LEN - 1].rstrip() + "…"

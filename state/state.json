@@ -1,48 +1,39 @@
 {
-  "budget": {
-    "period": "2026-07",
-    "posts_used": 4,
-    "usd_used": 0.615
+  "whale": {
+    "last_btc_block_height": null,
+    "seen_btc_txids": [],
+    "last_eth_block": null
+  },
+  "news": {
+    "posted_urls": []
+  },
+  "price": {
+    "last_alert_price": {},
+    "last_alert_time": {}
+  },
+  "scheduled_daily": {
+    "last_posted_date": null,
+    "rotate_index": 0
   },
   "flashback": {
     "last_posted_date": null
   },
-  "news": {
-    "posted_urls": [
-      "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
-      "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
-      "https://www.coindesk.com/business/2026/07/13/sbi-holdings-blockchain-initiative-pivots-to-solana-for-tokenization-stablecoin-issuance"
-    ]
-  },
   "polls": {
     "last_posted_date": null
-  },
-  "price": {
-    "last_alert_price": {
-      "BTC": 62077,
-      "ETH": 1761.7,
-      "SOL": 74.47,
-      "XRP": 1.059
-    },
-    "last_alert_time": {}
-  },
-  "retweets": {
-    "last_seen_tweet_id": {}
-  },
-  "run": {
-    "any_trigger_fired_today": false,
-    "last_run_date": null
-  },
-  "scheduled_daily": {
-    "last_posted_date": "2026-07-13",
-    "rotate_index": 1
   },
   "self_reply": {
     "pending": []
   },
-  "whale": {
-    "last_btc_block_height": 957907,
-    "last_eth_block": null,
-    "seen_btc_txids": []
+  "retweets": {
+    "last_seen_tweet_id": {}
+  },
+  "budget": {
+    "period": null,
+    "posts_used": 0,
+    "usd_used": 0.0
+  },
+  "run": {
+    "any_trigger_fired_today": false,
+    "last_run_date": null
   }
 }

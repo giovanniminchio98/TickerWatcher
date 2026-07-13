@@ -16,7 +16,7 @@ from src.config import load_all
 from src.context import Context
 from src.sources import coingecko
 from src.state import load_state, save_state
-from src.x_client import XClient
+from src.x_client import DRY_RUN, XClient
 from src.triggers import (
     historical_flashback,
     news_alerts,
@@ -88,7 +88,10 @@ def main():
     _safe_run("retweets", retweets.run, ctx)
 
     logger.info("Budget: %s", budget.remaining_summary())
-    save_state(state)
+    if DRY_RUN:
+        logger.info("DRY_RUN: not persisting state (dedup/budget bookkeeping stays untouched)")
+    else:
+        save_state(state)
 
 
 if __name__ == "__main__":
