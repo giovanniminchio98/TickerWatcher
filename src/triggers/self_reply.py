@@ -56,7 +56,7 @@ def run(ctx):
         text = f"Update: {item['symbol']} now at ${fmt_price(new_price)}, {fmt_pct(pct)} since this morning's alert 📈"
         reply_id = ctx.x.reply(text, item["tweet_id"])
         if reply_id:
-            ctx.budget.record_spend(has_link=False)
+            ctx.budget.record_spend(has_link=False, text=text)
             replies_done += 1
             fired = True
         else:

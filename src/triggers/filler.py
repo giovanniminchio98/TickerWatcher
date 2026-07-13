@@ -48,7 +48,7 @@ def run(ctx, higher_priority_fired):
     text = truncate(_next_filler_text(ctx))
     tweet_id = ctx.x.post(text)
     if tweet_id:
-        ctx.budget.record_spend(has_link=False)
+        ctx.budget.record_spend(has_link=False, text=text)
         state["posted_count_today"] += 1
         return True
     return False

@@ -5,8 +5,13 @@ Budget.try_spend() first. The trigger pipeline runs in strict priority order
 (whale -> news -> price -> daily -> flashback -> polls -> self-reply -> retweets),
 so once the cap is hit for the month, only the lowest-priority post types get
 skipped -- whale and news alerts are protected until the very end.
+
+record_spend() also fires a per-post Telegram notification (if configured)
+so every post is confirmed in near-real-time along with running budget usage.
 """
 from datetime import datetime, timezone
+
+from src import telegram_client
 
 
 def _current_period():
@@ -53,7 +58,7 @@ class Budget:
     def can_spend(self, has_link=False):
         return not self._would_exceed(has_link)
 
-    def record_spend(self, has_link=False):
+    def record_spend(self, has_link=False, text=None):
         b = self.state["budget"]
         cfg = self.config
         cost = cfg["cost_per_post_with_link_usd"] if has_link else cfg["cost_per_post_usd"]
@@ -61,6 +66,12 @@ class Budget:
         b["usd_used"] = round(b["usd_used"] + cost, 4)
         b["daily"]["posts_used"] += 1
         b["daily"]["usd_used"] = round(b["daily"]["usd_used"] + cost, 4)
+
+        if cfg["mode"] == "posts":
+            progress = f"{b['posts_used']}/{cfg['monthly_post_cap']} posts"
+        else:
+            progress = f"${b['usd_used']:.2f}/${cfg['monthly_usd_cap']:.2f}"
+        telegram_client.send_message(f"X post created: {text or '(no text)'}\n{progress}")
 
     def remaining_summary(self):
         b = self.state["budget"]

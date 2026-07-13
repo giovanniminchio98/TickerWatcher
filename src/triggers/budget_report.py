@@ -1,34 +1,42 @@
 """
-Daily Telegram budget report -- deliberately independent of the X posting
-pipeline's priority/budget gating (it always runs once/day regardless of
-whether the X budget cap has been hit), since its whole purpose is telling
-you when to top up X credits.
+Daily budget recap -- fires once/day at 9pm Europe/Brussels time (zoneinfo
+handles the CET/CEST switch automatically, no manual DST math needed).
+Deliberately independent of the X posting pipeline's priority/budget gating
+so it keeps working even after the monthly X budget cap trips, since that's
+exactly when you need the nudge to top up.
 """
 import logging
+from zoneinfo import ZoneInfo
 
 from src import telegram_client
 
 logger = logging.getLogger("tickerwatch.triggers.budget_report")
 
+BRUSSELS_TZ = ZoneInfo("Europe/Brussels")
+REPORT_HOUR = 21  # 9pm
+
 
 def run(ctx):
+    brussels_now = ctx.now.astimezone(BRUSSELS_TZ)
+    if brussels_now.hour != REPORT_HOUR:
+        return False
+
     state = ctx.state["telegram"]
-    today_str = ctx.now.strftime("%Y-%m-%d")
+    today_str = brussels_now.strftime("%Y-%m-%d")
     if state["last_report_date"] == today_str:
         return False
 
     b = ctx.state["budget"]
     cfg = ctx.config["budget"]
-    daily = b.get("daily", {"posts_used": 0, "usd_used": 0.0})
 
     if cfg["mode"] == "posts":
-        today_line = f"Today: {daily['posts_used']} posts"
-        month_line = f"Month-to-date: {b['posts_used']}/{cfg['monthly_post_cap']} posts"
+        used, cap = b["posts_used"], cfg["monthly_post_cap"]
+        pct = (used / cap * 100) if cap else 0
+        text = f"📅 Daily recap\n{used}/{cap} posts ({pct:.0f}% used)"
     else:
-        today_line = f"Today: ${daily['usd_used']:.2f} ({daily['posts_used']} posts)"
-        month_line = f"Month-to-date: ${b['usd_used']:.2f} / ${cfg['monthly_usd_cap']:.2f} cap"
-
-    text = f"📊 TickerWatch budget report — {today_str}\n{today_line}\n{month_line}"
+        used, cap = b["usd_used"], cfg["monthly_usd_cap"]
+        pct = (used / cap * 100) if cap else 0
+        text = f"📅 Daily recap\n${used:.2f}/${cap:.2f} ({pct:.0f}% used)"
 
     sent = telegram_client.send_message(text)
     if sent:

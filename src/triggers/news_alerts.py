@@ -34,7 +34,7 @@ def run(ctx):
         text = truncate(f"🚨 JUST IN: {summary}\nSource: {article['url']}")
         tweet_id = ctx.x.post(text)
         if tweet_id:
-            ctx.budget.record_spend(has_link=True)
+            ctx.budget.record_spend(has_link=True, text=text)
             state["posted_urls"].append(article["url"])
             fired = True
 

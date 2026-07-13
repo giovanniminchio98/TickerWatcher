@@ -46,7 +46,7 @@ def run(ctx, higher_priority_fired):
             )
             tweet_id = ctx.x.post(text)
             if tweet_id:
-                ctx.budget.record_spend(has_link=False)
+                ctx.budget.record_spend(has_link=False, text=text)
                 state["last_posted_date"] = today_str
                 return True
     return False

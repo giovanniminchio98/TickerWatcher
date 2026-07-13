@@ -26,7 +26,7 @@ def run(ctx):
             if not ctx.budget.can_spend(has_link=False):
                 break
             if ctx.x.retweet(tweet_id):
-                ctx.budget.record_spend(has_link=False)
+                ctx.budget.record_spend(has_link=False, text=f"retweet of @{handle}'s post {tweet_id}")
                 count += 1
 
         state["last_seen_tweet_id"][handle] = new_ids[0]

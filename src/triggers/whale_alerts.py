@@ -44,7 +44,7 @@ def _post_btc_alerts(ctx):
         )
         tweet_id = ctx.x.post(text)
         if tweet_id:
-            ctx.budget.record_spend(has_link=False)
+            ctx.budget.record_spend(has_link=False, text=text)
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
@@ -77,7 +77,7 @@ def _post_eth_alerts(ctx):
         )
         tweet_id = ctx.x.post(text)
         if tweet_id:
-            ctx.budget.record_spend(has_link=False)
+            ctx.budget.record_spend(has_link=False, text=text)
             posted += 1
             fired = True
     return fired

@@ -151,21 +151,30 @@ in this repo, and add:
 | `ETHERSCAN_API_KEY` | [etherscan.io/apis](https://etherscan.io/apis) → free signup → create API key | Required (for ETH whale alerts) |
 | `COINGECKO_API_KEY` | [coingecko.com/en/api/pricing](https://www.coingecko.com/en/api/pricing) → free Demo plan (no card) | Optional — improves rate limits, code falls back to keyless public API without it |
 | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Optional — enables real LLM paraphrasing of news headlines (Claude Haiku, a fraction of a cent/call). Without it, headlines are mechanically trimmed instead of truly paraphrased. |
-| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | See [Telegram budget report](#telegram-budget-report) below | Optional — enables the daily cost/budget notification |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables per-post + daily budget notifications |
 
 No key needed for: blockchain.info (BTC whale data), alternative.me (Fear &
 Greed Index), or the RSS feeds.
 
-## Telegram budget report
+## Telegram notifications
 
-Once/day (independent of the X pipeline — it keeps working even after the
-monthly X budget cap trips, since that's exactly when you need the nudge to
-top up), the bot sends a Telegram message like:
+Two independent messages (both free, both keep working even after the X
+budget cap trips, since that's exactly when you need the nudge to top up):
+
+**Per-post** — sent right after every single successful post/reply/retweet,
+so you get a near-live feed of what went out and running spend:
 
 ```
-📊 TickerWatch budget report — 2026-07-14
-Today: $0.42 (12 posts)
-Month-to-date: $6.30 / $15.00 cap
+X post created: 🚨 JUST IN: Mizuho says Circle bank approval doesn't...
+$6.30/$15.00
+```
+
+**Daily recap** — sent once/day at **9pm Europe/Brussels time** (handles the
+CET/CEST switch automatically):
+
+```
+📅 Daily recap
+$6.30/$15.00 (42% used)
 ```
 
 Setup (both free, ~2 minutes):

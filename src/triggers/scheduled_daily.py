@@ -66,7 +66,7 @@ def _post_possibly_threaded(ctx, text):
         tweet_id = ctx.x.reply(part, reply_to) if reply_to else ctx.x.post(part)
         if not tweet_id:
             break
-        ctx.budget.record_spend(has_link=False)
+        ctx.budget.record_spend(has_link=False, text=part)
         reply_to = tweet_id
         posted_any = True
     return posted_any

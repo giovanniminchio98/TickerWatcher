@@ -86,7 +86,7 @@ def run(ctx):
         )
         tweet_id = ctx.x.post(text)
         if tweet_id:
-            ctx.budget.record_spend(has_link=False)
+            ctx.budget.record_spend(has_link=False, text=text)
             state["last_alert_price"][symbol] = price
             state["last_alert_time"][symbol] = now_ts
             ctx.register_self_reply_candidate(symbol, price, tweet_id)
