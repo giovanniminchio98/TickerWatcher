@@ -31,5 +31,9 @@
   },
   "flashback": {
     "years_back_options": [1, 2, 3, 4]
+  },
+  "filler": {
+    "_comment": "Lowest priority of all -- only posts if nothing else fired this run. max_per_day bounds worst-case cost; with hourly checks, 24 would mean 'every empty hour' literally. Lower this (e.g. to 4-6) if filler ends up eating too much of the monthly budget -- see README cost math.",
+    "max_per_day": 24
   }
 }

@@ -18,6 +18,7 @@ from src.sources import coingecko
 from src.state import load_state, save_state
 from src.x_client import DRY_RUN, XClient
 from src.triggers import (
+    filler,
     historical_flashback,
     news_alerts,
     polls,
@@ -43,6 +44,7 @@ ENABLED = {
     "polls": True,
     "self_reply": True,
     "retweets": True,
+    "filler": True,
 }
 
 
@@ -76,15 +78,19 @@ def main():
     x_client = XClient()
     ctx = Context(config, state, budget, x_client, prices)
 
-    higher_priority_fired = False
-    higher_priority_fired |= bool(_safe_run("whale_alerts", whale_alerts.run, ctx))
-    higher_priority_fired |= bool(_safe_run("news_alerts", news_alerts.run, ctx))
-    higher_priority_fired |= bool(_safe_run("price_alerts", price_alerts.run, ctx))
-    higher_priority_fired |= bool(_safe_run("scheduled_daily", scheduled_daily.run, ctx))
+    anything_fired = False
+    anything_fired |= bool(_safe_run("whale_alerts", whale_alerts.run, ctx))
+    anything_fired |= bool(_safe_run("news_alerts", news_alerts.run, ctx))
+    anything_fired |= bool(_safe_run("price_alerts", price_alerts.run, ctx))
+    anything_fired |= bool(_safe_run("scheduled_daily", scheduled_daily.run, ctx))
+    anything_fired |= bool(_safe_run("historical_flashback", historical_flashback.run, ctx, anything_fired))
+    anything_fired |= bool(_safe_run("polls", polls.run, ctx))
+    anything_fired |= bool(_safe_run("self_reply", self_reply.run, ctx))
 
-    _safe_run("historical_flashback", historical_flashback.run, ctx, higher_priority_fired)
-    _safe_run("polls", polls.run, ctx)
-    _safe_run("self_reply", self_reply.run, ctx)
+    # last resort: only posts if nothing above did, so the account still
+    # posts roughly once per check instead of going silent on quiet hours
+    _safe_run("filler", filler.run, ctx, anything_fired)
+
     _safe_run("retweets", retweets.run, ctx)
 
     logger.info("Budget: %s", budget.remaining_summary())

@@ -18,4 +18,5 @@ def load_all():
         "accounts": _load("accounts.json"),
         "thresholds": _load("thresholds.json"),
         "budget": _load("budget.json"),
+        "filler": _load("filler.json"),
     }
