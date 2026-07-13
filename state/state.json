@@ -1,0 +1,39 @@
+{
+  "budget": {
+    "period": "2026-07",
+    "posts_used": 0,
+    "usd_used": 0.0
+  },
+  "flashback": {
+    "last_posted_date": null
+  },
+  "news": {
+    "posted_urls": []
+  },
+  "polls": {
+    "last_posted_date": null
+  },
+  "price": {
+    "last_alert_price": {},
+    "last_alert_time": {}
+  },
+  "retweets": {
+    "last_seen_tweet_id": {}
+  },
+  "run": {
+    "any_trigger_fired_today": false,
+    "last_run_date": null
+  },
+  "scheduled_daily": {
+    "last_posted_date": null,
+    "rotate_index": 0
+  },
+  "self_reply": {
+    "pending": []
+  },
+  "whale": {
+    "last_btc_block_height": null,
+    "last_eth_block": null,
+    "seen_btc_txids": []
+  }
+}

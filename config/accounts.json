@@ -1,0 +1,7 @@
+{
+  "_comment": "Accounts to auto-retweet. 'user_id' is the numeric X user ID (not the @handle) - resolve it once with GET /2/users/by/username/:username and paste it here, since the retweet endpoint needs it and looking it up every run burns API reads/budget.",
+  "monitored_accounts": [
+    { "handle": "coindesk", "user_id": "", "enabled": false },
+    { "handle": "cointelegraph", "user_id": "", "enabled": false }
+  ]
+}

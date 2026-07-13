@@ -1,0 +1,80 @@
+"""
+Free, keyless BTC whale detection via the blockchain.info block explorer API
+(no Whale Alert API key needed -- Whale Alert's programmatic API is paid-only
+as of 2026; their free tier is web/app viewing only).
+
+Trade-off vs. a paid feed: blockchain.info doesn't tag exchange/wallet
+identities, so we never fabricate a "from X wallet to Y wallet" claim -- we
+report the real on-chain amount plus a link to the transaction so every post
+is independently verifiable, and skip the wallet-type framing entirely.
+
+To bound run time/requests, only the most recent MAX_BLOCKS_PER_RUN blocks
+are scanned each run. At a ~10 min average BTC block time this comfortably
+covers a 3-4h check window (usually only ~2-3 new blocks); if GitHub Actions
+was down for a while and more blocks piled up, older blocks in the backlog
+are skipped rather than scanned, so this is a best-effort feed, not exhaustive.
+"""
+import logging
+
+import requests
+
+logger = logging.getLogger("tickerwatch.whale_btc")
+
+BASE_URL = "https://blockchain.info"
+TIMEOUT = 20
+MAX_BLOCKS_PER_RUN = 6
+SATOSHI = 100_000_000
+
+
+def _get_latest_height():
+    resp = requests.get(f"{BASE_URL}/q/getblockcount", timeout=TIMEOUT)
+    resp.raise_for_status()
+    return int(resp.text)
+
+
+def _get_block(height):
+    resp = requests.get(f"{BASE_URL}/block-height/{height}", params={"format": "json"}, timeout=TIMEOUT)
+    resp.raise_for_status()
+    blocks = resp.json().get("blocks", [])
+    return blocks[0] if blocks else None
+
+
+def find_large_transactions(last_seen_height, min_btc, btc_usd_price):
+    """Returns (new_last_height, [{"txid", "btc", "usd"}]) for transactions
+    at or above min_btc, scanning at most MAX_BLOCKS_PER_RUN new blocks."""
+    latest = _get_latest_height()
+    if last_seen_height is None:
+        # first run ever: don't backfill the whole chain, just start tracking from here
+        return latest, []
+
+    start = last_seen_height + 1
+    end = min(latest, start + MAX_BLOCKS_PER_RUN - 1)
+    if start > latest:
+        return last_seen_height, []
+
+    findings = []
+    for height in range(start, end + 1):
+        try:
+            block = _get_block(height)
+        except Exception:
+            logger.exception("Failed to fetch BTC block %s", height)
+            continue
+        if not block:
+            continue
+        for tx in block.get("tx", []):
+            outputs = tx.get("out", [])
+            if not outputs:
+                continue
+            # use the single largest output rather than summing all outputs,
+            # since summing would double-count change returned to the sender
+            largest_out_sat = max(o.get("value", 0) for o in outputs)
+            btc_amount = largest_out_sat / SATOSHI
+            if btc_amount >= min_btc:
+                findings.append(
+                    {
+                        "txid": tx.get("hash"),
+                        "btc": btc_amount,
+                        "usd": btc_amount * btc_usd_price if btc_usd_price else None,
+                    }
+                )
+    return end, findings
