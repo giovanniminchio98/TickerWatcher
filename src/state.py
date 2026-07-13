@@ -15,7 +15,13 @@ DEFAULT_STATE = {
     "self_reply": {"pending": []},
     "retweets": {"last_seen_tweet_id": {}},
     "filler": {"shuffled_bag": [], "posted_date": None, "posted_count_today": 0},
-    "budget": {"period": None, "posts_used": 0, "usd_used": 0.0},
+    "budget": {
+        "period": None,
+        "posts_used": 0,
+        "usd_used": 0.0,
+        "daily": {"date": None, "posts_used": 0, "usd_used": 0.0},
+    },
+    "telegram": {"last_report_date": None},
     "run": {"any_trigger_fired_today": False, "last_run_date": None},
 }
 

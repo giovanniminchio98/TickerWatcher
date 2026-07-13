@@ -14,11 +14,16 @@ def _current_period():
     return f"{now.year:04d}-{now.month:02d}"
 
 
+def _current_day():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
 class Budget:
     def __init__(self, state, config):
         self.state = state
         self.config = config
         self._roll_period_if_needed()
+        self._roll_day_if_needed()
 
     def _roll_period_if_needed(self):
         b = self.state["budget"]
@@ -27,6 +32,15 @@ class Budget:
             b["period"] = period
             b["posts_used"] = 0
             b["usd_used"] = 0.0
+
+    def _roll_day_if_needed(self):
+        b = self.state["budget"]
+        day = _current_day()
+        daily = b.setdefault("daily", {"date": None, "posts_used": 0, "usd_used": 0.0})
+        if daily.get("date") != day:
+            daily["date"] = day
+            daily["posts_used"] = 0
+            daily["usd_used"] = 0.0
 
     def _would_exceed(self, has_link):
         b = self.state["budget"]
@@ -45,6 +59,8 @@ class Budget:
         cost = cfg["cost_per_post_with_link_usd"] if has_link else cfg["cost_per_post_usd"]
         b["posts_used"] += 1
         b["usd_used"] = round(b["usd_used"] + cost, 4)
+        b["daily"]["posts_used"] += 1
+        b["daily"]["usd_used"] = round(b["daily"]["usd_used"] + cost, 4)
 
     def remaining_summary(self):
         b = self.state["budget"]

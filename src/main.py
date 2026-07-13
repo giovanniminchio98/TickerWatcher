@@ -18,6 +18,7 @@ from src.sources import coingecko
 from src.state import load_state, save_state
 from src.x_client import DRY_RUN, XClient
 from src.triggers import (
+    budget_report,
     filler,
     historical_flashback,
     news_alerts,
@@ -45,6 +46,7 @@ ENABLED = {
     "self_reply": True,
     "retweets": True,
     "filler": True,
+    "budget_report": True,
 }
 
 
@@ -92,6 +94,10 @@ def main():
     _safe_run("filler", filler.run, ctx, anything_fired)
 
     _safe_run("retweets", retweets.run, ctx)
+
+    # independent of the X pipeline/budget above -- always attempted, since
+    # this is what tells you when to top up X credits
+    _safe_run("budget_report", budget_report.run, ctx)
 
     logger.info("Budget: %s", budget.remaining_summary())
     if DRY_RUN:

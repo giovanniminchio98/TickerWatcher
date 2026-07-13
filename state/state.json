@@ -2,7 +2,15 @@
   "budget": {
     "period": "2026-07",
     "posts_used": 4,
-    "usd_used": 0.615
+    "usd_used": 0.615,
+    "daily": {
+      "date": null,
+      "posts_used": 0,
+      "usd_used": 0.0
+    }
+  },
+  "telegram": {
+    "last_report_date": null
   },
   "flashback": {
     "last_posted_date": null

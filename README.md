@@ -133,7 +133,8 @@ src/
                   whale_eth, news_rss, paraphrase, feargreed)
   triggers/       one file per post type (whale_alerts, news_alerts,
                   price_alerts, scheduled_daily, historical_flashback, polls,
-                  self_reply, retweets)
+                  self_reply, filler, retweets, budget_report)
+  telegram_client.py  daily budget report sender (free, independent of the X budget)
 .github/workflows/tickerwatch.yml   cron schedule + secret wiring + state commit
 ```
 
@@ -150,16 +151,44 @@ in this repo, and add:
 | `ETHERSCAN_API_KEY` | [etherscan.io/apis](https://etherscan.io/apis) → free signup → create API key | Required (for ETH whale alerts) |
 | `COINGECKO_API_KEY` | [coingecko.com/en/api/pricing](https://www.coingecko.com/en/api/pricing) → free Demo plan (no card) | Optional — improves rate limits, code falls back to keyless public API without it |
 | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Optional — enables real LLM paraphrasing of news headlines (Claude Haiku, a fraction of a cent/call). Without it, headlines are mechanically trimmed instead of truly paraphrased. |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | See [Telegram budget report](#telegram-budget-report) below | Optional — enables the daily cost/budget notification |
 
 No key needed for: blockchain.info (BTC whale data), alternative.me (Fear &
 Greed Index), or the RSS feeds.
+
+## Telegram budget report
+
+Once/day (independent of the X pipeline — it keeps working even after the
+monthly X budget cap trips, since that's exactly when you need the nudge to
+top up), the bot sends a Telegram message like:
+
+```
+📊 TickerWatch budget report — 2026-07-14
+Today: $0.42 (12 posts)
+Month-to-date: $6.30 / $15.00 cap
+```
+
+Setup (both free, ~2 minutes):
+
+1. In Telegram, message **@BotFather** → `/newbot` → follow the prompts →
+   it gives you a token like `123456789:AAH...` → this is `TELEGRAM_BOT_TOKEN`.
+2. Send your new bot any message first (bots can't message you until you've
+   messaged them), then get your chat ID: message **@userinfobot** (or
+   **@get_id_bot**) and it'll reply with your numeric ID → this is
+   `TELEGRAM_CHAT_ID`. (If you want the report in a group instead, add the
+   bot to the group and use the group's chat ID, which is negative.)
+3. Add both as GitHub secrets (see the table above).
+
+Without these two secrets set, the report step just logs "not configured"
+and skips — it never blocks or breaks the rest of the run.
 
 ## Editing config files
 
 - **`config/watchlist.json`** — crypto (needs a valid [CoinGecko id](https://api.coingecko.com/api/v3/coins/list)) and stock/ETF tickers (must be a symbol Twelve Data recognizes). `snapshot_order` controls what appears in the daily market snapshot.
 - **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary) and `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run).
 - **`config/accounts.json`** — accounts to auto-retweet. You must resolve each `@handle` to its numeric `user_id` once (e.g. via a one-off API call or a tool like [tweeterid.com](https://tweeterid.com)) and paste it in — looking it up every run would burn extra API budget. Set `"enabled": true` to activate an account.
-- **`config/thresholds.json`** — whale minimums, price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation.
+- **`config/thresholds.json`** — whale minimums, price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, and `filler.max_per_day` (how many empty-hour fillers/day at most).
+- **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly cap (see [Cost math](#cost-math-and-the-budget-cap)).
 
 ## Testing locally
@@ -171,7 +200,7 @@ pip install -r requirements.txt
 export DRY_RUN=1              # never calls the X API, just logs what it would post
 export TWELVEDATA_API_KEY=... # real key needed even in dry run, since price data is real
 export ETHERSCAN_API_KEY=...
-# COINGECKO_API_KEY / ANTHROPIC_API_KEY optional
+# COINGECKO_API_KEY / ANTHROPIC_API_KEY / TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID optional
 
 python -m src.main
 ```
