@@ -64,26 +64,35 @@ rest of the month, throttling from the *bottom* of the priority list up
 
 | Post type | ~posts/month | Link? | Cost |
 |---|---|---|---|
-| Whale alerts | ~12 | yes (tx link) | $2.40 |
+| Whale alerts | ~12 | no (see below) | $0.18 |
 | News | ~8 | yes (source link) | $1.60 |
 | Price alerts | ~20 | no | $0.30 |
 | Scheduled daily | ~30 | no | $0.45 |
 | Flashback | ~8 | no | $0.12 |
 | Polls | ~4 | no | $0.06 |
 | Self-reply | ~15 | no | $0.23 |
-| **Total** | **~97 posts** | | **~$5.16/month** |
+| **Total** | **~97 posts** | | **~$2.94/month** |
+
+Whale alerts intentionally don't include a tx-explorer link — at $0.015 vs
+$0.20, the link would be by far the largest line item for a post type that
+can fire often. The amount is still real, sourced on-chain data; it's just
+not click-to-verify from the tweet itself. News keeps its source link since
+that's a hard requirement (never reproduce article text verbatim, always
+cite a real source).
 
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
-actions/month (~$1-2). **Realistic total: ~100-250 posts/month, ~$6-8/month.**
-This is why `budget.json` defaults to a **$10/month cap**.
+actions/month (~$1-2). **Realistic total: ~100-250 posts/month, ~$3-5/month.**
+`budget.json` defaults to a **$10/month cap**, comfortably above this.
 
 **Theoretical worst case** (literally every trigger fires on every single run,
-as requested): whale (6/run) + news (3/run) + all 7 watchlist assets alerting
-every run, sustained for a full month, comes out to **~4,700 posts/month and
-~$485/month**. This number is not a realistic scenario — it's what the hard
-budget cap in `budget.json` exists to prevent. With the default $10 cap, the
-bot simply stops posting non-critical content once ~$10 is spent, no matter
-how noisy the underlying data gets.
+as requested): whale (6/run, no link) + news (3/run, always linked) + all 7
+watchlist assets alerting every run, sustained for a full month, comes out to
+**~4,700 posts/month and ~$216/month** — news's mandatory link is what
+dominates this number, since every other post type is $0.015 flat. This is
+not a realistic scenario — it's what the hard budget cap in `budget.json`
+exists to prevent. With the default $10 cap, the bot simply stops posting
+non-critical content once ~$10 is spent, no matter how noisy the underlying
+data gets.
 
 If you still have a **legacy X free-tier account** (created before Feb 2026,
 not yet migrated to pay-per-use), set `"mode": "posts"` and

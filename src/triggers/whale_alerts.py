@@ -1,5 +1,12 @@
 """Post type 1 (highest priority): whale/on-chain alerts. See sources/whale_btc.py
-and sources/whale_eth.py for the free-tier data sources and their trade-offs."""
+and sources/whale_eth.py for the free-tier data sources and their trade-offs.
+
+No tx-explorer link is included in the post text: at X's pay-per-use pricing,
+any post containing a URL jumps from $0.015 to $0.20, and whale alerts can
+fire often enough that the link cost adds up fast. The amount is still real,
+on-chain data (never fabricated) -- it's just not click-to-verify from the
+tweet itself. Anyone who wants to check can look up the amount/timestamp on
+a block explorer directly."""
 import logging
 
 from src.formatting import fmt_usd_compact, truncate
@@ -29,16 +36,15 @@ def _post_btc_alerts(ctx):
             break
         if hit["txid"] in seen:
             continue
-        if not ctx.budget.can_spend(has_link=True):
+        if not ctx.budget.can_spend(has_link=False):
             break
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
         text = truncate(
-            f"🐋 WHALE ALERT\n{hit['btc']:.1f} BTC{usd_part} just moved on-chain\n"
-            f"tx: https://www.blockchain.com/btc/tx/{hit['txid']}\n#BTC #Crypto"
+            f"🐋 WHALE ALERT\n{hit['btc']:.1f} BTC{usd_part} just moved on-chain\n#BTC #Crypto"
         )
         tweet_id = ctx.x.post(text)
         if tweet_id:
-            ctx.budget.record_spend(has_link=True)
+            ctx.budget.record_spend(has_link=False)
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
@@ -64,15 +70,14 @@ def _post_eth_alerts(ctx):
     for hit in hits:
         if posted >= th["max_alerts_per_run"]:
             break
-        if not ctx.budget.can_spend(has_link=True):
+        if not ctx.budget.can_spend(has_link=False):
             break
         text = truncate(
-            f"🐋 WHALE ALERT\n{hit['eth']:.1f} ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n"
-            f"tx: https://etherscan.io/tx/{hit['txhash']}\n#ETH #Crypto"
+            f"🐋 WHALE ALERT\n{hit['eth']:.1f} ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
         )
         tweet_id = ctx.x.post(text)
         if tweet_id:
-            ctx.budget.record_spend(has_link=True)
+            ctx.budget.record_spend(has_link=False)
             posted += 1
             fired = True
     return fired
