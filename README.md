@@ -89,24 +89,20 @@ not click-to-verify from the tweet itself. News keeps its source link since
 that's a hard requirement (never reproduce article text verbatim, always
 cite a real source).
 
-**Filler is the dominant cost, and it can push you over the cap.** With
-hourly checks and `filler.max_per_day` at 24 (i.e. "fill every empty hour"),
-most hours have no real content, so filler ends up posting roughly
-600-650 times/month — **~$9-9.75/month on its own**, on top of the ~$2.94
-above. Combined, typical total lands around **$12-13/month, which exceeds
-the default $10 cap.** In practice this means the budget cap will likely
-trip a few days before month-end, and the bot goes quiet (including for
-real whale/news alerts) for the remainder of the month — the priority
-ordering only allocates *remaining* budget, it can't create more once
-exhausted. If you want guaranteed hourly posting without that risk, either:
-
-- raise `monthly_usd_cap` in `config/budget.json` to ~$13-15, or
-- lower `filler.max_per_day` in `config/thresholds.json` (e.g. to 10-12,
-  roughly "fill every other empty hour") to cut filler's cost by ~50%,
-  bringing the total comfortably back under $10.
+**Filler is the dominant cost.** With hourly checks and `filler.max_per_day`
+at 24 (i.e. "fill every empty hour"), most hours have no real content, so
+filler ends up posting roughly 600-650 times/month — **~$9-9.75/month on its
+own**, on top of the ~$2.94 above. Combined, typical total lands around
+**$12-13/month**, which is why `monthly_usd_cap` is set to **$15** rather
+than the earlier $10 — it covers true hourly posting (including filler) with
+a bit of headroom, rather than risking the cap tripping a few days before
+month-end and going quiet on real whale/news alerts too. If you'd rather cap
+spend lower than $15, the alternative is lowering `filler.max_per_day` in
+`config/thresholds.json` (e.g. to 10-12, roughly "fill every other empty
+hour") instead of raising the cap.
 
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
-actions/month (~$1-2) on top of whichever total above applies.
+actions/month (~$1-2) on top of the total above.
 
 **Theoretical worst case** (literally every trigger fires on every single run,
 at the current hourly cadence, ~730 runs/month): whale + news + all 7

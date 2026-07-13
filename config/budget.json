@@ -1,7 +1,7 @@
 {
   "_comment": "Hard safety net against the X API bill (or the legacy 500/month free cap). The pipeline runs in strict priority order and stops posting for the rest of the month once a cap is hit, so whale/news alerts are always protected first and low-priority filler (flashback, polls, retweets) is throttled first. Set 'mode' to 'usd' if you're on X API pay-per-use pricing (default in 2026), or 'posts' if you still have a legacy free-tier account with a hard post-count cap.",
   "mode": "usd",
-  "monthly_usd_cap": 10.0,
+  "monthly_usd_cap": 15.0,
   "monthly_post_cap": 480,
   "cost_per_post_usd": 0.015,
   "cost_per_post_with_link_usd": 0.20
