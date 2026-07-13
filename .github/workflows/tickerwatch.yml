@@ -5,8 +5,10 @@ on:
     # every hour -> 24 runs/day, ~730 runs/month. See README for why higher
     # check frequency mostly buys faster alert latency, not proportionally
     # higher cost (most post types are capped by date/cooldown, not by
-    # how often we check).
-    - cron: "0 * * * *"
+    # how often we check). Offset to :07 rather than the exact top of the
+    # hour -- GitHub's scheduler is most congested at :00 (every repo on the
+    # platform tends to schedule there) and can delay/skip runs there.
+    - cron: "7 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:

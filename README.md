@@ -49,10 +49,13 @@ in the `ENABLED` dict at the top of `src/main.py`.
 ## Run frequency and cron schedule
 
 ```
-0 * * * *
+7 * * * *
 ```
 
-Every hour → **24 runs/day → ~730 runs/month**. Note that higher check
+Every hour, offset to :07 rather than the exact top of the hour (GitHub's
+scheduler is most congested at `:00` since every repo tends to schedule
+there, which can delay or skip runs) → **24 runs/day → ~730 runs/month**.
+Note that higher check
 frequency mostly buys faster alert latency and better whale-scan coverage,
 **not** proportionally higher cost: scheduled daily/flashback/polls are
 capped by date regardless of check frequency, and whale/news/price alerts
