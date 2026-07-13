@@ -1,0 +1,29 @@
+{
+  "_comment": "News trigger fires only if an article title/summary matches >=1 keyword AND comes from a whitelisted RSS feed below. Matching is case-insensitive substring matching on title+summary.",
+  "keywords": [
+    "SEC",
+    "ETF approval",
+    "spot ETF",
+    "Fed",
+    "FOMC",
+    "rate cut",
+    "rate hike",
+    "interest rate",
+    "CPI",
+    "hack",
+    "exploit",
+    "regulation",
+    "lawsuit",
+    "bankruptcy",
+    "halving",
+    "stablecoin",
+    "default"
+  ],
+  "rss_feeds": [
+    { "name": "CoinDesk", "url": "https://www.coindesk.com/arc/outboundfeeds/rss/", "whitelisted": true },
+    { "name": "CoinTelegraph", "url": "https://cointelegraph.com/rss", "whitelisted": true },
+    { "name": "CNBC Markets", "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "whitelisted": true },
+    { "name": "MarketWatch Top Stories", "url": "https://feeds.marketwatch.com/marketwatch/topstories/", "whitelisted": true }
+  ],
+  "max_articles_per_run": 3
+}

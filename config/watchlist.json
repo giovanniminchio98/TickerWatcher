@@ -1,0 +1,14 @@
+{
+  "crypto": [
+    { "symbol": "BTC", "name": "Bitcoin", "coingecko_id": "bitcoin" },
+    { "symbol": "ETH", "name": "Ethereum", "coingecko_id": "ethereum" },
+    { "symbol": "SOL", "name": "Solana", "coingecko_id": "solana" },
+    { "symbol": "XRP", "name": "XRP", "coingecko_id": "ripple" }
+  ],
+  "stocks": [
+    { "symbol": "SPY", "name": "S&P 500 ETF" },
+    { "symbol": "QQQ", "name": "Nasdaq 100 ETF" },
+    { "symbol": "AAPL", "name": "Apple" }
+  ],
+  "snapshot_order": ["BTC", "ETH", "SOL", "SPY", "QQQ"]
+}

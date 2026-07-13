@@ -1,0 +1,43 @@
+import json
+import os
+import tempfile
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATE_PATH = os.path.join(ROOT_DIR, "state", "state.json")
+
+DEFAULT_STATE = {
+    "whale": {"last_btc_block_height": None, "seen_btc_txids": [], "last_eth_block": None},
+    "news": {"posted_urls": []},
+    "price": {"last_alert_price": {}, "last_alert_time": {}},
+    "scheduled_daily": {"last_posted_date": None, "rotate_index": 0},
+    "flashback": {"last_posted_date": None},
+    "polls": {"last_posted_date": None},
+    "self_reply": {"pending": []},
+    "retweets": {"last_seen_tweet_id": {}},
+    "budget": {"period": None, "posts_used": 0, "usd_used": 0.0},
+    "run": {"any_trigger_fired_today": False, "last_run_date": None},
+}
+
+
+def load_state():
+    if not os.path.exists(STATE_PATH):
+        return json.loads(json.dumps(DEFAULT_STATE))
+    with open(STATE_PATH, "r") as f:
+        state = json.load(f)
+    # backfill any keys added since this state file was written
+    for key, default in DEFAULT_STATE.items():
+        state.setdefault(key, json.loads(json.dumps(default)))
+    return state
+
+
+def save_state(state):
+    os.makedirs(os.path.dirname(STATE_PATH), exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(STATE_PATH))
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(state, f, indent=2, sort_keys=True)
+        os.replace(tmp_path, STATE_PATH)
+    except Exception:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise

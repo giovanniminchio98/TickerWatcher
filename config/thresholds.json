@@ -1,0 +1,35 @@
+{
+  "whale": {
+    "btc_min_amount": 500,
+    "eth_min_usd": 10000000,
+    "max_alerts_per_run": 3
+  },
+  "price": {
+    "pct_change_trigger": 5.0,
+    "min_hours_between_repeat_alerts": 6,
+    "milestones": {
+      "BTC": [50000, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 150000, 200000],
+      "ETH": [2000, 2500, 3000, 3500, 4000, 5000, 6000],
+      "SOL": [100, 150, 200, 250, 300, 400],
+      "XRP": [1, 1.5, 2, 3, 5],
+      "SPY": [500, 550, 600, 650, 700],
+      "QQQ": [400, 450, 500, 550, 600]
+    }
+  },
+  "polls": {
+    "days_of_week": [4],
+    "asset": "BTC",
+    "horizon_days": 4
+  },
+  "self_reply": {
+    "min_hours_after_post": 4,
+    "max_hours_after_post": 10,
+    "max_replies_per_run": 1
+  },
+  "scheduled_daily": {
+    "post_both": false
+  },
+  "flashback": {
+    "years_back_options": [1, 2, 3, 4]
+  }
+}
