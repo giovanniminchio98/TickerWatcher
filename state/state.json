@@ -7,7 +7,8 @@
     },
     "period": "2026-07",
     "posts_used": 10,
-    "usd_used": 1.26
+    "usd_used": 1.26,
+    "low_budget_alert_sent_period": null
   },
   "filler": {
     "posted_count_today": 0,

@@ -7,11 +7,16 @@ so once the cap is hit for the month, only the lowest-priority post types get
 skipped -- whale and news alerts are protected until the very end.
 
 record_spend() also fires a per-post Telegram notification (if configured)
-so every post is confirmed in near-real-time along with running budget usage.
+so every post is confirmed in near-real-time along with running budget usage,
+plus a one-time "low budget" alert (with a link to top up) the first time
+usage crosses LOW_BUDGET_THRESHOLD in a given month.
 """
 from datetime import datetime, timezone
 
 from src import telegram_client
+
+LOW_BUDGET_THRESHOLD = 0.9
+X_CONSOLE_URL = "https://console.x.com/"
 
 
 def _current_period():
@@ -72,6 +77,30 @@ class Budget:
         else:
             progress = f"${b['usd_used']:.2f}/${cfg['monthly_usd_cap']:.2f}"
         telegram_client.send_message(f"X post created: {text or '(no text)'}\n{progress}")
+        self._maybe_send_low_budget_alert()
+
+    def _maybe_send_low_budget_alert(self):
+        b = self.state["budget"]
+        cfg = self.config
+        if cfg["mode"] == "posts":
+            cap, used = cfg["monthly_post_cap"], b["posts_used"]
+        else:
+            cap, used = cfg["monthly_usd_cap"], b["usd_used"]
+        if not cap or used / cap < LOW_BUDGET_THRESHOLD:
+            return
+        if b.get("low_budget_alert_sent_period") == b["period"]:
+            return  # already alerted this month
+
+        pct = used / cap * 100
+        if cfg["mode"] == "posts":
+            text = f"⚠️ TickerWatch budget alert: {used}/{cap} posts used ({pct:.0f}%) this month."
+        else:
+            text = (
+                f"⚠️ TickerWatch budget alert: ${used:.2f}/${cap:.2f} used ({pct:.0f}%) this month.\n"
+                f"Add credits: {X_CONSOLE_URL} (Billing -> Credits)"
+            )
+        telegram_client.send_message(text)
+        b["low_budget_alert_sent_period"] = b["period"]
 
     def remaining_summary(self):
         b = self.state["budget"]

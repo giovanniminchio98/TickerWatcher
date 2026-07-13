@@ -158,7 +158,7 @@ Greed Index), or the RSS feeds.
 
 ## Telegram notifications
 
-Two independent messages (both free, both keep working even after the X
+Three independent messages (all free, all keep working even after the X
 budget cap trips, since that's exactly when you need the nudge to top up):
 
 **Per-post** — sent right after every single successful post/reply/retweet,
@@ -177,7 +177,16 @@ CET/CEST switch automatically):
 $6.30/$15.00 (42% used)
 ```
 
-Setup (both free, ~2 minutes):
+**Low-budget alert** — a one-time nudge the moment month-to-date spend
+crosses 90% of the cap (won't repeat again until next month), with a direct
+link to add credits:
+
+```
+⚠️ TickerWatch budget alert: $13.62/$15.00 used (91%) this month.
+Add credits: https://console.x.com/ (Billing -> Credits)
+```
+
+Setup (all free, ~2 minutes):
 
 1. In Telegram, message **@BotFather** → `/newbot` → follow the prompts →
    it gives you a token like `123456789:AAH...` → this is `TELEGRAM_BOT_TOKEN`.

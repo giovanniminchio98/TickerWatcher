@@ -20,6 +20,7 @@ DEFAULT_STATE = {
         "posts_used": 0,
         "usd_used": 0.0,
         "daily": {"date": None, "posts_used": 0, "usd_used": 0.0},
+        "low_budget_alert_sent_period": None,
     },
     "telegram": {"last_report_date": None},
     "run": {"any_trigger_fired_today": False, "last_run_date": None},
