@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 47,
-      "usd_used": 2.37
+      "posts_used": 54,
+      "usd_used": 3.03
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 57,
-    "usd_used": 3.63
+    "posts_used": 64,
+    "usd_used": 4.29
   },
   "comment_engagement": {},
   "filler": {
@@ -118,7 +118,7 @@
     "last_posted_date": "2026-07-14"
   },
   "news": {
-    "posted_count_today": 3,
+    "posted_count_today": 6,
     "posted_date": "2026-07-14",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -135,7 +135,10 @@
       "https://cointelegraph.com/news/sbi-stablecoin-lending-service-3-yield-japan?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report",
       "https://cointelegraph.com/news/japan-lawson-netstars-stablecoin-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/ai-enabled-businesses-freelancers-could-add-262b-in-stablecoin-volumes-swyftx?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/ai-enabled-businesses-freelancers-could-add-262b-in-stablecoin-volumes-swyftx?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://www.coindesk.com/policy/2026/07/14/wikipedia-blackout-could-hurt-how-ai-engines-like-chatgpt-understand-crypto",
+      "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes",
+      "https://www.coindesk.com/business/2026/07/14/circle-signs-mou-with-japan-s-largest-card-network-to-explore-stablecoin-payments"
     ]
   },
   "polls": {
@@ -168,7 +171,7 @@
     "last_report_date": null
   },
   "whale": {
-    "last_btc_block_height": 958026,
+    "last_btc_block_height": 958034,
     "last_eth_block": null,
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -202,7 +205,8 @@
       "cc7542400f70a1ba3e4bf168ddabc9057d9ae654a205d938b362ecddacb61e95",
       "eec711e8f705387394ff80aa516efdc2ed90587362ef97813f273da9a9a5a96e",
       "a89a0e42c0c23dd0de4acaae86e28658b38f90b42ae797d5da4be453566dd359",
-      "9df06c3d847d96aad8f93047df9d25e72ca2ddcef86f915cef7bec80810db72a"
+      "9df06c3d847d96aad8f93047df9d25e72ca2ddcef86f915cef7bec80810db72a",
+      "54b9a3b87e235e6a433b6d80f298c4bf58e7829e757f28ed708ab816e122c6c1"
     ]
   }
 }
