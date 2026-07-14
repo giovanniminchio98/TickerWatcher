@@ -31,7 +31,10 @@ alerts' source URL.
 
 capped at thresholds.whale.max_alerts_per_run per chain per run (BTC and ETH
 each have their own independent counter below), so a busy run can't turn
-into a wall of alerts for a single chain."""
+into a wall of alerts for a single chain. Also capped at
+thresholds.whale.max_alerts_per_day combined across both chains, to leave
+room in the daily post volume/budget for other post types (e.g. the
+comment-engagement replies)."""
 import logging
 import math
 
@@ -65,6 +68,19 @@ def _asset_context_line(ctx, coingecko_id, symbol):
     return f"{dot_for_change(change)} {symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
 
 
+def _roll_daily_count(state, today_str):
+    if state.get("posted_date") != today_str:
+        state["posted_date"] = today_str
+        state["posted_count_today"] = 0
+
+
+def _daily_cap_reached(ctx):
+    daily_cap = ctx.config["thresholds"]["whale"].get("max_alerts_per_day")
+    if daily_cap is None:
+        return False
+    return ctx.state["whale"].get("posted_count_today", 0) >= daily_cap
+
+
 def _post(ctx, text, context_line, explorer_url=None):
     parts = [text]
     if context_line:
@@ -75,6 +91,7 @@ def _post(ctx, text, context_line, explorer_url=None):
         return False
     channel_link = ("View transaction", explorer_url) if explorer_url else None
     ctx.budget.record_spend(has_link=False, text=full_text, channel_link=channel_link)
+    ctx.state["whale"]["posted_count_today"] = ctx.state["whale"].get("posted_count_today", 0) + 1
     return True
 
 
@@ -96,7 +113,7 @@ def _post_btc_alerts(ctx):
     context_shown = False
     seen = set(state["seen_btc_txids"])
     for hit in hits:
-        if posted >= th["max_alerts_per_run"]:
+        if posted >= th["max_alerts_per_run"] or _daily_cap_reached(ctx):
             break
         if hit["txid"] in seen:
             continue
@@ -133,7 +150,7 @@ def _post_eth_alerts(ctx):
     posted = 0
     context_shown = False
     for hit in hits:
-        if posted >= th["max_alerts_per_run"]:
+        if posted >= th["max_alerts_per_run"] or _daily_cap_reached(ctx):
             break
         if not ctx.budget.can_spend(has_link=False):
             break
@@ -149,6 +166,7 @@ def _post_eth_alerts(ctx):
 
 
 def run(ctx):
+    _roll_daily_count(ctx.state["whale"], ctx.now.strftime("%Y-%m-%d"))
     btc_fired = _post_btc_alerts(ctx)
     eth_fired = _post_eth_alerts(ctx)
     return btc_fired or eth_fired

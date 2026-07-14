@@ -6,7 +6,13 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATE_PATH = os.path.join(ROOT_DIR, "state", "state.json")
 
 DEFAULT_STATE = {
-    "whale": {"last_btc_block_height": None, "seen_btc_txids": [], "last_eth_block": None},
+    "whale": {
+        "last_btc_block_height": None,
+        "seen_btc_txids": [],
+        "last_eth_block": None,
+        "posted_date": None,
+        "posted_count_today": 0,
+    },
     "news": {"posted_urls": [], "posted_date": None, "posted_count_today": 0},
     "price": {"last_alert_price": {}, "last_alert_time": {}},
     "scheduled_daily": {"last_posted_date": None, "rotate_index": 0},

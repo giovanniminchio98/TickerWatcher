@@ -4,10 +4,14 @@ posts. Everywhere else in TickerWatch, "never auto-reply under other
 accounts' posts" was a hard rule -- this trigger is the one deliberate,
 explicitly-approved exception, so it's kept on a short leash:
 
-- Nothing fires for an account unless it's both enabled=true AND has a
-  resolved user_id in config/reply_targets.json (same convention as
-  config/accounts.json's retweet list) -- so an empty/placeholder entry is
-  inert by construction, not just by a flag.
+- Nothing fires for an account unless enabled=true in
+  config/reply_targets.json -- an entry with enabled=false is inert by
+  construction, not just skipped by a runtime check.
+- user_id is optional in config: if left blank, it's auto-resolved from the
+  handle on first use (one read call) and cached in state so it's never
+  looked up again -- no manual "paste the numeric ID" step needed to add a
+  new account. Fill it in manually only if you want to skip that first
+  lookup call.
 - times_per_day is a hard per-account cap, checked before every reply.
 - The reply text is always freshly written by Claude from the target
   tweet's own content (src/sources/reply_writer.py), never a canned line --
@@ -29,13 +33,14 @@ def run(ctx):
     fired = False
 
     for target in targets:
-        if not target.get("enabled") or not target.get("user_id"):
+        if not target.get("enabled"):
             continue
         handle = target["handle"]
         cap = max(0, target.get("times_per_day", 1))
 
         acct_state = state.setdefault(
-            handle, {"date": None, "commented_today": 0, "last_seen_tweet_id": None}
+            handle,
+            {"date": None, "commented_today": 0, "last_seen_tweet_id": None, "resolved_user_id": None},
         )
         if acct_state["date"] != today_str:
             acct_state["date"] = today_str
@@ -44,7 +49,14 @@ def run(ctx):
         if acct_state["commented_today"] >= cap:
             continue
 
-        tweets = ctx.x.get_recent_tweets_with_text(target["user_id"], since_id=acct_state["last_seen_tweet_id"])
+        user_id = target.get("user_id") or acct_state.get("resolved_user_id")
+        if not user_id:
+            user_id = ctx.x.get_user_id(handle)
+            if not user_id:
+                continue
+            acct_state["resolved_user_id"] = user_id
+
+        tweets = ctx.x.get_recent_tweets_with_text(user_id, since_id=acct_state["last_seen_tweet_id"])
         if not tweets:
             continue
 

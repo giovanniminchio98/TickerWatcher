@@ -121,10 +121,12 @@ project, not a quick add — let me know if you want to go ahead with it.
 
 `config/reply_targets.json` lists specific accounts TickerWatch will reply
 under (not just retweet), each with a hard `times_per_day` cap. An entry is
-inert until you resolve its numeric `user_id` (same one-time lookup as
-`config/accounts.json`) — the shipped default has one placeholder entry
-(`WatcherGuru`) with a blank `user_id`, so it does nothing until you fill
-that in.
+inert until `"enabled": true` — `user_id` is optional and auto-resolves from
+the handle on first use (one read call, then cached in state so it's never
+looked up again), so adding an account is just adding its handle and
+flipping `enabled` to `true`, no manual lookup step required. The shipped
+default has one entry (`WatcherGuru`) with `enabled: true` but a blank
+`user_id`, which will auto-resolve the first time it runs.
 
 Reply text is always freshly written by Claude from the target tweet's own
 content (`src/sources/reply_writer.py`) — never a generic "Great post!" —
@@ -370,7 +372,7 @@ ever blocks or breaks the rest of the run.
 - **`config/watchlist.json`** — crypto (needs a valid [CoinGecko id](https://api.coingecko.com/api/v3/coins/list)) and stock/ETF tickers (must be a symbol Twelve Data recognizes). `snapshot_order` controls what appears in the daily market snapshot.
 - **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary), `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run), and `max_articles_per_day` (hard daily cap on the only post type that still carries a link — this is the main cost lever).
 - **`config/accounts.json`** — accounts to auto-retweet. You must resolve each `@handle` to its numeric `user_id` once (e.g. via a one-off API call or a tool like [tweeterid.com](https://tweeterid.com)) and paste it in — looking it up every run would burn extra API budget. Set `"enabled": true` to activate an account.
-- **`config/reply_targets.json`** — accounts to *comment* under (see [Comment engagement](#comment-engagement-opt-in-off-by-default-in-practice)). Same `user_id` resolution as `accounts.json`, plus a `times_per_day` hard cap per account.
+- **`config/reply_targets.json`** — accounts to *comment* under (see [Comment engagement](#comment-engagement-opt-in-off-by-default-in-practice)). Just add a `handle` and set `enabled: true` — `user_id` auto-resolves on first use, no manual lookup needed. Plus a `times_per_day` hard cap per account.
 - **`config/thresholds.json`** — whale minimums, price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, and `filler.max_per_day` (how many empty-hour fillers/day at most).
 - **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly cap (see [Cost math](#cost-math-and-the-budget-cap)).

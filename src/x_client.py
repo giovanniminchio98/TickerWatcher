@@ -94,6 +94,24 @@ class XClient:
             logger.exception("Failed to retweet %s", tweet_id)
             return False
 
+    def get_user_id(self, handle):
+        """Resolves an @handle to its numeric user ID (one read call). Used
+        to auto-resolve config/reply_targets.json entries that only have a
+        handle, so a blank user_id doesn't require a manual lookup step --
+        callers should cache the result (e.g. in state) since looking it up
+        every run would burn extra read budget for no reason."""
+        if DRY_RUN:
+            logger.info("[DRY RUN] would resolve user id for @%s", handle)
+            return None
+        try:
+            resp = self.client.get_user(username=handle.lstrip("@"))
+            if not resp.data:
+                return None
+            return str(resp.data.id)
+        except Exception:
+            logger.exception("Failed to resolve user id for @%s", handle)
+            return None
+
     def get_recent_tweet_ids(self, user_id, since_id=None, max_results=5):
         """Newest-first list of str tweet IDs posted by user_id since since_id
         (excludes retweets/replies so we never retweet a retweet or a reply).
