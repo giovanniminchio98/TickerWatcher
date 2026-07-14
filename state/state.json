@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 19,
-      "usd_used": 1.95
+      "posts_used": 25,
+      "usd_used": 2.04
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 29,
-    "usd_used": 3.21
+    "posts_used": 35,
+    "usd_used": 3.3
   },
   "filler": {
     "posted_count_today": 0,
@@ -19,8 +19,8 @@
     "last_posted_date": null
   },
   "news": {
-    "posted_date": "2026-07-14",
     "posted_count_today": 3,
+    "posted_date": "2026-07-14",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -69,7 +69,7 @@
     "last_report_date": null
   },
   "whale": {
-    "last_btc_block_height": 957930,
+    "last_btc_block_height": 957936,
     "last_eth_block": null,
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -83,7 +83,10 @@
       "9a9084d20365c90c69e7c55b14d6ae7c726aaa05da6912a418e1bdc006273f52",
       "009bde22a6363c2a0ee48a206f9737a76794b08ce7ea66dce71688ed4ee7fe35",
       "6d65e52311c6f0449ae81ca95a972bfb6f559456c3116c3a82d90f1badcff4cf",
-      "85a8055a9ad141a7e38773eed2a5f5f745d671be093be216a52dcc5da35aba6a"
+      "85a8055a9ad141a7e38773eed2a5f5f745d671be093be216a52dcc5da35aba6a",
+      "5cc25db68250cac565365bc5f6e110e966982df845eba9a50a077083ac4f0973",
+      "a81583c00315ab94cec42f71273e3ff5defdb3d597c652739e9e83a3b8ca16fe",
+      "7787f32e3e31653edad5071c926d232ef1ee021612fa7218db8b31bf9651beed"
     ]
   }
 }
