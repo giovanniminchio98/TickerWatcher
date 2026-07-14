@@ -10,9 +10,13 @@ is independently verifiable, and skip the wallet-type framing entirely.
 
 To bound run time/requests, only the most recent MAX_BLOCKS_PER_RUN blocks
 are scanned each run. At a ~10 min average BTC block time this comfortably
-covers a 3-4h check window (usually only ~2-3 new blocks); if GitHub Actions
-was down for a while and more blocks piled up, older blocks in the backlog
-are skipped rather than scanned, so this is a best-effort feed, not exhaustive.
+covers an hourly check window (usually only ~5-6 new blocks). If a gap
+between runs let more blocks pile up than that (a scheduler outage, a long
+run, etc.), the scan window jumps forward to the most recent
+MAX_BLOCKS_PER_RUN blocks rather than working through the backlog in
+order -- an alert should be about what just happened, not something that
+happened hours ago just because it's next in a queue. The skipped-over
+backlog is never scanned, so this is a best-effort feed, not exhaustive.
 """
 import logging
 
@@ -48,9 +52,11 @@ def find_large_transactions(last_seen_height, min_btc, btc_usd_price):
         return latest, []
 
     start = last_seen_height + 1
-    end = min(latest, start + MAX_BLOCKS_PER_RUN - 1)
     if start > latest:
         return last_seen_height, []
+    if latest - start + 1 > MAX_BLOCKS_PER_RUN:
+        start = latest - MAX_BLOCKS_PER_RUN + 1
+    end = latest
 
     findings = []
     for height in range(start, end + 1):

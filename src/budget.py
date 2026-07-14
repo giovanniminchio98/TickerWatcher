@@ -12,6 +12,16 @@ post content -- that chat is for you, not a content feed), and a full copy
 of the post to the Telegram channel (channel_text if given, else text) --
 Telegram is free, so the channel copy can be more generous than the X post
 itself (e.g. restoring a link X's post dropped for cost/reach reasons).
+
+The channel text is always HTML-escaped here (centrally, once) before
+sending, since Telegram messages go out with parse_mode=HTML -- callers
+just pass plain text (news paraphrases, LLM-written replies, filler lines
+can all contain a stray "&", e.g. "Fear & Greed", "S&P 500") and never need
+to think about escaping themselves. A caller that wants a short tappable
+link (instead of Telegram's giant auto-expanded preview card) passes
+channel_link=(label, url) and this appends it as a proper anchor tag after
+escaping the base text -- the anchor itself is never escaped.
+
 Plus a one-time "low budget" alert (with a link to top up) the first time
 usage crosses LOW_BUDGET_THRESHOLD in a given month.
 """
@@ -67,7 +77,7 @@ class Budget:
     def can_spend(self, has_link=False):
         return not self._would_exceed(has_link)
 
-    def record_spend(self, has_link=False, text=None, channel_text=None, mirror_to_channel=True):
+    def record_spend(self, has_link=False, text=None, channel_text=None, channel_link=None, mirror_to_channel=True):
         b = self.state["budget"]
         cfg = self.config
         cost = cfg["cost_per_post_with_link_usd"] if has_link else cfg["cost_per_post_usd"]
@@ -82,7 +92,12 @@ class Budget:
             progress = f"${b['usd_used']:.2f}/${cfg['monthly_usd_cap']:.2f}"
         telegram_client.send_message(f"✅ X post created — {progress}")
         if mirror_to_channel:
-            telegram_client.send_channel_message(channel_text or text or "(no text)")
+            base = channel_text if channel_text is not None else text or "(no text)"
+            escaped = telegram_client.escape_html(base)
+            if channel_link:
+                label, url = channel_link
+                escaped = f"{escaped}\n🔗 {telegram_client.link_html(label, url)}"
+            telegram_client.send_channel_message(escaped)
         self._maybe_send_low_budget_alert()
 
     def _maybe_send_low_budget_alert(self):

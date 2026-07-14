@@ -5,10 +5,13 @@ tier -- no Whale Alert subscription needed).
 
 Same bounded-scan trade-off as whale_btc.py: only the most recent
 MAX_BLOCKS_PER_RUN blocks are scanned per run to stay well within Etherscan's
-free rate limit (5 req/s, 100k req/day). ETH blocks are ~12s apart, so a 3-4h
-window is ~900-1200 blocks -- far more than we can afford to fetch one-by-one
-on the free tier, so this is a best-effort recent-blocks sample, not
-exhaustive chain coverage. Document this trade-off for the user in the README.
+free rate limit (5 req/s, 100k req/day). ETH blocks are ~12s apart, so even
+an hourly window is ~300 blocks -- far more than we can afford to fetch
+one-by-one on the free tier. If a gap between runs lets more blocks pile up
+than MAX_BLOCKS_PER_RUN, the scan window jumps forward to the most recent
+blocks rather than working through the backlog in order, so alerts are
+always about what just happened, never something hours old. This is a
+best-effort recent-blocks sample, not exhaustive chain coverage.
 """
 import logging
 import os
@@ -62,9 +65,11 @@ def find_large_transactions(last_seen_block, min_usd, eth_usd_price):
 
     min_eth = min_usd / eth_usd_price
     start = last_seen_block + 1
-    end = min(latest, start + MAX_BLOCKS_PER_RUN - 1)
     if start > latest:
         return last_seen_block, []
+    if latest - start + 1 > MAX_BLOCKS_PER_RUN:
+        start = latest - MAX_BLOCKS_PER_RUN + 1
+    end = latest
 
     findings = []
     for block_number in range(start, end + 1):

@@ -12,6 +12,7 @@ Two separate destinations:
     reach reasons get restored here, since Telegram is free). Optional --
     if unset, channel sends are silently skipped, same as missing bot creds.
 """
+import html
 import logging
 import os
 
@@ -22,6 +23,21 @@ logger = logging.getLogger("tickerwatch.telegram")
 BASE_URL = "https://api.telegram.org"
 TIMEOUT = 15
 DRY_RUN = os.environ.get("DRY_RUN", "0") == "1"
+
+
+def escape_html(text):
+    """Escape free-text (paraphrased headlines, etc.) before embedding it in
+    an HTML-parsed Telegram message -- an unescaped &/</> in real article
+    text (e.g. "AT&T", "Q&A") would otherwise make Telegram reject the whole
+    message."""
+    return html.escape(text, quote=False)
+
+
+def link_html(label, url):
+    """A short, tappable link with no auto-expanded preview card bloating
+    the message -- pair with disable_web_page_preview (already the default
+    in _send) so only this short label shows, not the raw URL."""
+    return f'<a href="{url}">{escape_html(label)}</a>'
 
 
 def _send(chat_id_env, text, label):
@@ -37,7 +53,12 @@ def _send(chat_id_env, text, label):
     try:
         resp = requests.post(
             f"{BASE_URL}/bot{token}/sendMessage",
-            json={"chat_id": chat_id, "text": text},
+            json={
+                "chat_id": chat_id,
+                "text": text,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True,
+            },
             timeout=TIMEOUT,
         )
         resp.raise_for_status()

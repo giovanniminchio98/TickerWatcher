@@ -72,8 +72,7 @@ def run(ctx):
         if not tweet_id:
             continue
 
-        channel_text = f"{text}\nSource: {article['url']}"
-        ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text)
+        ctx.budget.record_spend(has_link=False, text=text, channel_link=("Source", article["url"]))
         state["posted_urls"].append(article["url"])
         state["posted_count_today"] += 1
         fired = True
@@ -82,7 +81,7 @@ def run(ctx):
             reply_text = truncate(f"Source: {article['url']}")
             reply_id = ctx.x.reply(reply_text, tweet_id)
             if reply_id:
-                # already mirrored to the channel above via channel_text, skip duplicate
+                # already mirrored to the channel above via channel_link, skip duplicate
                 ctx.budget.record_spend(has_link=True, text=reply_text, mirror_to_channel=False)
 
     state["posted_urls"] = state["posted_urls"][-500:]

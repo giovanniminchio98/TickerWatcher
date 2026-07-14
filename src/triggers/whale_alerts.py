@@ -73,8 +73,8 @@ def _post(ctx, text, context_line, explorer_url=None):
     tweet_id = ctx.x.post(full_text)
     if not tweet_id:
         return False
-    channel_text = f"{full_text}\n🔗 {explorer_url}" if explorer_url else full_text
-    ctx.budget.record_spend(has_link=False, text=full_text, channel_text=channel_text)
+    channel_link = ("View transaction", explorer_url) if explorer_url else None
+    ctx.budget.record_spend(has_link=False, text=full_text, channel_link=channel_link)
     return True
 
 
