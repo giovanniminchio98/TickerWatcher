@@ -15,11 +15,19 @@ confirmed via a live billing test that this does NOT trigger the $0.20
 in-app-only entity type, never an external URL).
 
 Siren count scales with size (more sirens = bigger transaction, capped at
-10 for $200M+) so the visual weight matches the news."""
+10 for $200M+) so the visual weight matches the news.
+
+Each alert also carries a same-asset market context line (price + 24h
+change + a green/red dot) so it doesn't read as just a bare number every
+time -- e.g. a big BTC transfer alongside "BTC is up 5% today" is more
+informative than either fact alone. This costs nothing extra: the price
+data is already fetched once per run for the whole pipeline (ctx.prices),
+so no additional API calls. If that data's unavailable for some reason,
+the line is just omitted rather than blocking the alert."""
 import logging
 import math
 
-from src.formatting import fmt_usd_compact, truncate
+from src.formatting import fmt_pct, fmt_price, fmt_usd_compact, truncate
 from src.sources import whale_btc, whale_eth
 
 logger = logging.getLogger("tickerwatch.triggers.whale")
@@ -35,8 +43,22 @@ def _siren_count(usd):
     return "🚨" * count
 
 
-def _post_with_ref(ctx, text, ref_value):
-    full_text = truncate(f"{text}\n\n{ref_value}")
+def _asset_context_line(ctx, coingecko_id, symbol):
+    info = ctx.prices.get(coingecko_id)
+    if not info or info.get("usd") is None:
+        return None
+    price = info["usd"]
+    change = info.get("usd_24h_change")
+    dot = "🟢" if change is not None and change >= 0 else "🔴"
+    return f"{dot} ${symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
+
+
+def _post_with_ref(ctx, text, context_line, ref_value):
+    parts = [text]
+    if context_line:
+        parts.append(context_line)
+    parts.append(ref_value)
+    full_text = truncate("\n\n".join(parts))
     tweet_id = ctx.x.post(full_text)
     if not tweet_id:
         return False
@@ -70,7 +92,8 @@ def _post_btc_alerts(ctx):
         sirens = _siren_count(hit["usd"])
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
         text = f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
-        if _post_with_ref(ctx, text, hit["txid"]):
+        context_line = _asset_context_line(ctx, "bitcoin", "BTC")
+        if _post_with_ref(ctx, text, context_line, hit["txid"]):
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
@@ -100,7 +123,8 @@ def _post_eth_alerts(ctx):
             break
         sirens = _siren_count(hit["usd"])
         text = f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
-        if _post_with_ref(ctx, text, hit["txhash"]):
+        context_line = _asset_context_line(ctx, "ethereum", "ETH")
+        if _post_with_ref(ctx, text, context_line, hit["txhash"]):
             posted += 1
             fired = True
     return fired

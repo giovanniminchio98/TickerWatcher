@@ -29,8 +29,11 @@ on the monthly budget):
 
 1. **Whale/on-chain alerts** — large BTC (blockchain.info) / ETH (Etherscan) transfers.
    Siren count in the post scales with size (1 🚨 at the minimum threshold, up
-   to 10 at $200M+); a cheap follow-up reply (plain text, not a link) carries
-   the raw tx reference so it stays verifiable without the $0.20 link cost.
+   to 10 at $200M+); the raw tx hash sits on its own line in the same post
+   (not a link, not a separate reply) so it stays verifiable at no extra cost.
+   Each alert also includes a same-asset market context line (🟢/🔴 price +
+   24h change) reusing data already fetched for the run, so it's free and
+   the alert doesn't read as just a bare number every time.
 2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
    The main post names the outlet only (no link, e.g. "via CoinDesk"), with
    the real source URL in a follow-up reply -- X's algorithm has suppressed
