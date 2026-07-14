@@ -13,10 +13,17 @@ now that whale alerts dropped their link entirely.
 
 The Telegram channel copy always gets the real article URL, regardless of
 whether the paid X reply above ends up firing -- Telegram is free, so there's
-no budget reason to ever hold that link back there."""
+no budget reason to ever hold that link back there.
+
+Also attaches a small themed red/green/gray trend-line graphic (see
+src/media.py's get_trend_media_id) based on the same Claude call's sentiment
+read, matching the "chart snippet + terse JUST IN line" style other crypto
+news accounts use. Only available on the Claude paraphrase path -- the
+mechanical fallback has no sentiment signal, so no image gets attached then."""
 import logging
 
 from src.formatting import truncate
+from src.media import get_trend_media_id
 from src.sources import news_rss, paraphrase
 
 logger = logging.getLogger("tickerwatch.triggers.news")
@@ -54,13 +61,14 @@ def run(ctx):
         if not ctx.budget.can_spend(has_link=False):
             break
         try:
-            summary = paraphrase.paraphrase(article["title"], article["summary"])
+            summary, sentiment = paraphrase.paraphrase_with_sentiment(article["title"], article["summary"])
         except Exception:
             logger.exception("Paraphrase failed for %s", article["url"])
             continue
 
         text = truncate(f"🚨 JUST IN: {summary}\n(via {article['source']})")
-        tweet_id = ctx.x.post(text)
+        media_id = get_trend_media_id(ctx, sentiment)
+        tweet_id = ctx.x.post(text, media_id=media_id)
         if not tweet_id:
             continue
 

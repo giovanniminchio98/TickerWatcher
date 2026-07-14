@@ -105,6 +105,33 @@ watch your X credits balance for a day or two after this ships and flip
 `media.json`'s `enabled` to `false` if the per-post cost looks higher than
 the usual $0.015.
 
+News alerts aren't tied to one coin, so they instead get a small themed
+red/green/gray trend-line graphic (`assets/trend_up.png` / `trend_down.png` /
+`trend_neutral.png`, pre-generated and checked into the repo — no network
+call needed to attach one) matching the "chart snippet + terse JUST IN line"
+look other crypto news accounts use. Which one gets attached comes from the
+same Claude call already used to paraphrase the headline (it also tags the
+story bullish/bearish/neutral); the mechanical-fallback path (no
+`ANTHROPIC_API_KEY`) has no sentiment signal, so no image gets attached then.
+
+**On the liquidation-stat post style specifically** (e.g. Watcher.Guru's
+"$100,000,000 worth of crypto shorts liquidated in the past 60 minutes"):
+there's no free way to source that data honestly on our hourly-cron
+architecture. The only genuinely free feed is Binance's public
+`!forceOrder@arr` WebSocket stream — real-time, no key — but it's a
+persistent connection, not a REST endpoint; a batch job that connects for a
+few seconds once an hour would only catch whatever liquidations happen to
+fire in that narrow window, and reporting that as "in the past 60 minutes"
+would be a fabricated claim about data we never actually collected. The
+aggregators that do publish a clean rolling "$X liquidated in the last hour"
+number (CoinGlass, CoinAPI) are paid APIs — CoinGlass's cheapest plan is
+$29/month, no free tier at all. Doing this properly would mean a second,
+long-running GitHub Actions job that keeps the WebSocket open for most of
+each hour and accumulates real totals — a materially bigger, different piece
+of infrastructure than anything else in this repo (all of which is
+short batch runs). Worth building if you want it, but it's a separate
+project, not a quick add — let me know if you want to go ahead with it.
+
 ### Comment engagement (opt-in, off by default in practice)
 
 `config/reply_targets.json` lists specific accounts TickerWatch will reply
