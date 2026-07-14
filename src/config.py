@@ -19,6 +19,8 @@ def load_all():
         "reply_targets": _load("reply_targets.json"),
         "thresholds": _load("thresholds.json"),
         "budget": _load("budget.json"),
+        "claude_budget": _load("claude_budget.json"),
+        "ai_manager": _load("ai_manager.json"),
         "filler": _load("filler.json"),
         "media": _load("media.json"),
     }

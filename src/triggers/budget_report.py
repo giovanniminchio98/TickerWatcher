@@ -32,11 +32,18 @@ def run(ctx):
     if cfg["mode"] == "posts":
         used, cap = b["posts_used"], cfg["monthly_post_cap"]
         pct = (used / cap * 100) if cap else 0
-        text = f"📅 Daily recap\n{used}/{cap} posts ({pct:.0f}% used)"
+        text = f"📅 Daily recap\nX API: {used}/{cap} posts ({pct:.0f}% used)"
     else:
         used, cap = b["usd_used"], cfg["monthly_usd_cap"]
         pct = (used / cap * 100) if cap else 0
-        text = f"📅 Daily recap\n${used:.2f}/${cap:.2f} ({pct:.0f}% used)"
+        text = f"📅 Daily recap\nX API: ${used:.2f}/${cap:.2f} ({pct:.0f}% used)"
+
+    cb = ctx.state.get("claude_budget")
+    ccfg = ctx.config.get("claude_budget")
+    if cb and ccfg:
+        c_used, c_cap = cb["usd_used"], ccfg["monthly_usd_cap"]
+        c_pct = (c_used / c_cap * 100) if c_cap else 0
+        text += f"\nClaude API: ${c_used:.2f}/${c_cap:.2f} ({c_pct:.0f}% used)"
 
     sent = telegram_client.send_message(text)
     if sent:

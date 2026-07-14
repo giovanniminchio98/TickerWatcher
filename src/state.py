@@ -21,6 +21,18 @@ DEFAULT_STATE = {
     "self_reply": {"pending": []},
     "retweets": {"last_seen_tweet_id": {}},
     "comment_engagement": {},
+    "ai_manager": {
+        "last_call_time": None,
+        "date": None,
+        "calls_today": 0,
+        "posts_today": 0,
+        "replies_today": 0,
+        "recent_post_texts": [],
+        "replied_tweet_ids": [],
+        "account_replies_today": {},
+        "resolved_accounts": {},
+    },
+    "claude_budget": {"period": None, "usd_used": 0.0, "low_budget_alert_sent_period": None},
     "content_drafts": {
         "last_drafted_time": {},
         "drafted_urls": [],
