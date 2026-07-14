@@ -30,7 +30,8 @@ def _build_snapshot_text(ctx):
                 continue
             price, change = q["price"], q["percent_change"]
         label = "S&P 500" if symbol == "SPY" else symbol
-        lines.append(f"{label}: ${fmt_price(price)} ({fmt_pct(change)})")
+        dot = "🟢" if change is not None and change >= 0 else "🔴"
+        lines.append(f"{dot} {label}: ${fmt_price(price)} ({fmt_pct(change)})")
     if len(lines) <= 1:
         return None
     return "\n".join(lines)
