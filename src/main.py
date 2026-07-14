@@ -37,16 +37,18 @@ logging.basicConfig(
 logger = logging.getLogger("tickerwatch.main")
 
 ENABLED = {
+    # TEMPORARY: isolated for a single-post $BTC/$ETH cashtag billing test --
+    # revert all to True right after.
     "whale_alerts": True,
-    "news_alerts": True,
-    "price_alerts": True,
-    "scheduled_daily": True,
-    "historical_flashback": True,
-    "polls": True,
-    "self_reply": True,
-    "retweets": True,
-    "filler": True,
-    "budget_report": True,
+    "news_alerts": False,
+    "price_alerts": False,
+    "scheduled_daily": False,
+    "historical_flashback": False,
+    "polls": False,
+    "self_reply": False,
+    "retweets": False,
+    "filler": False,
+    "budget_report": False,
 }
 
 

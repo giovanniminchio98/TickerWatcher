@@ -2,7 +2,7 @@
   "whale": {
     "btc_min_amount": 500,
     "eth_min_usd": 10000000,
-    "max_alerts_per_run": 3
+    "max_alerts_per_run": 1
   },
   "price": {
     "pct_change_trigger": 5.0,
