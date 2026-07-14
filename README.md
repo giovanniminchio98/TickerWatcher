@@ -27,8 +27,13 @@ data source is genuinely free.
 Every run, in strict priority order (higher priority always gets first claim
 on the monthly budget):
 
-1. **Whale/on-chain alerts** — large BTC (blockchain.info) / ETH (Etherscan) transfers
-2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced
+1. **Whale/on-chain alerts** — large BTC (blockchain.info) / ETH (Etherscan) transfers.
+   Siren count in the post scales with size (1 🚨 at the minimum threshold, up
+   to 10 at $200M+); a cheap follow-up reply (plain text, not a link) carries
+   the raw tx reference so it stays verifiable without the $0.20 link cost.
+2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
+   Capped at `keywords.max_articles_per_day` (default 2) since this is the
+   only post type that keeps its link and is by far the biggest cost driver.
 3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
 4. **Scheduled daily post** — market snapshot / Fear & Greed Index (rotates, or both)
 5. **Historical flashback** — filler, max once/day, only if nothing else fired
@@ -72,37 +77,50 @@ the numbers below. Once the cap is hit, the pipeline stops posting for the
 rest of the month, throttling from the *bottom* of the priority list up
 (retweets and polls get cut before whale/news alerts do).
 
-**Typical case** (realistic trigger rates, retweets disabled by default):
+**Original estimate vs. observed reality:** the first-day estimate below
+assumed ~8 news posts/month, but the RSS feeds turned out to be far more
+active than that — real usage hit 15 news posts in under a day before the
+per-day cap existed, at $0.20 each. That's why `keywords.max_articles_per_day`
+(default 2) exists: it's the single biggest lever on cost, since news is the
+only post type that still carries a link.
 
 | Post type | ~posts/month | Link? | Cost |
 |---|---|---|---|
-| Whale alerts | ~12 | no (see below) | $0.18 |
-| News | ~8 | yes (source link) | $1.60 |
+| Whale alerts (main + tx-ref reply, ~12 alerts) | ~24 | no (see below) | $0.36 |
+| News (capped at 2/day) | up to ~60 | yes (source link) | up to $12.00 |
 | Price alerts | ~20 | no | $0.30 |
 | Scheduled daily | ~30 | no | $0.45 |
 | Flashback | ~8 | no | $0.12 |
 | Polls | ~4 | no | $0.06 |
 | Self-reply | ~15 | no | $0.23 |
-| **Real-content subtotal** | **~97 posts** | | **~$2.94/month** |
+| **Real-content subtotal** | | | **~$1.52 - $13.52/month**, depending on how often news actually matches |
 
-Whale alerts intentionally don't include a tx-explorer link — at $0.015 vs
-$0.20, the link would be by far the largest line item for a post type that
-can fire often. The amount is still real, sourced on-chain data; it's just
-not click-to-verify from the tweet itself. News keeps its source link since
-that's a hard requirement (never reproduce article text verbatim, always
-cite a real source).
+Whale alerts don't put the tx-explorer link in the main post — at $0.015 vs
+$0.20, the link would be a big line item for a post type that can fire
+often. Instead, a cheap plain-text reply (not a clickable link, so still
+$0.015) carries the raw tx reference right after, so it stays verifiable
+without the link surcharge. News keeps its link since that's a hard
+requirement (never reproduce article text verbatim, always cite a real
+source) — which is exactly why it's capped per-day instead.
 
-**Filler is the dominant cost.** With hourly checks and `filler.max_per_day`
-at 24 (i.e. "fill every empty hour"), most hours have no real content, so
-filler ends up posting roughly 600-650 times/month — **~$9-9.75/month on its
-own**, on top of the ~$2.94 above. Combined, typical total lands around
-**$12-13/month**, which is why `monthly_usd_cap` is set to **$15** rather
-than the earlier $10 — it covers true hourly posting (including filler) with
-a bit of headroom, rather than risking the cap tripping a few days before
-month-end and going quiet on real whale/news alerts too. If you'd rather cap
-spend lower than $15, the alternative is lowering `filler.max_per_day` in
-`config/thresholds.json` (e.g. to 10-12, roughly "fill every other empty
-hour") instead of raising the cap.
+Watch the Telegram per-post/daily notifications for the first week or two to
+see where your real news volume lands, and adjust `max_articles_per_day`
+(or `monthly_usd_cap`) accordingly.
+
+**Filler adds on top of the real-content range above.** With hourly checks
+and `filler.max_per_day` at 24 (i.e. "fill every empty hour"), most hours
+have no real content, so filler ends up posting roughly 600-650 times/month
+— **~$9-9.75/month on its own**. Combined with real content, monthly total
+could range from ~$10.50 (quiet news) up toward or past the $15 cap (active
+news + heavy filler). If a busy month does push past $15, the budget guard
+just does its job: it stops posting non-critical content for the rest of the
+month rather than overspending — you'd see this as the account going quiet
+plus the 90% Telegram alert firing well before it happens. Two levers if you
+want more headroom before that point:
+
+- lower `filler.max_per_day` in `config/thresholds.json` (e.g. to 10-12,
+  roughly "fill every other empty hour"), or
+- raise `monthly_usd_cap` in `config/budget.json` further.
 
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
 actions/month (~$1-2) on top of the total above.
@@ -206,7 +224,7 @@ and skips — it never blocks or breaks the rest of the run.
 ## Editing config files
 
 - **`config/watchlist.json`** — crypto (needs a valid [CoinGecko id](https://api.coingecko.com/api/v3/coins/list)) and stock/ETF tickers (must be a symbol Twelve Data recognizes). `snapshot_order` controls what appears in the daily market snapshot.
-- **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary) and `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run).
+- **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary), `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run), and `max_articles_per_day` (hard daily cap on the only post type that still carries a link — this is the main cost lever).
 - **`config/accounts.json`** — accounts to auto-retweet. You must resolve each `@handle` to its numeric `user_id` once (e.g. via a one-off API call or a tool like [tweeterid.com](https://tweeterid.com)) and paste it in — looking it up every run would burn extra API budget. Set `"enabled": true` to activate an account.
 - **`config/thresholds.json`** — whale minimums, price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, and `filler.max_per_day` (how many empty-hour fillers/day at most).
 - **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).

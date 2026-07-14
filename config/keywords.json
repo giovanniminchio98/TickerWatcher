@@ -25,5 +25,6 @@
     { "name": "CNBC Markets", "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "whitelisted": true },
     { "name": "MarketWatch Top Stories", "url": "https://feeds.marketwatch.com/marketwatch/topstories/", "whitelisted": true }
   ],
-  "max_articles_per_run": 3
+  "max_articles_per_run": 3,
+  "max_articles_per_day": 2
 }
