@@ -29,12 +29,16 @@ on the monthly budget):
 
 1. **Whale/on-chain alerts** — large BTC (blockchain.info) / ETH (Etherscan) transfers.
    Siren count in the post scales with size (1 🚨 at the minimum threshold, up
-   to 10 at $200M+); the raw tx hash sits on its own line in the same post
-   (not a link, not a separate reply) so it stays verifiable at no extra cost.
-   The first alert per asset per run also includes a same-asset market
-   context line (🟢/🔴 price + 24h change) reusing data already fetched for
-   the run, so it's free and the alert doesn't read as just a bare number.
-   Also carries the coin's logo as post media (see "Coin logo images" below).
+   to 10 at $200M+). The first alert per asset per run also includes a
+   same-asset market context line (🟢/🔴 price + 24h change) reusing data
+   already fetched for the run, so it's free and the alert doesn't read as
+   just a bare number. Capped at `thresholds.whale.max_alerts_per_run`
+   **per chain per run** (BTC and ETH each have their own independent
+   counter), so a busy run can't turn into a wall of alerts for one chain.
+   No coin logo/media and no tx hash reference right now -- both were tried
+   and pulled back (media looked bad, the tx reference is paused pending a
+   cleaner presentation); the tx id is still tracked internally for BTC
+   dedup even though it's no longer shown in the post.
 2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
    The main post names the outlet only (no link, e.g. "via CoinDesk"), with
    the real source URL in a follow-up reply -- X's algorithm has suppressed
@@ -90,11 +94,12 @@ in the `ENABLED` dict at the top of `src/main.py`.
 
 ### Coin logo images
 
-Whale and price alerts for crypto attach the coin's official logo as post
-media. The image URL comes back for free in the same CoinGecko `/coins/markets`
-call already made for prices every run (no extra request, no extra API key),
-and X's media upload is the older v1.1 endpoint (same OAuth1 credentials
-already in use, no new secrets needed either).
+Crypto price alerts attach the coin's official logo as post media. The image
+URL comes back for free in the same CoinGecko `/coins/markets` call already
+made for prices every run (no extra request, no extra API key), and X's media
+upload is the older v1.1 endpoint (same OAuth1 credentials already in use, no
+new secrets needed either). Whale alerts used to attach one too but it was
+pulled back — didn't look good in practice.
 
 This is gated by `config/media.json`'s `"enabled"` flag specifically so it
 can be switched off instantly (a config push, no code change) if a live
@@ -184,7 +189,7 @@ type where a real clickable link exists anywhere in the thread.
 
 | Post type | ~posts/month | Link? | Cost |
 |---|---|---|---|
-| Whale alerts (~12 alerts, single post, cashtag + tx ref) | ~12 | no (see below) | $0.18 |
+| Whale alerts (capped 1/chain/run, cashtag only) | ~12 | no (see below) | $0.18 |
 | News (capped at 2/day, main + source-link reply, ~$0.215/article) | up to ~120 (60 articles) | reply only | up to $12.90 |
 | Price alerts | ~20 | no | $0.30 |
 | Scheduled daily | ~30 | no | $0.45 |
@@ -196,10 +201,9 @@ type where a real clickable link exists anywhere in the thread.
 Whale alerts use the asset as a `$` cashtag ($BTC/$ETH) rather than plain
 text or a hashtag-only mention — confirmed via a live billing test that this
 does **not** trigger the $0.20 link surcharge (X's Smart Cashtags are a
-distinct in-app entity, never an external URL). The raw tx hash lives on its
-own line in the *same* post (not a separate reply) since it's not a link
-either and splitting it out was only ever a formatting choice, not a reach
-one — merging saved half the per-alert cost ($0.015 instead of $0.03).
+distinct in-app entity, never an external URL). X also caps posts at one
+cashtag each (403 Forbidden otherwise) — worth knowing if you ever add
+another asset mention to this post type.
 News still needs a real clickable source link somewhere (never reproduce
 article text verbatim, always cite a real source) — but that link lives in
 a reply instead of the main post, so
@@ -254,7 +258,7 @@ src/
   context.py      shared per-run objects passed to every trigger
   budget.py       monthly $/post cap enforcement
   x_client.py     tweepy wrapper (post/reply/retweet/poll/media upload), DRY_RUN support
-  media.py        coin logo -> X media_id helper, shared by whale/price alerts
+  media.py        coin logo (price alerts) / trend icon (news) -> X media_id helper
   formatting.py   number/text formatting, thread splitting
   sources/        one file per external API (coingecko, twelvedata, whale_btc,
                   whale_eth, news_rss, paraphrase, reply_writer, feargreed)
@@ -293,9 +297,8 @@ Two separate destinations, kept deliberately apart:
   No post content here, just budget bookkeeping.
 - **A Telegram channel** (`TELEGRAM_CHANNEL_ID`) — a full mirror of every
   post that actually fires. Since Telegram is free, the channel copy can be
-  *more generous* than the X post itself: it always includes links that the
-  X post dropped for cost or reach reasons (whale tx block-explorer links,
-  news article source URLs), regardless of whether the X-side reply carrying
+  *more generous* than the X post itself: it always includes the news
+  article's source URL, regardless of whether the X-side reply carrying
   that same link ended up firing.
 
 **Bot chat, per-post** — sent right after every single successful post/reply/retweet:
@@ -322,17 +325,12 @@ Add credits: https://console.x.com/ (Billing -> Credits)
 ```
 
 **Channel, every post** — same text as what went to X, plus the restored
-link where one exists, e.g.:
+link where one exists, e.g. for news:
 
 ```
-🚨🚨🚨 WHALE ALERT
-412.6 $BTC ($26.1M) just moved on-chain
-#BTC #Crypto
-
-🟢 $BTC: $63,120 (+1.85% today)
-
-a1b2c3d4e5f6...
-🔗 https://www.blockchain.com/explorer/transactions/btc/a1b2c3d4e5f6...
+🚨 JUST IN: Mizuho says Circle bank approval doesn't change stablecoin outlook
+(via CoinDesk)
+Source: https://www.coindesk.com/policy/...
 ```
 
 ### Setup: bot chat (technical messages)

@@ -1,18 +1,12 @@
 """Post type 1 (highest priority): whale/on-chain alerts. See sources/whale_btc.py
 and sources/whale_eth.py for the free-tier data sources and their trade-offs.
 
-The tx reference is a plain-text hash on its own line in the same post (not a
-clickable link), so it stays real and verifiable without pasting it into an
-explorer -- and since it's not a URL, it costs nothing extra either way,
-so it's just part of the one $0.015 post instead of a separate reply. (Unlike
-a real link, a raw hash doesn't trigger X's algorithmic reach suppression, so
-there was no reach reason to split it out -- only cost, and merging into one
-post actually halves the per-alert cost vs. a separate reply.)
-
 The asset symbol uses a $ cashtag ($BTC/$ETH) rather than plain text --
 confirmed via a live billing test that this does NOT trigger the $0.20
 "post contains a link" surcharge (X's Smart Cashtags are a distinct,
-in-app-only entity type, never an external URL).
+in-app-only entity type, never an external URL). X allows only ONE cashtag
+per post (403 Forbidden otherwise), which is why the market-context line
+below uses a plain-text symbol instead of a second cashtag.
 
 Siren count scales with size (more sirens = bigger transaction, capped at
 10 for $200M+) so the visual weight matches the news.
@@ -22,29 +16,31 @@ market context line (price + 24h change + a green/red dot) so it doesn't
 read as just a bare number -- e.g. a big BTC transfer alongside "BTC is up
 5% today" is more informative than either fact alone. Only the first alert
 per asset per run gets this line; later alerts for the same asset in the
-same run would just repeat near-identical numbers, so they skip straight to
-the tx reference. This costs nothing extra either way: the price data is
-already fetched once per run for the whole pipeline (ctx.prices), so no
-additional API calls. If that data's unavailable for some reason, the line
-is just omitted rather than blocking the alert.
+same run would just repeat near-identical numbers. This costs nothing
+extra either way: the price data is already fetched once per run for the
+whole pipeline (ctx.prices), so no additional API calls. If that data's
+unavailable for some reason, the line is just omitted rather than blocking
+the alert.
 
-Each post also gets the coin's logo attached as media (see src/media.py),
-and the Telegram channel copy gets the real block-explorer link for the tx
-(blockchain.com/etherscan) that the X post itself omits -- Telegram is free,
-so there's no reason to hold back there."""
+No coin logo/media and no tx hash/explorer reference right now -- both were
+tried and pulled back (media looked bad in practice, the tx reference was
+cut pending a cleaner way to present it) -- may come back later in a
+different form. The tx id is still tracked internally in state for BTC
+dedup even though it's no longer shown in the post.
+
+capped at thresholds.whale.max_alerts_per_run per chain per run (BTC and ETH
+each have their own independent counter below), so a busy run can't turn
+into a wall of alerts for a single chain."""
 import logging
 import math
 
 from src.formatting import dot_for_change, fmt_pct, fmt_price, fmt_usd_compact, truncate
-from src.media import get_coin_media_id
 from src.sources import whale_btc, whale_eth
 
 logger = logging.getLogger("tickerwatch.triggers.whale")
 
 SIREN_UNIT_USD = 20_000_000  # one siren per $20M, capped at 10 (reached at $200M+)
 MAX_SIRENS = 10
-BTC_EXPLORER = "https://www.blockchain.com/explorer/transactions/btc/{}"
-ETH_EXPLORER = "https://etherscan.io/tx/{}"
 
 
 def _siren_count(usd):
@@ -66,17 +62,15 @@ def _asset_context_line(ctx, coingecko_id, symbol):
     return f"{dot_for_change(change)} {symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
 
 
-def _post_with_ref(ctx, text, context_line, ref_value, explorer_url, media_id=None):
+def _post(ctx, text, context_line):
     parts = [text]
     if context_line:
         parts.append(context_line)
-    parts.append(ref_value)
     full_text = truncate("\n\n".join(parts))
-    tweet_id = ctx.x.post(full_text, media_id=media_id)
+    tweet_id = ctx.x.post(full_text)
     if not tweet_id:
         return False
-    channel_text = f"{full_text}\n🔗 {explorer_url}" if explorer_url else full_text
-    ctx.budget.record_spend(has_link=False, text=full_text, channel_text=channel_text)
+    ctx.budget.record_spend(has_link=False, text=full_text)
     return True
 
 
@@ -108,9 +102,7 @@ def _post_btc_alerts(ctx):
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
         text = f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
         context_line = None if context_shown else _asset_context_line(ctx, "bitcoin", "BTC")
-        media_id = get_coin_media_id(ctx, "bitcoin")
-        explorer_url = BTC_EXPLORER.format(hit["txid"])
-        if _post_with_ref(ctx, text, context_line, hit["txid"], explorer_url, media_id=media_id):
+        if _post(ctx, text, context_line):
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
@@ -143,9 +135,7 @@ def _post_eth_alerts(ctx):
         sirens = _siren_count(hit["usd"])
         text = f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
         context_line = None if context_shown else _asset_context_line(ctx, "ethereum", "ETH")
-        media_id = get_coin_media_id(ctx, "ethereum")
-        explorer_url = ETH_EXPLORER.format(hit["txhash"])
-        if _post_with_ref(ctx, text, context_line, hit["txhash"], explorer_url, media_id=media_id):
+        if _post(ctx, text, context_line):
             posted += 1
             fired = True
             context_shown = True
