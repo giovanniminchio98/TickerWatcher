@@ -1,14 +1,14 @@
 {
   "budget": {
     "daily": {
-      "date": "2026-07-13",
-      "posts_used": 6,
-      "usd_used": 0.645
+      "date": "2026-07-14",
+      "posts_used": 7,
+      "usd_used": 0.66
     },
+    "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 10,
-    "usd_used": 1.26,
-    "low_budget_alert_sent_period": null
+    "posts_used": 17,
+    "usd_used": 1.92
   },
   "filler": {
     "posted_count_today": 0,
@@ -25,7 +25,10 @@
       "https://www.coindesk.com/business/2026/07/13/sbi-holdings-blockchain-initiative-pivots-to-solana-for-tokenization-stablecoin-issuance",
       "https://www.coindesk.com/markets/2026/07/13/u-s-inflation-second-quarter-earnings-reports-crypto-week-ahead",
       "https://www.coindesk.com/markets/2026/07/13/bitcoin-slips-below-usd63-000-in-an-asian-session-leverage-flush",
-      "https://www.coindesk.com/markets/2026/07/12/stablecoin-market-cap-has-shrunk-by-usd10-billion-since-may-but-analyst-sees-no-reason-to-panic"
+      "https://www.coindesk.com/markets/2026/07/12/stablecoin-market-cap-has-shrunk-by-usd10-billion-since-may-but-analyst-sees-no-reason-to-panic",
+      "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/bolivia-weighs-usdt-payment-currency-amid-dollar-shortage?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/hyundai-completes-usdt-treasury-settlement-pilot-between-us-and-mexico?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ]
   },
   "polls": {
@@ -48,8 +51,8 @@
     "last_run_date": null
   },
   "scheduled_daily": {
-    "last_posted_date": "2026-07-13",
-    "rotate_index": 1
+    "last_posted_date": "2026-07-14",
+    "rotate_index": 2
   },
   "self_reply": {
     "pending": []
@@ -58,12 +61,15 @@
     "last_report_date": null
   },
   "whale": {
-    "last_btc_block_height": 957912,
+    "last_btc_block_height": 957918,
     "last_eth_block": null,
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
       "c6c5708341f94f764bda90b91dc44f94d473eabf213d1418aecfde1e0d5ddc23",
-      "07c888bcf12d3204661d4c67d79267637d522be8249464d5aba9b3b9778839cb"
+      "07c888bcf12d3204661d4c67d79267637d522be8249464d5aba9b3b9778839cb",
+      "27cc54d5b0c1741d3fa9813914fbd62b90e2b5ecd8dfcda4e1e8fd96e415bf4a",
+      "8d51f75a9cf9ea9b35a28c408d8e6e061e38b67609af2afa27805f31ef7bf2f0",
+      "e515689ab2a79ff1ddb2791a0db31ddae8f6798304eb71474e73f44bad02cf9e"
     ]
   }
 }
