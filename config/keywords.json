@@ -17,8 +17,7 @@
     "bankruptcy",
     "halving",
     "stablecoin",
-    "default",
-    "crypto"
+    "default"
   ],
   "rss_feeds": [
     { "name": "CoinDesk", "url": "https://www.coindesk.com/arc/outboundfeeds/rss/", "whitelisted": true },
@@ -30,5 +29,5 @@
     { "name": "MarketWatch Top Stories", "url": "https://feeds.marketwatch.com/marketwatch/topstories/", "whitelisted": true }
   ],
   "max_articles_per_run": 3,
-  "max_articles_per_day": 10
+  "max_articles_per_day": 2
 }
