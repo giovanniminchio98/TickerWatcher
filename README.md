@@ -48,18 +48,11 @@ on the monthly budget):
    reach optimization, not a cost one. Capped at `keywords.max_articles_per_day`
    (default 2), the main cost lever since news is the only post type with a
    real clickable link anywhere in the thread.
-3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs).
-   Crypto alerts also carry the coin's logo as post media.
+3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
 4. **Scheduled daily post** — market snapshot / Fear & Greed Index (rotates, or both)
 5. **Historical flashback** — filler, max once/day, only if nothing else fired
 6. **Polls** — ~1x/week engagement mechanic
 7. **Self-reply updates** — replies to the bot's *own* tweets only, never others'
-
-Every post type that shows a price/%/index change uses the same 🟢/🔴 dot
-convention (`src/formatting.py`'s `dot_for_change`), so the visual language
-stays consistent across whale alerts, the snapshot, Fear & Greed, price
-alerts, flashback, and self-replies rather than each post type inventing
-its own look.
 8. **Filler** — absolute last resort, only posts if nothing above did this run.
    Picks from `config/filler.json`'s ~100 generic engagement questions/facts
    (no repeats until the list is exhausted, then reshuffles). This is what
@@ -83,41 +76,28 @@ convention (`src/formatting.py`'s `dot_for_change`), so the visual language
 stays consistent across whale alerts, the snapshot, Fear & Greed, price
 alerts, flashback, and self-replies rather than each post type inventing
 its own look.
-8. **Filler** — absolute last resort, only posts if nothing above did this run.
-   Picks from `config/filler.json`'s ~100 generic engagement questions/facts
-   (no repeats until the list is exhausted, then reshuffles). This is what
-   keeps the account posting roughly once/hour even on quiet news/market
-   days — see the cost note below before raising check frequency further.
 
 Each post type is its own function in `src/triggers/`, toggled independently
 in the `ENABLED` dict at the top of `src/main.py`.
 
-### Coin logo images
+### News trend-line images
 
-Crypto price alerts attach the coin's official logo as post media. The image
-URL comes back for free in the same CoinGecko `/coins/markets` call already
-made for prices every run (no extra request, no extra API key), and X's media
-upload is the older v1.1 endpoint (same OAuth1 credentials already in use, no
-new secrets needed either). Whale alerts used to attach one too but it was
-pulled back — didn't look good in practice.
-
-This is gated by `config/media.json`'s `"enabled"` flag specifically so it
-can be switched off instantly (a config push, no code change) if a live
-billing check ever shows X charging extra for posts with media attached —
-the same kind of test that confirmed cashtags were free (isolate one trigger,
-cap it to one post, check the X credits balance before/after). Recommended:
-watch your X credits balance for a day or two after this ships and flip
-`media.json`'s `enabled` to `false` if the per-post cost looks higher than
-the usual $0.015.
-
-News alerts aren't tied to one coin, so they instead get a small themed
-red/green/gray trend-line graphic (`assets/trend_up.png` / `trend_down.png` /
+No post type attaches a coin logo — that was tried for whale and price
+alerts and pulled back in both cases (didn't look good in practice). The one
+remaining media attachment is on news alerts: a small themed red/green/gray
+trend-line graphic (`assets/trend_up.png` / `trend_down.png` /
 `trend_neutral.png`, pre-generated and checked into the repo — no network
 call needed to attach one) matching the "chart snippet + terse JUST IN line"
 look other crypto news accounts use. Which one gets attached comes from the
 same Claude call already used to paraphrase the headline (it also tags the
 story bullish/bearish/neutral); the mechanical-fallback path (no
 `ANTHROPIC_API_KEY`) has no sentiment signal, so no image gets attached then.
+
+This is gated by `config/media.json`'s `"enabled"` flag so it can be
+switched off instantly (a config push, no code change) if a live billing
+check ever shows X charging extra for posts with media attached — the same
+kind of test that confirmed cashtags were free (isolate one trigger, cap it
+to one post, check the X credits balance before/after).
 
 **On the liquidation-stat post style specifically** (e.g. Watcher.Guru's
 "$100,000,000 worth of crypto shorts liquidated in the past 60 minutes"):
@@ -258,7 +238,7 @@ src/
   context.py      shared per-run objects passed to every trigger
   budget.py       monthly $/post cap enforcement
   x_client.py     tweepy wrapper (post/reply/retweet/poll/media upload), DRY_RUN support
-  media.py        coin logo (price alerts) / trend icon (news) -> X media_id helper
+  media.py        news trend-icon -> X media_id helper
   formatting.py   number/text formatting, thread splitting
   sources/        one file per external API (coingecko, twelvedata, whale_btc,
                   whale_eth, news_rss, paraphrase, reply_writer, feargreed)
@@ -376,7 +356,7 @@ ever blocks or breaks the rest of the run.
 - **`config/thresholds.json`** — whale minimums, price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, and `filler.max_per_day` (how many empty-hour fillers/day at most).
 - **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly cap (see [Cost math](#cost-math-and-the-budget-cap)).
-- **`config/media.json`** — the on/off switch for attaching coin logos to posts (see [Coin logo images](#coin-logo-images)).
+- **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).
 
 ## Testing locally
 

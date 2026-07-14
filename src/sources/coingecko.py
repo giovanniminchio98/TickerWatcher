@@ -21,40 +21,17 @@ def _headers():
 
 
 def get_simple_prices(coingecko_ids):
-    """Returns {coingecko_id: {"usd": float, "usd_24h_change": float, "image": str|None}}.
-    Uses /coins/markets rather than /simple/price so the coin's official logo
-    URL comes back in the same call already made for prices every run --
-    no extra request/quota spent to support attaching it to alert posts."""
+    """Returns {coingecko_id: {"usd": float, "usd_24h_change": float}}"""
     if not coingecko_ids:
         return {}
     params = {
-        "vs_currency": "usd",
         "ids": ",".join(coingecko_ids),
+        "vs_currencies": "usd",
+        "include_24hr_change": "true",
     }
-    resp = requests.get(f"{BASE_URL}/coins/markets", params=params, headers=_headers(), timeout=TIMEOUT)
+    resp = requests.get(f"{BASE_URL}/simple/price", params=params, headers=_headers(), timeout=TIMEOUT)
     resp.raise_for_status()
-    return {
-        row["id"]: {
-            "usd": row.get("current_price"),
-            "usd_24h_change": row.get("price_change_percentage_24h"),
-            "image": row.get("image"),
-        }
-        for row in resp.json()
-    }
-
-
-def get_image_bytes(image_url):
-    """Downloads a coin logo's raw bytes for uploading to X as post media.
-    Returns None on any failure so a broken/slow image never blocks a post."""
-    if not image_url:
-        return None
-    try:
-        resp = requests.get(image_url, timeout=TIMEOUT)
-        resp.raise_for_status()
-        return resp.content
-    except Exception:
-        logger.exception("Failed to download coin image from %s", image_url)
-        return None
+    return resp.json()
 
 
 def get_price_on_date(coingecko_id, date_str):

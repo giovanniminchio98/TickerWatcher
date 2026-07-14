@@ -5,7 +5,6 @@ symbol -- fine within its 800/day, 8/min free-tier limits at this run frequency)
 import logging
 
 from src.formatting import dot_for_change, fmt_pct, fmt_price, truncate
-from src.media import get_coin_media_id
 from src.sources import twelvedata
 
 logger = logging.getLogger("tickerwatch.triggers.price")
@@ -86,8 +85,7 @@ def run(ctx):
             f"🚨 {display_symbol} just crossed ${fmt_price(price)}\n"
             f"{dot_for_change(change_24h)} 24h change: {fmt_pct(change_24h)}\n#{symbol} {hashtag}"
         )
-        media_id = get_coin_media_id(ctx, coingecko_id) if kind == "crypto" else None
-        tweet_id = ctx.x.post(text, media_id=media_id)
+        tweet_id = ctx.x.post(text)
         if tweet_id:
             ctx.budget.record_spend(has_link=False, text=text)
             state["last_alert_price"][symbol] = price
