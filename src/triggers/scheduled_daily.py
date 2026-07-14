@@ -14,13 +14,21 @@ def _build_snapshot_text(ctx):
     watchlist = ctx.config["watchlist"]
     crypto_by_symbol = {c["symbol"]: c for c in watchlist["crypto"]}
     lines = [f"📊 Market Snapshot — {ctx.now.strftime('%b %d, %Y')}"]
+    cashtag_used = False
     for symbol in watchlist.get("snapshot_order", []):
         if symbol in crypto_by_symbol:
             info = ctx.prices.get(crypto_by_symbol[symbol]["coingecko_id"])
             if not info:
                 continue
             price, change = info.get("usd"), info.get("usd_24h_change")
-            label = f"${symbol}"
+            # X rejects a post with more than one $cashtag (Forbidden 403), and
+            # the snapshot lists several cryptos in one post -- so only the
+            # first gets the $ cashtag, the rest fall back to plain text
+            if cashtag_used:
+                label = symbol
+            else:
+                label = f"${symbol}"
+                cashtag_used = True
         else:
             try:
                 q = twelvedata.get_quote(symbol)

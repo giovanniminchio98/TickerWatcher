@@ -55,12 +55,15 @@ def _siren_count(usd):
 
 
 def _asset_context_line(ctx, coingecko_id, symbol):
+    # plain symbol, NOT a $cashtag -- the main alert line above already carries
+    # the one cashtag X allows per post (Forbidden 403: "Posts are limited to
+    # a maximum of one cashtag"), so a second one here would reject the whole post
     info = ctx.prices.get(coingecko_id)
     if not info or info.get("usd") is None:
         return None
     price = info["usd"]
     change = info.get("usd_24h_change")
-    return f"{dot_for_change(change)} ${symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
+    return f"{dot_for_change(change)} {symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
 
 
 def _post_with_ref(ctx, text, context_line, ref_value, explorer_url, media_id=None):
