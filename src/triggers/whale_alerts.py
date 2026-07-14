@@ -17,13 +17,16 @@ in-app-only entity type, never an external URL).
 Siren count scales with size (more sirens = bigger transaction, capped at
 10 for $200M+) so the visual weight matches the news.
 
-Each alert also carries a same-asset market context line (price + 24h
-change + a green/red dot) so it doesn't read as just a bare number every
-time -- e.g. a big BTC transfer alongside "BTC is up 5% today" is more
-informative than either fact alone. This costs nothing extra: the price
-data is already fetched once per run for the whole pipeline (ctx.prices),
-so no additional API calls. If that data's unavailable for some reason,
-the line is just omitted rather than blocking the alert."""
+The first BTC (and first ETH) alert of each run also carries a same-asset
+market context line (price + 24h change + a green/red dot) so it doesn't
+read as just a bare number -- e.g. a big BTC transfer alongside "BTC is up
+5% today" is more informative than either fact alone. Only the first alert
+per asset per run gets this line; later alerts for the same asset in the
+same run would just repeat near-identical numbers, so they skip straight to
+the tx reference. This costs nothing extra either way: the price data is
+already fetched once per run for the whole pipeline (ctx.prices), so no
+additional API calls. If that data's unavailable for some reason, the line
+is just omitted rather than blocking the alert."""
 import logging
 import math
 
@@ -80,6 +83,7 @@ def _post_btc_alerts(ctx):
     state["last_btc_block_height"] = new_height
 
     posted = 0
+    context_shown = False
     seen = set(state["seen_btc_txids"])
     for hit in hits:
         if posted >= th["max_alerts_per_run"]:
@@ -91,11 +95,12 @@ def _post_btc_alerts(ctx):
         sirens = _siren_count(hit["usd"])
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
         text = f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
-        context_line = _asset_context_line(ctx, "bitcoin", "BTC")
+        context_line = None if context_shown else _asset_context_line(ctx, "bitcoin", "BTC")
         if _post_with_ref(ctx, text, context_line, hit["txid"]):
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
+            context_shown = True
     state["seen_btc_txids"] = state["seen_btc_txids"][-500:]
     return fired
 
@@ -115,6 +120,7 @@ def _post_eth_alerts(ctx):
     state["last_eth_block"] = new_block
 
     posted = 0
+    context_shown = False
     for hit in hits:
         if posted >= th["max_alerts_per_run"]:
             break
@@ -122,10 +128,11 @@ def _post_eth_alerts(ctx):
             break
         sirens = _siren_count(hit["usd"])
         text = f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
-        context_line = _asset_context_line(ctx, "ethereum", "ETH")
+        context_line = None if context_shown else _asset_context_line(ctx, "ethereum", "ETH")
         if _post_with_ref(ctx, text, context_line, hit["txhash"]):
             posted += 1
             fired = True
+            context_shown = True
     return fired
 
 
