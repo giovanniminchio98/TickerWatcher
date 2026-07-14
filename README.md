@@ -136,20 +136,38 @@ cap low at first, and read replies back before adding more accounts.
 
 ## Run frequency and cron schedule
 
-```
-7 * * * *
-```
+The workflow has **no in-repo `schedule:` trigger** — GitHub's own scheduler
+is documented to be unreliable in 2026 (delayed or dropped runs, worse right
+at the top of the hour, when every repo on the platform tends to schedule).
+Instead, an external free cron service ([cron-job.org](https://cron-job.org))
+calls the workflow's `workflow_dispatch` REST endpoint on a schedule:
 
-Every hour, offset to :07 rather than the exact top of the hour (GitHub's
-scheduler is most congested at `:00` since every repo tends to schedule
-there, which can delay or skip runs) → **24 runs/day → ~730 runs/month**.
-Note that higher check
+1. Create a GitHub **fine-grained personal access token**: Settings →
+   Developer settings → Personal access tokens → Fine-grained tokens →
+   scope it to **only this repo**, with **Actions: Read and write** permission
+   (nothing else needed).
+2. In cron-job.org, create a job: `POST` to
+   `https://api.github.com/repos/<owner>/<repo>/actions/workflows/tickerwatch.yml/dispatches`,
+   headers `Authorization: Bearer <token>`, `Accept: application/vnd.github+json`,
+   `Content-Type: application/json`, body `{"ref":"main"}`, schedule hourly.
+3. A successful call returns `204 No Content`; check the repo's Actions tab
+   to confirm a run actually started.
+
+Hourly → **24 runs/day → ~730 runs/month**. Note that higher check
 frequency mostly buys faster alert latency and better whale-scan coverage,
 **not** proportionally higher cost: scheduled daily/flashback/polls are
 capped by date regardless of check frequency, and whale/news/price alerts
 are capped by real-world event rate and per-asset cooldowns, not by how
 often the workflow runs. The budget cap and `thresholds.json` cooldowns are
 what actually control spend — see below.
+
+Two dispatches landing within the same run's duration (e.g. while testing
+with a 1-minute interval) can race on the final "commit updated state" step,
+since `actions/checkout` pins the branch snapshot from when the run was
+*queued*, not a live pull. That step retries with a fetch + rebase a few
+times before giving up; a still-unresolved conflict just means that one
+run's bookkeeping update doesn't persist (safe — never a corrupted push to
+main), which is harmless as long as dispatches stay roughly an hour apart.
 
 ## Cost math and the budget cap
 

@@ -1,14 +1,11 @@
 name: TickerWatch
 
 on:
-  schedule:
-    # every hour -> 24 runs/day, ~730 runs/month. See README for why higher
-    # check frequency mostly buys faster alert latency, not proportionally
-    # higher cost (most post types are capped by date/cooldown, not by
-    # how often we check). Offset to :07 rather than the exact top of the
-    # hour -- GitHub's scheduler is most congested at :00 (every repo on the
-    # platform tends to schedule there) and can delay/skip runs there.
-    - cron: "7 * * * *"
+  # No in-repo `schedule:` trigger -- GitHub's own scheduler is documented to
+  # be unreliable in 2026 (delayed/dropped runs, worse at exact top-of-hour).
+  # An external cron service (cron-job.org) calls the workflow_dispatch API
+  # below instead; see README for setup. Keep workflow_dispatch as the only
+  # trigger so there's a single source of truth for run timing.
   workflow_dispatch:
     inputs:
       dry_run:
@@ -59,4 +56,27 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add state/state.json
           git diff --cached --quiet || git commit -m "chore: update state [skip ci]"
-          git push
+          # actions/checkout pins the branch snapshot from when this run was
+          # queued, not a live pull -- if another run pushed in the meantime
+          # (e.g. two dispatches landing close together), a plain `git push`
+          # gets rejected. Rebase onto the latest remote state and retry a
+          # few times before giving up, same fix used manually all session.
+          # A rebase conflict (two runs changing the same state field) is left
+          # unresolved on purpose rather than force-guessed -- that just means
+          # this run's bookkeeping update doesn't persist, same as today's
+          # harmless failure, never a corrupted push to main.
+          for i in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "push rejected, fetching + rebasing (attempt $i)"
+            git fetch origin main
+            if ! git rebase origin/main; then
+              echo "rebase conflict -- giving up cleanly, this run's state update won't persist"
+              git rebase --abort
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "push still failing after retries"
+          exit 1
