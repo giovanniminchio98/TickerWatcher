@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 43,
-      "usd_used": 2.31
+      "posts_used": 44,
+      "usd_used": 2.325
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 53,
-    "usd_used": 3.57
+    "posts_used": 54,
+    "usd_used": 3.585
   },
   "comment_engagement": {},
   "filler": {
@@ -168,7 +168,7 @@
     "last_report_date": null
   },
   "whale": {
-    "last_btc_block_height": 958002,
+    "last_btc_block_height": 958008,
     "last_eth_block": null,
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -198,7 +198,8 @@
       "66aec2cdedbdee7ac8855bc76909d192ce18ab21608189e0b43b43707641ccbe",
       "a51004bd02b7bfd14504c327013e535f490e411a821693f51b718c680049747c",
       "c2d77c0258c845fd046e768ef366ec866befa10d2f219138ea427fac32697624",
-      "d010af50d3746d82a52e96bfcc0e55a298337229e0a979057c372922b7b1402c"
+      "d010af50d3746d82a52e96bfcc0e55a298337229e0a979057c372922b7b1402c",
+      "cc7542400f70a1ba3e4bf168ddabc9057d9ae654a205d938b362ecddacb61e95"
     ]
   }
 }
