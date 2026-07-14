@@ -1,22 +1,21 @@
 """Post type 1 (highest priority): whale/on-chain alerts. See sources/whale_btc.py
 and sources/whale_eth.py for the free-tier data sources and their trade-offs.
 
-The main post has no tx-explorer link: at X's pay-per-use pricing, any post
-containing a URL jumps from $0.015 to $0.20. Instead, a cheap follow-up reply
-(plain text, not a clickable link, so it stays at $0.015) carries the raw tx
-reference -- still real, verifiable, on-chain data, just not click-to-verify
-without pasting it into an explorer yourself. Siren count scales with size
-(more sirens = bigger transaction) so the visual weight matches the news.
+The tx reference is a plain-text hash on its own line in the same post (not a
+clickable link), so it stays real and verifiable without pasting it into an
+explorer -- and since it's not a URL, it costs nothing extra either way,
+so it's just part of the one $0.015 post instead of a separate reply. (Unlike
+a real link, a raw hash doesn't trigger X's algorithmic reach suppression, so
+there was no reach reason to split it out -- only cost, and merging into one
+post actually halves the per-alert cost vs. a separate reply.)
 
-EXPERIMENT: the asset symbol in the main line uses a $ cashtag ($BTC/$ETH)
-instead of plain text, testing whether X's Smart Cashtags (native in-app
-price/chart page, launched Jan 2026) count as "a link" for the $0.20 API
-surcharge the way a real URL does. Cashtags are a distinct entity type from
-URLs in X's data model and never leave the platform, so the working
-assumption is they're still billed at $0.015 (has_link=False below) --
-but this is unconfirmed by X's docs. Check the actual charged amount in
-the X Developer Console after this fires to confirm; if it turns out to
-bill at $0.20, flip has_link to True here."""
+The asset symbol uses a $ cashtag ($BTC/$ETH) rather than plain text --
+confirmed via a live billing test that this does NOT trigger the $0.20
+"post contains a link" surcharge (X's Smart Cashtags are a distinct,
+in-app-only entity type, never an external URL).
+
+Siren count scales with size (more sirens = bigger transaction, capped at
+10 for $200M+) so the visual weight matches the news."""
 import logging
 import math
 
@@ -36,16 +35,12 @@ def _siren_count(usd):
     return "🚨" * count
 
 
-def _post_and_reply_with_ref(ctx, text, ref_label, ref_value):
-    tweet_id = ctx.x.post(text)
+def _post_with_ref(ctx, text, ref_value):
+    full_text = truncate(f"{text}\n\n{ref_value}")
+    tweet_id = ctx.x.post(full_text)
     if not tweet_id:
         return False
-    ctx.budget.record_spend(has_link=False, text=text)
-    if ctx.budget.can_spend(has_link=False):
-        reply_text = truncate(f"{ref_label}: {ref_value}")
-        reply_id = ctx.x.reply(reply_text, tweet_id)
-        if reply_id:
-            ctx.budget.record_spend(has_link=False, text=reply_text)
+    ctx.budget.record_spend(has_link=False, text=full_text)
     return True
 
 
@@ -74,10 +69,8 @@ def _post_btc_alerts(ctx):
             break
         sirens = _siren_count(hit["usd"])
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
-        text = truncate(
-            f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
-        )
-        if _post_and_reply_with_ref(ctx, text, "tx", hit["txid"]):
+        text = f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
+        if _post_with_ref(ctx, text, hit["txid"]):
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
@@ -106,10 +99,8 @@ def _post_eth_alerts(ctx):
         if not ctx.budget.can_spend(has_link=False):
             break
         sirens = _siren_count(hit["usd"])
-        text = truncate(
-            f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
-        )
-        if _post_and_reply_with_ref(ctx, text, "tx", hit["txhash"]):
+        text = f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
+        if _post_with_ref(ctx, text, hit["txhash"]):
             posted += 1
             fired = True
     return fired

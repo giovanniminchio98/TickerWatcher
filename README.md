@@ -92,22 +92,25 @@ type where a real clickable link exists anywhere in the thread.
 
 | Post type | ~posts/month | Link? | Cost |
 |---|---|---|---|
-| Whale alerts (main + tx-ref reply, ~12 alerts) | ~24 | no (see below) | $0.36 |
+| Whale alerts (~12 alerts, single post, cashtag + tx ref) | ~12 | no (see below) | $0.18 |
 | News (capped at 2/day, main + source-link reply, ~$0.215/article) | up to ~120 (60 articles) | reply only | up to $12.90 |
 | Price alerts | ~20 | no | $0.30 |
 | Scheduled daily | ~30 | no | $0.45 |
 | Flashback | ~8 | no | $0.12 |
 | Polls | ~4 | no | $0.06 |
 | Self-reply | ~15 | no | $0.23 |
-| **Real-content subtotal** | | | **~$1.52 - $14.42/month**, depending on how often news actually matches |
+| **Real-content subtotal** | | | **~$1.34 - $14.24/month**, depending on how often news actually matches |
 
-Whale alerts don't put the tx-explorer link in the main post — at $0.015 vs
-$0.20, the link would be a big line item for a post type that can fire
-often. Instead, a cheap plain-text reply (not a clickable link, so still
-$0.015) carries the raw tx reference right after, so it stays verifiable
-without the link surcharge. News still needs a real clickable source link
-somewhere (never reproduce article text verbatim, always cite a real
-source) — but that link now lives in a reply instead of the main post, so
+Whale alerts use the asset as a `$` cashtag ($BTC/$ETH) rather than plain
+text or a hashtag-only mention — confirmed via a live billing test that this
+does **not** trigger the $0.20 link surcharge (X's Smart Cashtags are a
+distinct in-app entity, never an external URL). The raw tx hash lives on its
+own line in the *same* post (not a separate reply) since it's not a link
+either and splitting it out was only ever a formatting choice, not a reach
+one — merging saved half the per-alert cost ($0.015 instead of $0.03).
+News still needs a real clickable source link somewhere (never reproduce
+article text verbatim, always cite a real source) — but that link lives in
+a reply instead of the main post, so
 the main post's reach isn't hit by X's link-suppression algorithm. This
 doesn't reduce cost the way whale alerts did (the link still costs $0.20
 wherever it lands), which is exactly why the per-day cap matters more here.
