@@ -32,8 +32,14 @@ on the monthly budget):
    to 10 at $200M+); a cheap follow-up reply (plain text, not a link) carries
    the raw tx reference so it stays verifiable without the $0.20 link cost.
 2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
-   Capped at `keywords.max_articles_per_day` (default 2) since this is the
-   only post type that keeps its link and is by far the biggest cost driver.
+   The main post names the outlet only (no link, e.g. "via CoinDesk"), with
+   the real source URL in a follow-up reply -- X's algorithm has suppressed
+   reach on linked posts hard since March 2026, so this keeps the main post's
+   reach intact. Unlike whale alerts this doesn't save money (the link still
+   costs $0.20 wherever it lands, so it's ~$0.215/post total now) -- it's a
+   reach optimization, not a cost one. Capped at `keywords.max_articles_per_day`
+   (default 2), the main cost lever since news is the only post type with a
+   real clickable link anywhere in the thread.
 3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
 4. **Scheduled daily post** — market snapshot / Fear & Greed Index (rotates, or both)
 5. **Historical flashback** — filler, max once/day, only if nothing else fired
@@ -80,28 +86,31 @@ rest of the month, throttling from the *bottom* of the priority list up
 **Original estimate vs. observed reality:** the first-day estimate below
 assumed ~8 news posts/month, but the RSS feeds turned out to be far more
 active than that — real usage hit 15 news posts in under a day before the
-per-day cap existed, at $0.20 each. That's why `keywords.max_articles_per_day`
-(default 2) exists: it's the single biggest lever on cost, since news is the
-only post type that still carries a link.
+per-day cap existed. That's why `keywords.max_articles_per_day` (default 2)
+exists: it's the single biggest lever on cost, since news is the only post
+type where a real clickable link exists anywhere in the thread.
 
 | Post type | ~posts/month | Link? | Cost |
 |---|---|---|---|
 | Whale alerts (main + tx-ref reply, ~12 alerts) | ~24 | no (see below) | $0.36 |
-| News (capped at 2/day) | up to ~60 | yes (source link) | up to $12.00 |
+| News (capped at 2/day, main + source-link reply, ~$0.215/article) | up to ~120 (60 articles) | reply only | up to $12.90 |
 | Price alerts | ~20 | no | $0.30 |
 | Scheduled daily | ~30 | no | $0.45 |
 | Flashback | ~8 | no | $0.12 |
 | Polls | ~4 | no | $0.06 |
 | Self-reply | ~15 | no | $0.23 |
-| **Real-content subtotal** | | | **~$1.52 - $13.52/month**, depending on how often news actually matches |
+| **Real-content subtotal** | | | **~$1.52 - $14.42/month**, depending on how often news actually matches |
 
 Whale alerts don't put the tx-explorer link in the main post — at $0.015 vs
 $0.20, the link would be a big line item for a post type that can fire
 often. Instead, a cheap plain-text reply (not a clickable link, so still
 $0.015) carries the raw tx reference right after, so it stays verifiable
-without the link surcharge. News keeps its link since that's a hard
-requirement (never reproduce article text verbatim, always cite a real
-source) — which is exactly why it's capped per-day instead.
+without the link surcharge. News still needs a real clickable source link
+somewhere (never reproduce article text verbatim, always cite a real
+source) — but that link now lives in a reply instead of the main post, so
+the main post's reach isn't hit by X's link-suppression algorithm. This
+doesn't reduce cost the way whale alerts did (the link still costs $0.20
+wherever it lands), which is exactly why the per-day cap matters more here.
 
 Watch the Telegram per-post/daily notifications for the first week or two to
 see where your real news volume lands, and adjust `max_articles_per_day`

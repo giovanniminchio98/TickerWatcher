@@ -1,9 +1,15 @@
 """Post type 2: high-relevance "JUST IN" news alerts, RSS-sourced (see
 sources/news_rss.py for why CryptoPanic/NewsAPI aren't viable free options).
 
-News is the only post type that still carries a link (required for sourcing),
-so it's the main cost driver -- bounded by keywords.max_articles_per_day on
-top of the per-run cap and the overall budget cap."""
+The main post carries no clickable link -- X's algorithm has suppressed
+reach on linked posts hard since March 2026 (near-zero reach for non-Premium
+accounts), so the source URL goes in a cheap follow-up reply instead, same
+pattern as whale alerts. Unlike whale alerts' tx reference, this link still
+costs $0.20 wherever it lives, so this isn't a cost optimization -- it's a
+reach one. To make sure a post is never left fully uncited if the reply
+happens to fail, the main post still names the outlet (no URL) as a fallback
+citation. Still bounded by keywords.max_articles_per_day, the main cost lever
+now that whale alerts dropped their link entirely."""
 import logging
 
 from src.formatting import truncate
@@ -41,20 +47,29 @@ def run(ctx):
     for article in articles:
         if state["posted_count_today"] >= max_per_day:
             break
-        if not ctx.budget.can_spend(has_link=True):
+        if not ctx.budget.can_spend(has_link=False):
             break
         try:
             summary = paraphrase.paraphrase(article["title"], article["summary"])
         except Exception:
             logger.exception("Paraphrase failed for %s", article["url"])
             continue
-        text = truncate(f"🚨 JUST IN: {summary}\nSource: {article['url']}")
+
+        text = truncate(f"🚨 JUST IN: {summary}\n(via {article['source']})")
         tweet_id = ctx.x.post(text)
-        if tweet_id:
-            ctx.budget.record_spend(has_link=True, text=text)
-            state["posted_urls"].append(article["url"])
-            state["posted_count_today"] += 1
-            fired = True
+        if not tweet_id:
+            continue
+
+        ctx.budget.record_spend(has_link=False, text=text)
+        state["posted_urls"].append(article["url"])
+        state["posted_count_today"] += 1
+        fired = True
+
+        if ctx.budget.can_spend(has_link=True):
+            reply_text = truncate(f"Source: {article['url']}")
+            reply_id = ctx.x.reply(reply_text, tweet_id)
+            if reply_id:
+                ctx.budget.record_spend(has_link=True, text=reply_text)
 
     state["posted_urls"] = state["posted_urls"][-500:]
     return fired
