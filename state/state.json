@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 13,
-      "usd_used": 1.305
+      "posts_used": 19,
+      "usd_used": 1.95
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 23,
-    "usd_used": 2.565
+    "posts_used": 29,
+    "usd_used": 3.21
   },
   "filler": {
     "posted_count_today": 0,
@@ -31,7 +31,10 @@
       "https://cointelegraph.com/news/hyundai-completes-usdt-treasury-settlement-pilot-between-us-and-mexico?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/features/thai-scammer-japan-crypto-loans?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/clarity-act-gains-second-law-enforcement-endorsement-before-senate-push?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/sbi-stablecoin-lending-service-3-yield-japan?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/sbi-stablecoin-lending-service-3-yield-japan?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report",
+      "https://cointelegraph.com/news/japan-lawson-netstars-stablecoin-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/ai-enabled-businesses-freelancers-could-add-262b-in-stablecoin-volumes-swyftx?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ]
   },
   "polls": {
@@ -64,7 +67,7 @@
     "last_report_date": null
   },
   "whale": {
-    "last_btc_block_height": 957924,
+    "last_btc_block_height": 957930,
     "last_eth_block": null,
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -75,7 +78,10 @@
       "e515689ab2a79ff1ddb2791a0db31ddae8f6798304eb71474e73f44bad02cf9e",
       "0b5962596fa50db236072419d345c0b034a469de25b3bc0858d78d65e3056ac6",
       "d41ef49ed3b5575626991c2376e05806af90f43a3bb0d415d2ad77c78af339c0",
-      "9a9084d20365c90c69e7c55b14d6ae7c726aaa05da6912a418e1bdc006273f52"
+      "9a9084d20365c90c69e7c55b14d6ae7c726aaa05da6912a418e1bdc006273f52",
+      "009bde22a6363c2a0ee48a206f9737a76794b08ce7ea66dce71688ed4ee7fe35",
+      "6d65e52311c6f0449ae81ca95a972bfb6f559456c3116c3a82d90f1badcff4cf",
+      "85a8055a9ad141a7e38773eed2a5f5f745d671be093be216a52dcc5da35aba6a"
     ]
   }
 }
