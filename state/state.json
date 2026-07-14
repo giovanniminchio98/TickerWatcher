@@ -1,9 +1,9 @@
 {
   "ai_manager": {
     "account_replies_today": {},
-    "calls_today": 4,
+    "calls_today": 5,
     "date": "2026-07-14",
-    "last_call_time": null,
+    "last_call_time": 1784073570.267037,
     "posts_today": 3,
     "recent_post_texts": [
       "Cooler than expected June CPI (-0.4%) and the whole market ripped. ETH up 7%, BTC back near 65k, SOL and XRP both up nearly 5%. Rate hike fears fading fast, and risk assets are loving it.",
@@ -45,18 +45,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 61,
-      "usd_used": 3.135
+      "posts_used": 62,
+      "usd_used": 3.15
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 71,
-    "usd_used": 4.395
+    "posts_used": 72,
+    "usd_used": 4.41
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.0967
+    "usd_used": 0.1173
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -83,7 +83,7 @@
     "posted_date": "2026-07-14"
   },
   "filler": {
-    "posted_count_today": 3,
+    "posted_count_today": 4,
     "posted_date": "2026-07-14",
     "shuffled_bag": [
       53,
@@ -179,8 +179,7 @@
       72,
       1,
       95,
-      60,
-      9
+      60
     ]
   },
   "flashback": {
@@ -241,7 +240,7 @@
   },
   "whale": {
     "last_btc_block_height": 958075,
-    "last_eth_block": 25534144,
+    "last_eth_block": 25534321,
     "posted_count_today": 3,
     "posted_date": "2026-07-14",
     "seen_btc_txids": [
