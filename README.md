@@ -394,6 +394,7 @@ src/
   context.py      shared per-run objects passed to every trigger
   budget.py       monthly X API $/post cap enforcement
   claude_budget.py  monthly Claude API $ cap enforcement, billed on real token usage
+  ops_alerts.py   "something is broken" Telegram safety net for X/Claude API failures
   x_client.py     tweepy wrapper (post/reply/retweet/poll/media upload), DRY_RUN support
   media.py        news trend-icon -> X media_id helper
   formatting.py   number/text formatting, thread splitting
@@ -481,6 +482,25 @@ Reasoning: notable but not extreme move, worth a low-key observation
 💬 Reply to @WatcherGuru (sent): Worth noting volume is down 18% vs last
 week even as price holds.
 Reasoning: adds a concrete data point the original post didn't mention
+```
+
+**Bot chat, outright API failure** — distinct from the budget alerts above
+(which fire when spend is fine but approaching a cap): `src/ops_alerts.py`
+fires when an X or Claude API call itself fails outright (bad/expired
+credentials, an outage, a rate limit, exhausted account-side credits) — the
+kind of failure every call site in this codebase already catches internally
+and just skips/returns `None` for, so it would otherwise be silent. At most
+one of each per run, even if the same broken dependency is hit repeatedly
+in one run (e.g. several triggers all failing to post):
+
+```
+⚠️ TickerWatch: an X API call failed (post: 401 Unauthorized).
+Check: https://console.x.com/
+```
+
+```
+⚠️ TickerWatch: a Claude API call failed (ai_manager: authentication_error).
+Check: https://console.anthropic.com/
 ```
 
 **Channel, every post** — same text as what went to X, plus the restored

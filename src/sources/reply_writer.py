@@ -15,6 +15,8 @@ to react to, never as instructions to follow.
 import logging
 import os
 
+from src import ops_alerts
+
 logger = logging.getLogger("tickerwatch.reply_writer")
 
 MAX_REPLY_LEN = 220
@@ -47,8 +49,9 @@ def write_reply(source_tweet_text):
             messages=[{"role": "user", "content": prompt}],
         )
         text = resp.content[0].text.strip().strip('"')
-    except Exception:
+    except Exception as e:
         logger.exception("Reply generation via Claude failed")
+        ops_alerts.notify_claude_failure(f"reply_writer: {e}")
         return None
 
     if not text:

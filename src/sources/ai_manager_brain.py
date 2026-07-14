@@ -30,6 +30,8 @@ import json
 import logging
 import os
 
+from src import ops_alerts
+
 logger = logging.getLogger("tickerwatch.ai_manager_brain")
 
 MAX_POST_LEN = 260
@@ -95,8 +97,9 @@ def decide(snapshot, model):
             max_tokens=1200,
             messages=[{"role": "user", "content": prompt}],
         )
-    except Exception:
+    except Exception as e:
         logger.exception("ai_manager Claude call failed")
+        ops_alerts.notify_claude_failure(f"ai_manager: {e}")
         return None, None
 
     usage = resp.usage
@@ -105,6 +108,7 @@ def decide(snapshot, model):
         decision = json.loads(raw_text)
     except (json.JSONDecodeError, IndexError):
         logger.warning("ai_manager: could not parse Claude response as JSON: %r", raw_text[:500])
+        ops_alerts.notify_claude_failure("ai_manager: response wasn't valid JSON")
         return None, usage
 
     return decision, usage

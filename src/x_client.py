@@ -10,6 +10,8 @@ calling the X API. Always test with DRY_RUN=1 first (see README).
 import logging
 import os
 
+from src import ops_alerts
+
 logger = logging.getLogger("tickerwatch.x_client")
 
 DRY_RUN = os.environ.get("DRY_RUN", "0") == "1"
@@ -66,8 +68,9 @@ class XClient:
             tweet_id = str(resp.data["id"])
             logger.info("Posted tweet %s: https://x.com/i/web/status/%s\n%s", tweet_id, tweet_id, text)
             return tweet_id
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to post tweet")
+            ops_alerts.notify_x_failure(f"post: {e}")
             return None
 
     def reply(self, text, in_reply_to_tweet_id):
@@ -79,8 +82,9 @@ class XClient:
             reply_id = str(resp.data["id"])
             logger.info("Posted reply %s to %s: https://x.com/i/web/status/%s\n%s", reply_id, in_reply_to_tweet_id, reply_id, text)
             return reply_id
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to post reply")
+            ops_alerts.notify_x_failure(f"reply: {e}")
             return None
 
     def retweet(self, tweet_id):
@@ -90,8 +94,9 @@ class XClient:
         try:
             self.client.retweet(tweet_id)
             return True
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to retweet %s", tweet_id)
+            ops_alerts.notify_x_failure(f"retweet: {e}")
             return False
 
     def get_user_id(self, handle):

@@ -13,6 +13,8 @@ mechanical headline trim), so this simply returns None without it.
 import logging
 import os
 
+from src import ops_alerts
+
 logger = logging.getLogger("tickerwatch.draft_writer")
 
 MAX_DRAFT_LEN = 260
@@ -47,8 +49,9 @@ def write_draft(fact):
             messages=[{"role": "user", "content": prompt}],
         )
         text = resp.content[0].text.strip().strip('"')
-    except Exception:
+    except Exception as e:
         logger.exception("Draft generation via Claude failed")
+        ops_alerts.notify_claude_failure(f"draft_writer: {e}")
         return None
 
     if not text:

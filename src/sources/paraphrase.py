@@ -21,6 +21,8 @@ import logging
 import os
 import re
 
+from src import ops_alerts
+
 logger = logging.getLogger("tickerwatch.paraphrase")
 
 MAX_PARAPHRASE_LEN = 200
@@ -75,8 +77,9 @@ def paraphrase_with_sentiment(title, summary):
     if os.environ.get("ANTHROPIC_API_KEY"):
         try:
             return _llm_paraphrase_with_sentiment(title, summary)
-        except Exception:
+        except Exception as e:
             logger.exception("LLM paraphrase failed, falling back to mechanical condense")
+            ops_alerts.notify_claude_failure(f"paraphrase: {e}")
     return _mechanical_condense(title), None
 
 
