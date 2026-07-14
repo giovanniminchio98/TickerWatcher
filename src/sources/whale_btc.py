@@ -17,8 +17,17 @@ MAX_BLOCKS_PER_RUN blocks rather than working through the backlog in
 order -- an alert should be about what just happened, not something that
 happened hours ago just because it's next in a queue. The skipped-over
 backlog is never scanned, so this is a best-effort feed, not exhaustive.
+
+Block *count* alone doesn't guarantee freshness though -- BTC block times
+are naturally variable (Poisson-distributed around the ~10 min average, so
+a run of slow blocks can span well over an hour for the same 6 blocks).
+Each block's own timestamp is checked against MAX_AGE_MINUTES too, so a
+block that's technically "one of the last 6" but is actually stale gets
+skipped from findings (transactions in it are simply never reported, not
+deferred to next run) rather than posted as if it just happened.
 """
 import logging
+import time
 
 import requests
 
@@ -27,6 +36,7 @@ logger = logging.getLogger("tickerwatch.whale_btc")
 BASE_URL = "https://blockchain.info"
 TIMEOUT = 20
 MAX_BLOCKS_PER_RUN = 6
+MAX_AGE_MINUTES = 65  # hourly cadence + a little slack for cron/run timing
 SATOSHI = 100_000_000
 
 
@@ -58,6 +68,7 @@ def find_large_transactions(last_seen_height, min_btc, btc_usd_price):
         start = latest - MAX_BLOCKS_PER_RUN + 1
     end = latest
 
+    cutoff = time.time() - MAX_AGE_MINUTES * 60
     findings = []
     for height in range(start, end + 1):
         try:
@@ -67,6 +78,8 @@ def find_large_transactions(last_seen_height, min_btc, btc_usd_price):
             continue
         if not block:
             continue
+        if block.get("time", 0) < cutoff:
+            continue  # one of the last N blocks by count, but actually stale -- skip its txs
         for tx in block.get("tx", []):
             outputs = tx.get("out", [])
             if not outputs:

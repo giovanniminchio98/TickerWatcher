@@ -12,9 +12,14 @@ than MAX_BLOCKS_PER_RUN, the scan window jumps forward to the most recent
 blocks rather than working through the backlog in order, so alerts are
 always about what just happened, never something hours old. This is a
 best-effort recent-blocks sample, not exhaustive chain coverage.
+
+Each block's own timestamp is also checked against MAX_AGE_MINUTES (not
+just its position in the last-N-blocks window), so a stale block doesn't
+get reported as if it just happened -- same reasoning as whale_btc.py.
 """
 import logging
 import os
+import time
 
 import requests
 
@@ -23,6 +28,7 @@ logger = logging.getLogger("tickerwatch.whale_eth")
 BASE_URL = "https://api.etherscan.io/v2/api"
 TIMEOUT = 20
 MAX_BLOCKS_PER_RUN = 30
+MAX_AGE_MINUTES = 65  # hourly cadence + a little slack for cron/run timing
 WEI_PER_ETH = 10**18
 CHAIN_ID = 1  # Ethereum mainnet
 
@@ -71,6 +77,7 @@ def find_large_transactions(last_seen_block, min_usd, eth_usd_price):
         start = latest - MAX_BLOCKS_PER_RUN + 1
     end = latest
 
+    cutoff = time.time() - MAX_AGE_MINUTES * 60
     findings = []
     for block_number in range(start, end + 1):
         try:
@@ -80,6 +87,8 @@ def find_large_transactions(last_seen_block, min_usd, eth_usd_price):
             continue
         if not block:
             continue
+        if int(block.get("timestamp", "0x0"), 16) < cutoff:
+            continue  # one of the last N blocks by count, but actually stale -- skip its txs
         for tx in block.get("transactions", []):
             value_wei = int(tx.get("value", "0x0"), 16)
             eth_amount = value_wei / WEI_PER_ETH
