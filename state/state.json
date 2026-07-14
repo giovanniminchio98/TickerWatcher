@@ -1,13 +1,14 @@
 {
   "ai_manager": {
     "account_replies_today": {},
-    "calls_today": 3,
+    "calls_today": 4,
     "date": "2026-07-14",
-    "last_call_time": null,
-    "posts_today": 2,
+    "last_call_time": 1784071448.314436,
+    "posts_today": 3,
     "recent_post_texts": [
       "Cooler than expected June CPI (-0.4%) and the whole market ripped. ETH up 7%, BTC back near 65k, SOL and XRP both up nearly 5%. Rate hike fears fading fast, and risk assets are loving it.",
-      "Stablecoin infrastructure is quietly becoming the real story this cycle. Circle just landed Japan's biggest card network for 40M merchants, Velocity raised $38M for treasury tooling, and Binance is leaning into stablecoins for its super app push. Rails matter\u2026"
+      "Stablecoin infrastructure is quietly becoming the real story this cycle. Circle just landed Japan's biggest card network for 40M merchants, Velocity raised $38M for treasury tooling, and Binance is leaning into stablecoins for its super app push. Rails matter\u2026",
+      "Regulatory pieces are lining up fast: Lummis says the CLARITY Act is ready for the Senate, and the US and UK just laid out a joint plan for tokenized assets and stablecoins. Add today's rally on top and this cycle's backdrop looks structurally different."
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -44,18 +45,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 60,
-      "usd_used": 3.12
+      "posts_used": 61,
+      "usd_used": 3.135
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 70,
-    "usd_used": 4.38
+    "posts_used": 71,
+    "usd_used": 4.395
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.0495
+    "usd_used": 0.0967
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -240,7 +241,7 @@
   },
   "whale": {
     "last_btc_block_height": 958075,
-    "last_eth_block": 25534132,
+    "last_eth_block": 25534144,
     "posted_count_today": 3,
     "posted_date": "2026-07-14",
     "seen_btc_txids": [
