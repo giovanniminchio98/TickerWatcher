@@ -17,7 +17,8 @@
     "bankruptcy",
     "halving",
     "stablecoin",
-    "default"
+    "default",
+    "crypto"
   ],
   "rss_feeds": [
     { "name": "CoinDesk", "url": "https://www.coindesk.com/arc/outboundfeeds/rss/", "whitelisted": true },
