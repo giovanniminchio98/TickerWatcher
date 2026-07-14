@@ -4,7 +4,7 @@ config/thresholds.json) to keep the monthly post/cost count low; set
 post_both=true if your budget allows both every day."""
 import logging
 
-from src.formatting import fmt_pct, fmt_price, thread_parts, truncate
+from src.formatting import dot_for_change, fmt_pct, fmt_price, thread_parts, truncate
 from src.sources import feargreed, twelvedata
 
 logger = logging.getLogger("tickerwatch.triggers.scheduled_daily")
@@ -30,8 +30,7 @@ def _build_snapshot_text(ctx):
                 continue
             price, change = q["price"], q["percent_change"]
         label = "S&P 500" if symbol == "SPY" else symbol
-        dot = "🟢" if change is not None and change >= 0 else "🔴"
-        lines.append(f"{dot} {label}: ${fmt_price(price)} ({fmt_pct(change)})")
+        lines.append(f"{dot_for_change(change)} {label}: ${fmt_price(price)} ({fmt_pct(change)})")
     if len(lines) <= 1:
         return None
     return "\n".join(lines)
@@ -49,11 +48,20 @@ def _build_feargreed_text(ctx):
     yesterday = history[1] if len(history) > 1 else None
     last_week = history[7] if len(history) > 7 else None
 
-    lines = [f"😨 Crypto Fear & Greed Index: {today['value']} ({today['value_classification']})"]
+    lines = [
+        f"{dot_for_change(today['value'] - 50)} Crypto Fear & Greed Index: "
+        f"{today['value']} ({today['value_classification']})"
+    ]
     if yesterday:
-        lines.append(f"Yesterday: {yesterday['value']} ({yesterday['value_classification']})")
+        lines.append(
+            f"{dot_for_change(yesterday['value'] - 50)} Yesterday: "
+            f"{yesterday['value']} ({yesterday['value_classification']})"
+        )
     if last_week:
-        lines.append(f"Last week: {last_week['value']} ({last_week['value_classification']})")
+        lines.append(
+            f"{dot_for_change(last_week['value'] - 50)} Last week: "
+            f"{last_week['value']} ({last_week['value_classification']})"
+        )
     return "\n".join(lines)
 
 

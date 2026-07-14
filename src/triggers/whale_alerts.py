@@ -27,7 +27,7 @@ the line is just omitted rather than blocking the alert."""
 import logging
 import math
 
-from src.formatting import fmt_pct, fmt_price, fmt_usd_compact, truncate
+from src.formatting import dot_for_change, fmt_pct, fmt_price, fmt_usd_compact, truncate
 from src.sources import whale_btc, whale_eth
 
 logger = logging.getLogger("tickerwatch.triggers.whale")
@@ -49,8 +49,7 @@ def _asset_context_line(ctx, coingecko_id, symbol):
         return None
     price = info["usd"]
     change = info.get("usd_24h_change")
-    dot = "🟢" if change is not None and change >= 0 else "🔴"
-    return f"{dot} ${symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
+    return f"{dot_for_change(change)} ${symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
 
 
 def _post_with_ref(ctx, text, context_line, ref_value):

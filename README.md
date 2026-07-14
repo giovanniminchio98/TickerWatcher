@@ -48,6 +48,12 @@ on the monthly budget):
 5. **Historical flashback** — filler, max once/day, only if nothing else fired
 6. **Polls** — ~1x/week engagement mechanic
 7. **Self-reply updates** — replies to the bot's *own* tweets only, never others'
+
+Every post type that shows a price/%/index change uses the same 🟢/🔴 dot
+convention (`src/formatting.py`'s `dot_for_change`), so the visual language
+stays consistent across whale alerts, the snapshot, Fear & Greed, price
+alerts, flashback, and self-replies rather than each post type inventing
+its own look.
 8. **Filler** — absolute last resort, only posts if nothing above did this run.
    Picks from `config/filler.json`'s ~100 generic engagement questions/facts
    (no repeats until the list is exhausted, then reshuffles). This is what

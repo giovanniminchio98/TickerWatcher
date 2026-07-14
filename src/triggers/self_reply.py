@@ -3,7 +3,7 @@ Safe by construction -- only ever replies to this bot's own tweets, never to
 other accounts' content."""
 import logging
 
-from src.formatting import fmt_pct, fmt_price
+from src.formatting import dot_for_change, fmt_pct, fmt_price
 from src.sources import twelvedata
 
 logger = logging.getLogger("tickerwatch.triggers.self_reply")
@@ -53,7 +53,11 @@ def run(ctx):
             continue
 
         pct = (new_price - item["price"]) / item["price"] * 100
-        text = f"Update: {item['symbol']} now at ${fmt_price(new_price)}, {fmt_pct(pct)} since this morning's alert 📈"
+        trend_emoji = "📈" if pct >= 0 else "📉"
+        text = (
+            f"Update: {item['symbol']} now at ${fmt_price(new_price)}, "
+            f"{dot_for_change(pct)} {fmt_pct(pct)} since this morning's alert {trend_emoji}"
+        )
         reply_id = ctx.x.reply(text, item["tweet_id"])
         if reply_id:
             ctx.budget.record_spend(has_link=False, text=text)

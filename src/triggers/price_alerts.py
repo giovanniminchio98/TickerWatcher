@@ -4,7 +4,7 @@ per run (ctx.prices); stock/ETF quotes come from Twelve Data (one call per
 symbol -- fine within its 800/day, 8/min free-tier limits at this run frequency)."""
 import logging
 
-from src.formatting import fmt_pct, fmt_price, truncate
+from src.formatting import dot_for_change, fmt_pct, fmt_price, truncate
 from src.sources import twelvedata
 
 logger = logging.getLogger("tickerwatch.triggers.price")
@@ -82,7 +82,7 @@ def run(ctx):
         hashtag = "#Crypto" if kind == "crypto" else "#Stocks"
         text = truncate(
             f"🚨 {symbol} just crossed ${fmt_price(price)}\n"
-            f"24h change: {fmt_pct(change_24h)}\n#{symbol} {hashtag}"
+            f"{dot_for_change(change_24h)} 24h change: {fmt_pct(change_24h)}\n#{symbol} {hashtag}"
         )
         tweet_id = ctx.x.post(text)
         if tweet_id:

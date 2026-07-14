@@ -19,6 +19,15 @@ def fmt_pct(value):
     return f"{sign}{value:.2f}%"
 
 
+def dot_for_change(value):
+    """Green/red dot for a price/pct change, used consistently across every
+    post type that shows one (snapshot, whale alerts, price alerts,
+    flashback, self-reply) so the visual language stays uniform."""
+    if value is None:
+        return "⚪"
+    return "🟢" if value >= 0 else "🔴"
+
+
 def fmt_usd_compact(value):
     value = float(value)
     for unit, threshold in (("B", 1e9), ("M", 1e6), ("K", 1e3)):

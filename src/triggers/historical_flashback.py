@@ -6,7 +6,7 @@ import logging
 import random
 from datetime import timedelta
 
-from src.formatting import fmt_pct, fmt_price, truncate
+from src.formatting import dot_for_change, fmt_pct, fmt_price, truncate
 from src.sources import coingecko
 
 logger = logging.getLogger("tickerwatch.triggers.flashback")
@@ -42,7 +42,7 @@ def run(ctx, higher_priority_fired):
             change = (price_now - price_then) / price_then * 100
             text = truncate(
                 f"📅 On this day in {date_then.year}, {asset['symbol']} was trading at ${fmt_price(price_then)}\n"
-                f"Today: ${fmt_price(price_now)}\nChange: {fmt_pct(change)}"
+                f"Today: ${fmt_price(price_now)}\n{dot_for_change(change)} Change: {fmt_pct(change)}"
             )
             tweet_id = ctx.x.post(text)
             if tweet_id:
