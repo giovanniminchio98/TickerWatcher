@@ -14,6 +14,7 @@ import logging
 import os
 
 from src import ops_alerts
+from src.sources.claude_utils import extract_text
 
 logger = logging.getLogger("tickerwatch.draft_writer")
 
@@ -48,7 +49,7 @@ def write_draft(fact):
             max_tokens=150,
             messages=[{"role": "user", "content": prompt}],
         )
-        text = resp.content[0].text.strip().strip('"')
+        text = extract_text(resp).strip('"')
     except Exception as e:
         logger.exception("Draft generation via Claude failed")
         ops_alerts.notify_claude_failure(f"draft_writer: {e}")

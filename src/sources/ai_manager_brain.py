@@ -31,6 +31,7 @@ import logging
 import os
 
 from src import ops_alerts
+from src.sources.claude_utils import extract_text
 
 logger = logging.getLogger("tickerwatch.ai_manager_brain")
 
@@ -103,12 +104,12 @@ def decide(snapshot, model):
         return None, None
 
     usage = resp.usage
-    raw_text = resp.content[0].text.strip() if resp.content else ""
     try:
+        raw_text = extract_text(resp)
         decision = json.loads(raw_text)
-    except (json.JSONDecodeError, IndexError):
-        logger.warning("ai_manager: could not parse Claude response as JSON: %r", raw_text[:500])
-        ops_alerts.notify_claude_failure("ai_manager: response wasn't valid JSON")
+    except Exception as e:
+        logger.warning("ai_manager: could not parse Claude response: %r", e)
+        ops_alerts.notify_claude_failure(f"ai_manager: couldn't parse response ({e})")
         return None, usage
 
     return decision, usage

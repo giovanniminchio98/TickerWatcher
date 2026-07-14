@@ -85,7 +85,12 @@ def find_large_transactions(last_seen_block, min_usd, eth_usd_price):
         except Exception:
             logger.exception("Failed to fetch ETH block %s", block_number)
             continue
-        if not block:
+        if not block or not isinstance(block, dict):
+            # Etherscan's free tier returns a plain error string in "result"
+            # (e.g. a rate-limit message) instead of a block object under
+            # load -- treat it the same as a failed fetch, never crash on it.
+            if block:
+                logger.warning("Unexpected ETH block response for %s: %r", block_number, block)
             continue
         if int(block.get("timestamp", "0x0"), 16) < cutoff:
             continue  # one of the last N blocks by count, but actually stale -- skip its txs

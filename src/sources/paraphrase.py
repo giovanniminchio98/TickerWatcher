@@ -22,6 +22,7 @@ import os
 import re
 
 from src import ops_alerts
+from src.sources.claude_utils import extract_text
 
 logger = logging.getLogger("tickerwatch.paraphrase")
 
@@ -61,7 +62,7 @@ def _llm_paraphrase_with_sentiment(title, summary):
         max_tokens=120,
         messages=[{"role": "user", "content": prompt}],
     )
-    raw = resp.content[0].text.strip()
+    raw = extract_text(resp)
     lines = [l.strip() for l in raw.splitlines() if l.strip()]
     text = lines[0] if lines else raw
     sentiment = lines[-1].lower() if len(lines) > 1 else None
