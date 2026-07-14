@@ -1,7 +1,7 @@
 {
   "whale": {
-    "btc_min_amount": 500,
-    "eth_min_usd": 10000000,
+    "btc_min_amount": 3000,
+    "eth_min_usd": 200000000,
     "max_alerts_per_run": 1,
     "max_alerts_per_day": 10
   },
