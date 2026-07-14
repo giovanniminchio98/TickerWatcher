@@ -6,7 +6,17 @@ containing a URL jumps from $0.015 to $0.20. Instead, a cheap follow-up reply
 (plain text, not a clickable link, so it stays at $0.015) carries the raw tx
 reference -- still real, verifiable, on-chain data, just not click-to-verify
 without pasting it into an explorer yourself. Siren count scales with size
-(more sirens = bigger transaction) so the visual weight matches the news."""
+(more sirens = bigger transaction) so the visual weight matches the news.
+
+EXPERIMENT: the asset symbol in the main line uses a $ cashtag ($BTC/$ETH)
+instead of plain text, testing whether X's Smart Cashtags (native in-app
+price/chart page, launched Jan 2026) count as "a link" for the $0.20 API
+surcharge the way a real URL does. Cashtags are a distinct entity type from
+URLs in X's data model and never leave the platform, so the working
+assumption is they're still billed at $0.015 (has_link=False below) --
+but this is unconfirmed by X's docs. Check the actual charged amount in
+the X Developer Console after this fires to confirm; if it turns out to
+bill at $0.20, flip has_link to True here."""
 import logging
 import math
 
@@ -65,7 +75,7 @@ def _post_btc_alerts(ctx):
         sirens = _siren_count(hit["usd"])
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
         text = truncate(
-            f"{sirens} WHALE ALERT\n{hit['btc']:.1f} BTC{usd_part} just moved on-chain\n#BTC #Crypto"
+            f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
         )
         if _post_and_reply_with_ref(ctx, text, "tx", hit["txid"]):
             state["seen_btc_txids"].append(hit["txid"])
@@ -97,7 +107,7 @@ def _post_eth_alerts(ctx):
             break
         sirens = _siren_count(hit["usd"])
         text = truncate(
-            f"{sirens} WHALE ALERT\n{hit['eth']:.1f} ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
+            f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
         )
         if _post_and_reply_with_ref(ctx, text, "tx", hit["txhash"]):
             posted += 1
