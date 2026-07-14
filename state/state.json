@@ -1,9 +1,9 @@
 {
   "ai_manager": {
     "account_replies_today": {},
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-14",
-    "last_call_time": null,
+    "last_call_time": 1784071307.751353,
     "posts_today": 2,
     "recent_post_texts": [
       "Cooler than expected June CPI (-0.4%) and the whole market ripped. ETH up 7%, BTC back near 65k, SOL and XRP both up nearly 5%. Rate hike fears fading fast, and risk assets are loving it.",
@@ -12,15 +12,33 @@
     "replied_tweet_ids": [],
     "replies_today": 0,
     "resolved_accounts": {
-      "AshCrypto": {},
-      "CoinGecko": {},
-      "CoinMarketCap": {},
-      "ManicDYOR": {},
-      "TedPillows": {},
-      "WatcherGuru": {},
-      "coinbase": {},
-      "saylor": {},
-      "solana": {}
+      "AshCrypto": {
+        "resolved_user_id": "3185716686"
+      },
+      "CoinGecko": {
+        "resolved_user_id": "2412652615"
+      },
+      "CoinMarketCap": {
+        "resolved_user_id": "2260491445"
+      },
+      "ManicDYOR": {
+        "resolved_user_id": "1609339440442351617"
+      },
+      "TedPillows": {
+        "resolved_user_id": "3222562058"
+      },
+      "WatcherGuru": {
+        "resolved_user_id": "1387497871751196672"
+      },
+      "coinbase": {
+        "resolved_user_id": "574032254"
+      },
+      "saylor": {
+        "resolved_user_id": "244647486"
+      },
+      "solana": {
+        "resolved_user_id": "951329744804392960"
+      }
     }
   },
   "budget": {
@@ -37,7 +55,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.0191
+    "usd_used": 0.0495
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -50,7 +68,9 @@
   "content_drafts": {
     "drafted_urls": [
       "https://www.coindesk.com/business/2026/07/14/binance-bets-on-becoming-a-crypto-super-app-as-stablecoins-reshape-growth",
-      "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes"
+      "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes",
+      "https://www.coindesk.com/business/2026/07/14/circle-signs-mou-with-japan-s-largest-card-network-to-explore-stablecoin-payments",
+      "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report"
     ],
     "last_drafted_time": {
       "BTC": 1784068876.314268,
@@ -58,7 +78,7 @@
       "SOL": 1784069172.81282,
       "XRP": 1784069172.81282
     },
-    "posted_count_today": 6,
+    "posted_count_today": 8,
     "posted_date": "2026-07-14"
   },
   "filler": {
@@ -159,8 +179,7 @@
       1,
       95,
       60,
-      9,
-      65
+      9
     ]
   },
   "flashback": {
@@ -221,7 +240,7 @@
   },
   "whale": {
     "last_btc_block_height": 958075,
-    "last_eth_block": 25534102,
+    "last_eth_block": 25534132,
     "posted_count_today": 3,
     "posted_date": "2026-07-14",
     "seen_btc_txids": [
