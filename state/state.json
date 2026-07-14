@@ -1,4 +1,17 @@
 {
+  "ai_manager": {
+    "account_replies_today": {},
+    "calls_today": 0,
+    "date": "2026-07-14",
+    "last_call_time": null,
+    "posts_today": 0,
+    "recent_post_texts": [],
+    "replied_tweet_ids": [],
+    "replies_today": 0,
+    "resolved_accounts": {
+      "WatcherGuru": {}
+    }
+  },
   "budget": {
     "daily": {
       "date": "2026-07-14",
@@ -10,6 +23,11 @@
     "posts_used": 68,
     "usd_used": 4.35
   },
+  "claude_budget": {
+    "low_budget_alert_sent_period": null,
+    "period": "2026-07",
+    "usd_used": 0.0
+  },
   "comment_engagement": {
     "WatcherGuru": {
       "commented_today": 0,
@@ -17,6 +35,15 @@
       "last_seen_tweet_id": null,
       "resolved_user_id": null
     }
+  },
+  "content_drafts": {
+    "drafted_urls": [],
+    "last_drafted_time": {
+      "BTC": 1784068876.314268,
+      "ETH": 1784068876.314268
+    },
+    "posted_count_today": 2,
+    "posted_date": "2026-07-14"
   },
   "filler": {
     "posted_count_today": 3,
@@ -117,8 +144,7 @@
       95,
       60,
       9,
-      65,
-      82
+      65
     ]
   },
   "flashback": {
@@ -178,7 +204,7 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958055,
+    "last_btc_block_height": 958073,
     "last_eth_block": 25532542,
     "posted_count_today": 3,
     "posted_date": "2026-07-14",
