@@ -18,6 +18,11 @@ Draws from two pools each run:
     can legitimately be BOTH auto-posted by news_alerts AND drafted here;
     they serve different purposes (automatic vs. a manually-refined take).
 
+Since posting is manual here (never automatic), a news draft's real source
+URL is appended after the drafted text -- no reach/cost penalty to dodge
+the way there is on X, so there's no reason to hold it back. Appended by
+the trigger itself rather than trusting Claude to reproduce a URL verbatim.
+
 Capped at max_drafts_per_day combined across both pools, and
 max_drafts_per_run per run, so a busy run can't flood Telegram."""
 import logging
@@ -41,7 +46,7 @@ def _remaining_today(ctx):
     return cfg["max_drafts_per_day"] - state.get("posted_count_today", 0)
 
 
-def _send_draft(ctx, fact, label):
+def _send_draft(ctx, fact, label, url=None):
     try:
         draft = draft_writer.write_draft(fact)
     except Exception:
@@ -50,6 +55,11 @@ def _send_draft(ctx, fact, label):
     if not draft:
         return False
     text = f"📝 Draft idea ({label}):\n\n{draft}"
+    if url:
+        # appended programmatically rather than trusting Claude to reproduce
+        # a URL verbatim -- posting is manual anyway, so the real link is
+        # just here for you to keep or drop when you post
+        text += f"\n\n{url}"
     if not telegram_client.send_message(text):
         return False
     ctx.state["content_drafts"]["posted_count_today"] += 1
@@ -128,7 +138,7 @@ def run(ctx):
             if drafted_this_run >= cfg["max_drafts_per_run"] or _remaining_today(ctx) <= 0:
                 break
             fact = f"News via {article['source']}: {article['title']}. {article['summary']}"
-            if _send_draft(ctx, fact, "news"):
+            if _send_draft(ctx, fact, "news", url=article["url"]):
                 state["drafted_urls"].append(article["url"])
                 drafted_this_run += 1
                 fired = True

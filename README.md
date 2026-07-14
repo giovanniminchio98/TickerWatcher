@@ -156,6 +156,19 @@ yourself whenever you like.
 BTC just broke $65K again -- worth watching if it holds through the weekend.
 ```
 
+News drafts also get the real source URL appended after the text — since
+posting is manual here, there's no X-style cost/reach reason to hold it
+back, unlike the main auto-posted pipeline:
+
+```
+📝 Draft idea (news):
+
+Mizuho's note on Circle's bank approval is a reminder regulatory clarity
+doesn't equal an instant stablecoin growth story.
+
+https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval...
+```
+
 Capped at `thresholds.content_drafts.max_drafts_per_day` (8) combined across
 both pools (price moves + news), `max_drafts_per_run` (2) per hourly check,
 and a per-symbol cooldown (`min_hours_between_repeat_drafts`) so the same
