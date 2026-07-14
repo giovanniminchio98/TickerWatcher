@@ -45,7 +45,7 @@ def run(ctx):
     if not ctx.budget.can_spend(has_link=False):
         return False
 
-    text = f"{symbol} above or below ${fmt_price(round_number)} by {day_name}? 👇"
+    text = f"${symbol} above or below ${fmt_price(round_number)} by {day_name}? 👇"
     tweet_id = ctx.x.post(text, poll_options=["Above", "Below"], poll_duration_minutes=cfg["horizon_days"] * 1440)
     if tweet_id:
         ctx.budget.record_spend(has_link=False, text=text)

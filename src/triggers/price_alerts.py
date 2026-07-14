@@ -80,8 +80,9 @@ def run(ctx):
             break
 
         hashtag = "#Crypto" if kind == "crypto" else "#Stocks"
+        display_symbol = f"${symbol}" if kind == "crypto" else symbol
         text = truncate(
-            f"🚨 {symbol} just crossed ${fmt_price(price)}\n"
+            f"🚨 {display_symbol} just crossed ${fmt_price(price)}\n"
             f"{dot_for_change(change_24h)} 24h change: {fmt_pct(change_24h)}\n#{symbol} {hashtag}"
         )
         tweet_id = ctx.x.post(text)

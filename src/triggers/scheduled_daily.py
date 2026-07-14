@@ -20,6 +20,7 @@ def _build_snapshot_text(ctx):
             if not info:
                 continue
             price, change = info.get("usd"), info.get("usd_24h_change")
+            label = f"${symbol}"
         else:
             try:
                 q = twelvedata.get_quote(symbol)
@@ -29,7 +30,7 @@ def _build_snapshot_text(ctx):
             if not q:
                 continue
             price, change = q["price"], q["percent_change"]
-        label = "S&P 500" if symbol == "SPY" else symbol
+            label = "S&P 500" if symbol == "SPY" else symbol
         lines.append(f"{dot_for_change(change)} {label}: ${fmt_price(price)} ({fmt_pct(change)})")
     if len(lines) <= 1:
         return None

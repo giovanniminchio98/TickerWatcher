@@ -9,8 +9,12 @@ from src.sources import twelvedata
 logger = logging.getLogger("tickerwatch.triggers.self_reply")
 
 
+def _crypto_cfg(ctx, symbol):
+    return next((c for c in ctx.config["watchlist"]["crypto"] if c["symbol"] == symbol), None)
+
+
 def _current_price(ctx, symbol):
-    crypto_cfg = next((c for c in ctx.config["watchlist"]["crypto"] if c["symbol"] == symbol), None)
+    crypto_cfg = _crypto_cfg(ctx, symbol)
     if crypto_cfg:
         info = ctx.prices.get(crypto_cfg["coingecko_id"])
         return info.get("usd") if info else None
@@ -54,8 +58,9 @@ def run(ctx):
 
         pct = (new_price - item["price"]) / item["price"] * 100
         trend_emoji = "📈" if pct >= 0 else "📉"
+        display_symbol = f"${item['symbol']}" if _crypto_cfg(ctx, item["symbol"]) else item["symbol"]
         text = (
-            f"Update: {item['symbol']} now at ${fmt_price(new_price)}, "
+            f"Update: {display_symbol} now at ${fmt_price(new_price)}, "
             f"{dot_for_change(pct)} {fmt_pct(pct)} since this morning's alert {trend_emoji}"
         )
         reply_id = ctx.x.reply(text, item["tweet_id"])
