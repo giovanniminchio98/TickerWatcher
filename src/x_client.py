@@ -109,7 +109,11 @@ class XClient:
             logger.info("[DRY RUN] would resolve user id for @%s", handle)
             return None
         try:
-            resp = self.client.get_user(username=handle.lstrip("@"))
+            # tweepy defaults get_user() to user_auth=False (OAuth 2.0 App-only
+            # Bearer auth), which we never configure (no bearer_token) --
+            # explicit user_auth=True is required to use our OAuth 1.0a
+            # credentials, the same ones that already work fine for posting.
+            resp = self.client.get_user(username=handle.lstrip("@"), user_auth=True)
             if not resp.data:
                 return None
             return str(resp.data.id)
@@ -126,11 +130,14 @@ class XClient:
             logger.info("[DRY RUN] would fetch tweets for user %s since %s", user_id, since_id)
             return []
         try:
+            # see get_user_id's comment -- get_users_tweets also defaults to
+            # user_auth=False (App-only Bearer auth) unless told otherwise.
             resp = self.client.get_users_tweets(
                 id=user_id,
                 since_id=since_id,
                 max_results=max_results,
                 exclude=["retweets", "replies"],
+                user_auth=True,
             )
             if not resp.data:
                 return []
@@ -152,6 +159,7 @@ class XClient:
                 since_id=since_id,
                 max_results=max_results,
                 exclude=["retweets", "replies"],
+                user_auth=True,
             )
             if not resp.data:
                 return []
