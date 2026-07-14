@@ -60,11 +60,15 @@ on the monthly budget):
    days — see the cost note below before raising check frequency further.
 
 Plus a separate **retweet pipeline** (retweet only, never auto-reply/comment
-under someone else's tweet) and an **opt-in comment-engagement pipeline** —
+under someone else's tweet), an **opt-in comment-engagement pipeline** —
 the one deliberate exception to that rule, kept on a short leash: it only
 replies under accounts explicitly listed in `config/reply_targets.json`,
 with a hard per-account daily cap, and only ever with a fresh Claude-written
-reply (never a canned line — see "Comment engagement" below).
+reply (never a canned line — see "Comment engagement" below) — and a
+**content-drafts pipeline** that never touches X at all: it sends
+ready-to-post draft ideas (crypto/stock moves, matching news) to your
+private Telegram chat for you to review, refine, and post yourself, a
+handful a day (see "Content drafts" below).
 
 Every crypto ticker mentioned anywhere (whale alerts, price alerts, snapshot,
 flashback, self-replies, polls) uses a `$` cashtag (`$BTC`, `$ETH`, ...)
@@ -135,6 +139,34 @@ and requires `ANTHROPIC_API_KEY`; without it, this trigger just skips
 paraphrasing, since a low-effort/bot-sounding reply under someone else's
 post does more harm than good). Keep the target list small and the daily
 cap low at first, and read replies back before adding more accounts.
+
+### Content drafts (Telegram-only, opt-in via ANTHROPIC_API_KEY)
+
+`src/triggers/content_drafts.py` is the other half of a deliberate shift
+away from "everything posts automatically": instead of auto-posting, it
+surfaces real material (a notable crypto or stock/ETF move, a matching news
+article) and has Claude draft a short, ready-to-post take on it — then sends
+that draft to your **private Telegram bot chat only**. It never touches X.
+You read it, refine it (add your own opinion, fix the tone), and post it
+yourself whenever you like.
+
+```
+📝 Draft idea (crypto):
+
+BTC just broke $65K again -- worth watching if it holds through the weekend.
+```
+
+Capped at `thresholds.content_drafts.max_drafts_per_day` (8) combined across
+both pools (price moves + news), `max_drafts_per_run` (2) per hourly check,
+and a per-symbol cooldown (`min_hours_between_repeat_drafts`) so the same
+asset doesn't get drafted again right away. News articles here use their own
+dedup list, separate from `news_alerts`' — the same article can legitimately
+be both auto-posted by `news_alerts` *and* separately drafted here, since
+they serve different purposes (automatic vs. a manually-refined take).
+
+Requires `ANTHROPIC_API_KEY` — like comment-engagement's replies, there's no
+safe mechanical fallback for "curated insight" text, so this trigger simply
+does nothing without it.
 
 ## Run frequency and cron schedule
 
@@ -261,10 +293,12 @@ src/
   media.py        news trend-icon -> X media_id helper
   formatting.py   number/text formatting, thread splitting
   sources/        one file per external API (coingecko, twelvedata, whale_btc,
-                  whale_eth, news_rss, paraphrase, reply_writer, feargreed)
+                  whale_eth, news_rss, paraphrase, reply_writer, draft_writer,
+                  feargreed)
   triggers/       one file per post type (whale_alerts, news_alerts,
                   price_alerts, scheduled_daily, historical_flashback, polls,
-                  self_reply, filler, retweets, comment_engagement, budget_report)
+                  self_reply, filler, retweets, comment_engagement,
+                  content_drafts, budget_report)
   telegram_client.py  bot-chat + channel message senders, free, independent of the X budget
 .github/workflows/tickerwatch.yml   cron schedule + secret wiring + state commit
 ```
@@ -373,7 +407,7 @@ ever blocks or breaks the rest of the run.
 - **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary), `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run), and `max_articles_per_day` (hard daily cap on the only post type that still carries a link — this is the main cost lever).
 - **`config/accounts.json`** — accounts to auto-retweet. You must resolve each `@handle` to its numeric `user_id` once (e.g. via a one-off API call or a tool like [tweeterid.com](https://tweeterid.com)) and paste it in — looking it up every run would burn extra API budget. Set `"enabled": true` to activate an account.
 - **`config/reply_targets.json`** — accounts to *comment* under (see [Comment engagement](#comment-engagement-opt-in-off-by-default-in-practice)). Just add a `handle` and set `enabled: true` — `user_id` auto-resolves on first use, no manual lookup needed. Plus a `times_per_day` hard cap per account.
-- **`config/thresholds.json`** — whale minimums, price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, and `filler.max_per_day` (how many empty-hour fillers/day at most).
+- **`config/thresholds.json`** — whale minimums (and `max_alerts_per_day`), price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, `filler.max_per_day` (how many empty-hour fillers/day at most), and `content_drafts` (Telegram-only draft cadence/cooldowns).
 - **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).

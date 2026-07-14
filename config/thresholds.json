@@ -36,5 +36,12 @@
   "filler": {
     "_comment": "Lowest priority of all -- only posts if nothing else fired this run. max_per_day bounds worst-case cost; with hourly checks, 24 would mean 'every empty hour' literally. Lower this (e.g. to 4-6) if filler ends up eating too much of the monthly budget -- see README cost math.",
     "max_per_day": 24
+  },
+  "content_drafts": {
+    "_comment": "Telegram-only draft ideas (never posted to X automatically) -- see src/triggers/content_drafts.py. Lower pct_change_trigger than price_alerts' since these are free (no X spend), just Telegram noise to weigh.",
+    "pct_change_trigger": 3.0,
+    "min_hours_between_repeat_drafts": 4,
+    "max_drafts_per_run": 2,
+    "max_drafts_per_day": 8
   }
 }

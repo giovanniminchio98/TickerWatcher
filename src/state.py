@@ -21,6 +21,12 @@ DEFAULT_STATE = {
     "self_reply": {"pending": []},
     "retweets": {"last_seen_tweet_id": {}},
     "comment_engagement": {},
+    "content_drafts": {
+        "last_drafted_time": {},
+        "drafted_urls": [],
+        "posted_date": None,
+        "posted_count_today": 0,
+    },
     "filler": {"shuffled_bag": [], "posted_date": None, "posted_count_today": 0},
     "budget": {
         "period": None,

@@ -20,6 +20,7 @@ from src.x_client import DRY_RUN, XClient
 from src.triggers import (
     budget_report,
     comment_engagement,
+    content_drafts,
     filler,
     historical_flashback,
     news_alerts,
@@ -47,6 +48,7 @@ ENABLED = {
     "self_reply": True,
     "retweets": True,
     "comment_engagement": True,
+    "content_drafts": True,
     "filler": True,
     "budget_report": True,
 }
@@ -97,6 +99,10 @@ def main():
 
     _safe_run("retweets", retweets.run, ctx)
     _safe_run("comment_engagement", comment_engagement.run, ctx)
+
+    # Telegram-only draft ideas -- never posts to X, so it never counts
+    # toward anything_fired (that would wrongly suppress filler)
+    _safe_run("content_drafts", content_drafts.run, ctx)
 
     # independent of the X pipeline/budget above -- always attempted, since
     # this is what tells you when to top up X credits
