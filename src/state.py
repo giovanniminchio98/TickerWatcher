@@ -14,6 +14,7 @@ DEFAULT_STATE = {
     "polls": {"last_posted_date": None},
     "self_reply": {"pending": []},
     "retweets": {"last_seen_tweet_id": {}},
+    "comment_engagement": {},
     "filler": {"shuffled_bag": [], "posted_date": None, "posted_count_today": 0},
     "budget": {
         "period": None,

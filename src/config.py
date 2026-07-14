@@ -16,7 +16,9 @@ def load_all():
         "watchlist": _load("watchlist.json"),
         "keywords": _load("keywords.json"),
         "accounts": _load("accounts.json"),
+        "reply_targets": _load("reply_targets.json"),
         "thresholds": _load("thresholds.json"),
         "budget": _load("budget.json"),
         "filler": _load("filler.json"),
+        "media": _load("media.json"),
     }

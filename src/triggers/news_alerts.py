@@ -9,7 +9,11 @@ costs $0.20 wherever it lives, so this isn't a cost optimization -- it's a
 reach one. To make sure a post is never left fully uncited if the reply
 happens to fail, the main post still names the outlet (no URL) as a fallback
 citation. Still bounded by keywords.max_articles_per_day, the main cost lever
-now that whale alerts dropped their link entirely."""
+now that whale alerts dropped their link entirely.
+
+The Telegram channel copy always gets the real article URL, regardless of
+whether the paid X reply above ends up firing -- Telegram is free, so there's
+no budget reason to ever hold that link back there."""
 import logging
 
 from src.formatting import truncate
@@ -60,7 +64,8 @@ def run(ctx):
         if not tweet_id:
             continue
 
-        ctx.budget.record_spend(has_link=False, text=text)
+        channel_text = f"{text}\nSource: {article['url']}"
+        ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text)
         state["posted_urls"].append(article["url"])
         state["posted_count_today"] += 1
         fired = True
@@ -69,7 +74,8 @@ def run(ctx):
             reply_text = truncate(f"Source: {article['url']}")
             reply_id = ctx.x.reply(reply_text, tweet_id)
             if reply_id:
-                ctx.budget.record_spend(has_link=True, text=reply_text)
+                # already mirrored to the channel above via channel_text, skip duplicate
+                ctx.budget.record_spend(has_link=True, text=reply_text, mirror_to_channel=False)
 
     state["posted_urls"] = state["posted_urls"][-500:]
     return fired

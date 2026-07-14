@@ -26,17 +26,25 @@ same run would just repeat near-identical numbers, so they skip straight to
 the tx reference. This costs nothing extra either way: the price data is
 already fetched once per run for the whole pipeline (ctx.prices), so no
 additional API calls. If that data's unavailable for some reason, the line
-is just omitted rather than blocking the alert."""
+is just omitted rather than blocking the alert.
+
+Each post also gets the coin's logo attached as media (see src/media.py),
+and the Telegram channel copy gets the real block-explorer link for the tx
+(blockchain.com/etherscan) that the X post itself omits -- Telegram is free,
+so there's no reason to hold back there."""
 import logging
 import math
 
 from src.formatting import dot_for_change, fmt_pct, fmt_price, fmt_usd_compact, truncate
+from src.media import get_coin_media_id
 from src.sources import whale_btc, whale_eth
 
 logger = logging.getLogger("tickerwatch.triggers.whale")
 
 SIREN_UNIT_USD = 20_000_000  # one siren per $20M, capped at 10 (reached at $200M+)
 MAX_SIRENS = 10
+BTC_EXPLORER = "https://www.blockchain.com/explorer/transactions/btc/{}"
+ETH_EXPLORER = "https://etherscan.io/tx/{}"
 
 
 def _siren_count(usd):
@@ -55,16 +63,17 @@ def _asset_context_line(ctx, coingecko_id, symbol):
     return f"{dot_for_change(change)} ${symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
 
 
-def _post_with_ref(ctx, text, context_line, ref_value):
+def _post_with_ref(ctx, text, context_line, ref_value, explorer_url, media_id=None):
     parts = [text]
     if context_line:
         parts.append(context_line)
     parts.append(ref_value)
     full_text = truncate("\n\n".join(parts))
-    tweet_id = ctx.x.post(full_text)
+    tweet_id = ctx.x.post(full_text, media_id=media_id)
     if not tweet_id:
         return False
-    ctx.budget.record_spend(has_link=False, text=full_text)
+    channel_text = f"{full_text}\n🔗 {explorer_url}" if explorer_url else full_text
+    ctx.budget.record_spend(has_link=False, text=full_text, channel_text=channel_text)
     return True
 
 
@@ -96,7 +105,9 @@ def _post_btc_alerts(ctx):
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
         text = f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
         context_line = None if context_shown else _asset_context_line(ctx, "bitcoin", "BTC")
-        if _post_with_ref(ctx, text, context_line, hit["txid"]):
+        media_id = get_coin_media_id(ctx, "bitcoin")
+        explorer_url = BTC_EXPLORER.format(hit["txid"])
+        if _post_with_ref(ctx, text, context_line, hit["txid"], explorer_url, media_id=media_id):
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
@@ -129,7 +140,9 @@ def _post_eth_alerts(ctx):
         sirens = _siren_count(hit["usd"])
         text = f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
         context_line = None if context_shown else _asset_context_line(ctx, "ethereum", "ETH")
-        if _post_with_ref(ctx, text, context_line, hit["txhash"]):
+        media_id = get_coin_media_id(ctx, "ethereum")
+        explorer_url = ETH_EXPLORER.format(hit["txhash"])
+        if _post_with_ref(ctx, text, context_line, hit["txhash"], explorer_url, media_id=media_id):
             posted += 1
             fired = True
             context_shown = True

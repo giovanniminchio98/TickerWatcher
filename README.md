@@ -31,9 +31,10 @@ on the monthly budget):
    Siren count in the post scales with size (1 🚨 at the minimum threshold, up
    to 10 at $200M+); the raw tx hash sits on its own line in the same post
    (not a link, not a separate reply) so it stays verifiable at no extra cost.
-   Each alert also includes a same-asset market context line (🟢/🔴 price +
-   24h change) reusing data already fetched for the run, so it's free and
-   the alert doesn't read as just a bare number every time.
+   The first alert per asset per run also includes a same-asset market
+   context line (🟢/🔴 price + 24h change) reusing data already fetched for
+   the run, so it's free and the alert doesn't read as just a bare number.
+   Also carries the coin's logo as post media (see "Coin logo images" below).
 2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
    The main post names the outlet only (no link, e.g. "via CoinDesk"), with
    the real source URL in a follow-up reply -- X's algorithm has suppressed
@@ -43,7 +44,8 @@ on the monthly budget):
    reach optimization, not a cost one. Capped at `keywords.max_articles_per_day`
    (default 2), the main cost lever since news is the only post type with a
    real clickable link anywhere in the thread.
-3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
+3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs).
+   Crypto alerts also carry the coin's logo as post media.
 4. **Scheduled daily post** — market snapshot / Fear & Greed Index (rotates, or both)
 5. **Historical flashback** — filler, max once/day, only if nothing else fired
 6. **Polls** — ~1x/week engagement mechanic
@@ -60,11 +62,65 @@ its own look.
    keeps the account posting roughly once/hour even on quiet news/market
    days — see the cost note below before raising check frequency further.
 
-Plus a separate **retweet pipeline** (hard constraint: retweet only, never
-auto-reply/comment under someone else's tweet).
+Plus a separate **retweet pipeline** (retweet only, never auto-reply/comment
+under someone else's tweet) and an **opt-in comment-engagement pipeline** —
+the one deliberate exception to that rule, kept on a short leash: it only
+replies under accounts explicitly listed in `config/reply_targets.json`,
+with a hard per-account daily cap, and only ever with a fresh Claude-written
+reply (never a canned line — see "Comment engagement" below).
+
+Every crypto ticker mentioned anywhere (whale alerts, price alerts, snapshot,
+flashback, self-replies, polls) uses a `$` cashtag (`$BTC`, `$ETH`, ...)
+rather than plain text, so X renders its dynamic cashtag chart wherever the
+coin comes up. Stock tickers (AAPL, SPY, QQQ) stay plain text.
+
+Every post type that shows a price/%/index change uses the same 🟢/🔴 dot
+convention (`src/formatting.py`'s `dot_for_change`), so the visual language
+stays consistent across whale alerts, the snapshot, Fear & Greed, price
+alerts, flashback, and self-replies rather than each post type inventing
+its own look.
+8. **Filler** — absolute last resort, only posts if nothing above did this run.
+   Picks from `config/filler.json`'s ~100 generic engagement questions/facts
+   (no repeats until the list is exhausted, then reshuffles). This is what
+   keeps the account posting roughly once/hour even on quiet news/market
+   days — see the cost note below before raising check frequency further.
 
 Each post type is its own function in `src/triggers/`, toggled independently
 in the `ENABLED` dict at the top of `src/main.py`.
+
+### Coin logo images
+
+Whale and price alerts for crypto attach the coin's official logo as post
+media. The image URL comes back for free in the same CoinGecko `/coins/markets`
+call already made for prices every run (no extra request, no extra API key),
+and X's media upload is the older v1.1 endpoint (same OAuth1 credentials
+already in use, no new secrets needed either).
+
+This is gated by `config/media.json`'s `"enabled"` flag specifically so it
+can be switched off instantly (a config push, no code change) if a live
+billing check ever shows X charging extra for posts with media attached —
+the same kind of test that confirmed cashtags were free (isolate one trigger,
+cap it to one post, check the X credits balance before/after). Recommended:
+watch your X credits balance for a day or two after this ships and flip
+`media.json`'s `enabled` to `false` if the per-post cost looks higher than
+the usual $0.015.
+
+### Comment engagement (opt-in, off by default in practice)
+
+`config/reply_targets.json` lists specific accounts TickerWatch will reply
+under (not just retweet), each with a hard `times_per_day` cap. An entry is
+inert until you resolve its numeric `user_id` (same one-time lookup as
+`config/accounts.json`) — the shipped default has one placeholder entry
+(`WatcherGuru`) with a blank `user_id`, so it does nothing until you fill
+that in.
+
+Reply text is always freshly written by Claude from the target tweet's own
+content (`src/sources/reply_writer.py`) — never a generic "Great post!" —
+and requires `ANTHROPIC_API_KEY`; without it, this trigger just skips
+(there's no safe mechanical fallback for a reply the way there is for news
+paraphrasing, since a low-effort/bot-sounding reply under someone else's
+post does more harm than good). Keep the target list small and the daily
+cap low at first, and read replies back before adding more accounts.
 
 ## Run frequency and cron schedule
 
@@ -163,20 +219,22 @@ counting posts instead of dollars.
 ## Repo structure
 
 ```
-config/           watchlist.json, keywords.json, accounts.json, thresholds.json, budget.json
+config/           watchlist.json, keywords.json, accounts.json, reply_targets.json,
+                   thresholds.json, budget.json, media.json
 state/state.json  dedup/budget state, committed back to the repo after every run
 src/
   main.py         orchestrator — priority pipeline, per-trigger error isolation
   context.py      shared per-run objects passed to every trigger
   budget.py       monthly $/post cap enforcement
-  x_client.py     tweepy wrapper (post/reply/retweet/poll), DRY_RUN support
+  x_client.py     tweepy wrapper (post/reply/retweet/poll/media upload), DRY_RUN support
+  media.py        coin logo -> X media_id helper, shared by whale/price alerts
   formatting.py   number/text formatting, thread splitting
   sources/        one file per external API (coingecko, twelvedata, whale_btc,
-                  whale_eth, news_rss, paraphrase, feargreed)
+                  whale_eth, news_rss, paraphrase, reply_writer, feargreed)
   triggers/       one file per post type (whale_alerts, news_alerts,
                   price_alerts, scheduled_daily, historical_flashback, polls,
-                  self_reply, filler, retweets, budget_report)
-  telegram_client.py  daily budget report sender (free, independent of the X budget)
+                  self_reply, filler, retweets, comment_engagement, budget_report)
+  telegram_client.py  bot-chat + channel message senders, free, independent of the X budget
 .github/workflows/tickerwatch.yml   cron schedule + secret wiring + state commit
 ```
 
@@ -192,64 +250,108 @@ in this repo, and add:
 | `TWELVEDATA_API_KEY` | [twelvedata.com](https://twelvedata.com) → free signup → dashboard API key | Required (for stock/ETF prices) |
 | `ETHERSCAN_API_KEY` | [etherscan.io/apis](https://etherscan.io/apis) → free signup → create API key | Required (for ETH whale alerts) |
 | `COINGECKO_API_KEY` | [coingecko.com/en/api/pricing](https://www.coingecko.com/en/api/pricing) → free Demo plan (no card) | Optional — improves rate limits, code falls back to keyless public API without it |
-| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Optional — enables real LLM paraphrasing of news headlines (Claude Haiku, a fraction of a cent/call). Without it, headlines are mechanically trimmed instead of truly paraphrased. |
-| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables per-post + daily budget notifications |
+| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Optional — enables real LLM paraphrasing of news headlines (Claude Haiku, a fraction of a cent/call), and is *required* for the comment-engagement pipeline's reply text (see [config/reply_targets.json](#editing-config-files)) since there's no safe generic fallback for that one. |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables budget notifications in your private bot chat |
+| `TELEGRAM_CHANNEL_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables the public-ish channel that mirrors every post |
 
 No key needed for: blockchain.info (BTC whale data), alternative.me (Fear &
 Greed Index), or the RSS feeds.
 
 ## Telegram notifications
 
-Three independent messages (all free, all keep working even after the X
-budget cap trips, since that's exactly when you need the nudge to top up):
+Two separate destinations, kept deliberately apart:
 
-**Per-post** — sent right after every single successful post/reply/retweet,
-so you get a near-live feed of what went out and running spend:
+- **Your private bot chat** (`TELEGRAM_CHAT_ID`) — technical messages only:
+  a short confirmation after every post and the daily/low-budget reports.
+  No post content here, just budget bookkeeping.
+- **A Telegram channel** (`TELEGRAM_CHANNEL_ID`) — a full mirror of every
+  post that actually fires. Since Telegram is free, the channel copy can be
+  *more generous* than the X post itself: it always includes links that the
+  X post dropped for cost or reach reasons (whale tx block-explorer links,
+  news article source URLs), regardless of whether the X-side reply carrying
+  that same link ended up firing.
+
+**Bot chat, per-post** — sent right after every single successful post/reply/retweet:
 
 ```
-X post created: 🚨 JUST IN: Mizuho says Circle bank approval doesn't...
-$6.30/$15.00
+✅ X post created — $6.30/$15.00
 ```
 
-**Daily recap** — sent once/day at **9pm Europe/Brussels time** (handles the
-CET/CEST switch automatically):
+**Bot chat, daily recap** — sent once/day at **9pm Europe/Brussels time**
+(handles the CET/CEST switch automatically):
 
 ```
 📅 Daily recap
 $6.30/$15.00 (42% used)
 ```
 
-**Low-budget alert** — a one-time nudge the moment month-to-date spend
-crosses 90% of the cap (won't repeat again until next month), with a direct
-link to add credits:
+**Bot chat, low-budget alert** — a one-time nudge the moment month-to-date
+spend crosses 90% of the cap (won't repeat again until next month), with a
+direct link to add credits:
 
 ```
 ⚠️ TickerWatch budget alert: $13.62/$15.00 used (91%) this month.
 Add credits: https://console.x.com/ (Billing -> Credits)
 ```
 
-Setup (all free, ~2 minutes):
+**Channel, every post** — same text as what went to X, plus the restored
+link where one exists, e.g.:
+
+```
+🚨🚨🚨 WHALE ALERT
+412.6 $BTC ($26.1M) just moved on-chain
+#BTC #Crypto
+
+🟢 $BTC: $63,120 (+1.85% today)
+
+a1b2c3d4e5f6...
+🔗 https://www.blockchain.com/explorer/transactions/btc/a1b2c3d4e5f6...
+```
+
+### Setup: bot chat (technical messages)
 
 1. In Telegram, message **@BotFather** → `/newbot` → follow the prompts →
    it gives you a token like `123456789:AAH...` → this is `TELEGRAM_BOT_TOKEN`.
 2. Send your new bot any message first (bots can't message you until you've
    messaged them), then get your chat ID: message **@userinfobot** (or
    **@get_id_bot**) and it'll reply with your numeric ID → this is
-   `TELEGRAM_CHAT_ID`. (If you want the report in a group instead, add the
-   bot to the group and use the group's chat ID, which is negative.)
+   `TELEGRAM_CHAT_ID`.
 3. Add both as GitHub secrets (see the table above).
 
-Without these two secrets set, the report step just logs "not configured"
-and skips — it never blocks or breaks the rest of the run.
+### Setup: public channel (full post mirror)
+
+1. In the Telegram app: **New Channel** (the pencil/compose icon → New
+   Channel), give it a name (e.g. "TickerWatch Feed"), and choose Public or
+   Private — either works, Public just gets you a shareable `t.me/...` link
+   if you ever want to let others follow along.
+2. Open the channel → **Administrators** → **Add Admin** → search for your
+   bot by its @username (the one you created with BotFather) → add it, no
+   special admin rights beyond "Post Messages" are needed.
+3. Get the channel's chat ID:
+   - If it's a **public** channel: the chat ID is just `@yourchannelusername`
+     (with the `@`) — you can use that directly as `TELEGRAM_CHANNEL_ID`,
+     no numeric ID needed.
+   - If it's a **private** channel: post any message in it, then forward
+     that message to **@userinfobot** (or **@get_id_bot**) — it'll show the
+     channel's numeric ID (a negative number starting with `-100`). Use that
+     as `TELEGRAM_CHANNEL_ID`.
+4. Add `TELEGRAM_CHANNEL_ID` as a GitHub secret (see the table above).
+
+Without `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` set, the bot-chat messages
+just log "not configured" and skip. Without `TELEGRAM_CHANNEL_ID` set, same
+thing for the channel mirror — either can be set independently, and neither
+ever blocks or breaks the rest of the run.
 
 ## Editing config files
 
 - **`config/watchlist.json`** — crypto (needs a valid [CoinGecko id](https://api.coingecko.com/api/v3/coins/list)) and stock/ETF tickers (must be a symbol Twelve Data recognizes). `snapshot_order` controls what appears in the daily market snapshot.
 - **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary), `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run), and `max_articles_per_day` (hard daily cap on the only post type that still carries a link — this is the main cost lever).
 - **`config/accounts.json`** — accounts to auto-retweet. You must resolve each `@handle` to its numeric `user_id` once (e.g. via a one-off API call or a tool like [tweeterid.com](https://tweeterid.com)) and paste it in — looking it up every run would burn extra API budget. Set `"enabled": true` to activate an account.
+- **`config/reply_targets.json`** — accounts to *comment* under (see [Comment engagement](#comment-engagement-opt-in-off-by-default-in-practice)). Same `user_id` resolution as `accounts.json`, plus a `times_per_day` hard cap per account.
 - **`config/thresholds.json`** — whale minimums, price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, and `filler.max_per_day` (how many empty-hour fillers/day at most).
 - **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly cap (see [Cost math](#cost-math-and-the-budget-cap)).
+- **`config/media.json`** — the on/off switch for attaching coin logos to posts (see [Coin logo images](#coin-logo-images)).
 
 ## Testing locally
 

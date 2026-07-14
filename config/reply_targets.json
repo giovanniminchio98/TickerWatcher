@@ -1,0 +1,6 @@
+{
+  "_comment": "Opt-in list of accounts to COMMENT under (not just retweet) -- the one deliberate exception to the 'never auto-reply under other accounts' rule, so start small. 'user_id' is the numeric X user ID (not the @handle) -- resolve it once with GET /2/users/by/username/:username and paste it here, same as config/accounts.json. An entry with a blank user_id (or enabled=false) does nothing at all. 'times_per_day' is a hard per-account cap. Watch reply quality for a while before adding more accounts.",
+  "targets": [
+    { "handle": "WatcherGuru", "user_id": "", "enabled": true, "times_per_day": 1 }
+  ]
+}

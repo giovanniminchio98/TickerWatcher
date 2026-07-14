@@ -18,25 +18,50 @@ DRY_RUN = os.environ.get("DRY_RUN", "0") == "1"
 class XClient:
     def __init__(self):
         self.client = None
+        self.api_v1 = None
         if not DRY_RUN:
             import tweepy
 
-            self.client = tweepy.Client(
+            creds = dict(
                 consumer_key=os.environ["X_API_KEY"],
                 consumer_secret=os.environ["X_API_SECRET"],
                 access_token=os.environ["X_ACCESS_TOKEN"],
                 access_token_secret=os.environ["X_ACCESS_SECRET"],
             )
+            self.client = tweepy.Client(**creds)
+            # Media upload has no v2 endpoint in tweepy yet, so it goes through
+            # the older v1.1 API -- same OAuth1 credentials, no new secrets needed.
+            auth = tweepy.OAuth1UserHandler(
+                creds["consumer_key"], creds["consumer_secret"],
+                creds["access_token"], creds["access_token_secret"],
+            )
+            self.api_v1 = tweepy.API(auth)
 
-    def post(self, text, poll_options=None, poll_duration_minutes=None):
+    def upload_media(self, image_bytes):
+        """Uploads raw image bytes to X, returns a media_id_string for use in
+        post()'s media_id, or None on any failure (never blocks the post)."""
+        if DRY_RUN or not image_bytes:
+            return None
+        import io
+
+        try:
+            media = self.api_v1.media_upload(filename="coin.png", file=io.BytesIO(image_bytes))
+            return media.media_id_string
+        except Exception:
+            logger.exception("Failed to upload media")
+            return None
+
+    def post(self, text, poll_options=None, poll_duration_minutes=None, media_id=None):
         if DRY_RUN:
-            logger.info("[DRY RUN] would post:\n%s", text)
+            logger.info("[DRY RUN] would post (media_id=%s):\n%s", media_id, text)
             return "dryrun-tweet-id"
         try:
             kwargs = {"text": text}
             if poll_options:
                 kwargs["poll_options"] = poll_options
                 kwargs["poll_duration_minutes"] = poll_duration_minutes or 1440
+            if media_id:
+                kwargs["media_ids"] = [media_id]
             resp = self.client.create_tweet(**kwargs)
             tweet_id = str(resp.data["id"])
             logger.info("Posted tweet %s: https://x.com/i/web/status/%s\n%s", tweet_id, tweet_id, text)
@@ -89,4 +114,25 @@ class XClient:
             return [str(t.id) for t in resp.data]
         except Exception:
             logger.exception("Failed to fetch recent tweets for user %s", user_id)
+            return []
+
+    def get_recent_tweets_with_text(self, user_id, since_id=None, max_results=5):
+        """Same as get_recent_tweet_ids but also returns each tweet's text,
+        for the comment-engagement pipeline which needs the source content to
+        write a relevant reply. Newest-first list of {"id": str, "text": str}."""
+        if DRY_RUN:
+            logger.info("[DRY RUN] would fetch tweets+text for user %s since %s", user_id, since_id)
+            return []
+        try:
+            resp = self.client.get_users_tweets(
+                id=user_id,
+                since_id=since_id,
+                max_results=max_results,
+                exclude=["retweets", "replies"],
+            )
+            if not resp.data:
+                return []
+            return [{"id": str(t.id), "text": t.text} for t in resp.data]
+        except Exception:
+            logger.exception("Failed to fetch recent tweets+text for user %s", user_id)
             return []
