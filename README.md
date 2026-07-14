@@ -35,10 +35,10 @@ on the monthly budget):
    just a bare number. Capped at `thresholds.whale.max_alerts_per_run`
    **per chain per run** (BTC and ETH each have their own independent
    counter), so a busy run can't turn into a wall of alerts for one chain.
-   No coin logo/media and no tx hash reference right now -- both were tried
-   and pulled back (media looked bad, the tx reference is paused pending a
-   cleaner presentation); the tx id is still tracked internally for BTC
-   dedup even though it's no longer shown in the post.
+   No coin logo/media on the X post -- tried and pulled back, looked bad.
+   The tx hash/explorer link is also gone from the X post, but the Telegram
+   channel copy still gets the real block-explorer link (Telegram is free),
+   same pattern as news alerts' source URL.
 2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
    The main post names the outlet only (no link, e.g. "via CoinDesk"), with
    the real source URL in a follow-up reply -- X's algorithm has suppressed

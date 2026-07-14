@@ -22,11 +22,12 @@ whole pipeline (ctx.prices), so no additional API calls. If that data's
 unavailable for some reason, the line is just omitted rather than blocking
 the alert.
 
-No coin logo/media and no tx hash/explorer reference right now -- both were
-tried and pulled back (media looked bad in practice, the tx reference was
-cut pending a cleaner way to present it) -- may come back later in a
-different form. The tx id is still tracked internally in state for BTC
-dedup even though it's no longer shown in the post.
+No coin logo/media on the post itself -- tried and pulled back, looked bad
+in practice. The tx hash/explorer link is also gone from the X post (kept
+clean/cheap), but the Telegram channel copy still gets the real
+block-explorer link (blockchain.com/etherscan) since Telegram is free --
+same "X stays lean, Telegram gets the generous version" pattern as news
+alerts' source URL.
 
 capped at thresholds.whale.max_alerts_per_run per chain per run (BTC and ETH
 each have their own independent counter below), so a busy run can't turn
@@ -41,6 +42,8 @@ logger = logging.getLogger("tickerwatch.triggers.whale")
 
 SIREN_UNIT_USD = 20_000_000  # one siren per $20M, capped at 10 (reached at $200M+)
 MAX_SIRENS = 10
+BTC_EXPLORER = "https://www.blockchain.com/explorer/transactions/btc/{}"
+ETH_EXPLORER = "https://etherscan.io/tx/{}"
 
 
 def _siren_count(usd):
@@ -62,7 +65,7 @@ def _asset_context_line(ctx, coingecko_id, symbol):
     return f"{dot_for_change(change)} {symbol}: ${fmt_price(price)} ({fmt_pct(change)} today)"
 
 
-def _post(ctx, text, context_line):
+def _post(ctx, text, context_line, explorer_url=None):
     parts = [text]
     if context_line:
         parts.append(context_line)
@@ -70,7 +73,8 @@ def _post(ctx, text, context_line):
     tweet_id = ctx.x.post(full_text)
     if not tweet_id:
         return False
-    ctx.budget.record_spend(has_link=False, text=full_text)
+    channel_text = f"{full_text}\n🔗 {explorer_url}" if explorer_url else full_text
+    ctx.budget.record_spend(has_link=False, text=full_text, channel_text=channel_text)
     return True
 
 
@@ -102,7 +106,8 @@ def _post_btc_alerts(ctx):
         usd_part = f" ({fmt_usd_compact(hit['usd'])})" if hit["usd"] else ""
         text = f"{sirens} WHALE ALERT\n{hit['btc']:.1f} $BTC{usd_part} just moved on-chain\n#BTC #Crypto"
         context_line = None if context_shown else _asset_context_line(ctx, "bitcoin", "BTC")
-        if _post(ctx, text, context_line):
+        explorer_url = BTC_EXPLORER.format(hit["txid"])
+        if _post(ctx, text, context_line, explorer_url):
             state["seen_btc_txids"].append(hit["txid"])
             posted += 1
             fired = True
@@ -135,7 +140,8 @@ def _post_eth_alerts(ctx):
         sirens = _siren_count(hit["usd"])
         text = f"{sirens} WHALE ALERT\n{hit['eth']:.1f} $ETH ({fmt_usd_compact(hit['usd'])}) just moved on-chain\n#ETH #Crypto"
         context_line = None if context_shown else _asset_context_line(ctx, "ethereum", "ETH")
-        if _post(ctx, text, context_line):
+        explorer_url = ETH_EXPLORER.format(hit["txhash"])
+        if _post(ctx, text, context_line, explorer_url):
             posted += 1
             fired = True
             context_shown = True
