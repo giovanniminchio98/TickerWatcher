@@ -1,6 +1,14 @@
 {
-  "_comment": "Opt-in list of accounts to COMMENT under (not just retweet) -- the one deliberate exception to the 'never auto-reply under other accounts' rule, so start small. 'user_id' is optional: leave it blank and it auto-resolves from 'handle' on first use (one read call, then cached), or paste the numeric ID yourself to skip that lookup. An entry with enabled=false does nothing at all. 'times_per_day' is a hard per-account cap. Watch reply quality for a while before adding more accounts.",
+  "_comment": "Opt-in list of accounts AI Manager considers replying under (see src/triggers/ai_manager.py) -- the one deliberate exception to the 'never auto-reply under other accounts' rule. 'user_id' is optional: leave it blank and it auto-resolves from 'handle' on first use (one read call, then cached), or paste the numeric ID yourself to skip that lookup. An entry with enabled=false does nothing at all. 'times_per_day' is a hard per-account cap -- the global thresholds in config/ai_manager.json (max_replies_per_day) is the real ceiling across all accounts combined.",
   "targets": [
-    { "handle": "WatcherGuru", "user_id": "", "enabled": true, "times_per_day": 1 }
+    { "handle": "AshCrypto", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "CoinGecko", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "solana", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "WatcherGuru", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "saylor", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "coinbase", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "TedPillows", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "CoinMarketCap", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "ManicDYOR", "user_id": "", "enabled": true, "times_per_day": 2 }
   ]
 }
