@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 58,
-      "usd_used": 3.09
+      "posts_used": 59,
+      "usd_used": 3.105
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 68,
-    "usd_used": 4.35
+    "posts_used": 69,
+    "usd_used": 4.365
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -17,6 +17,12 @@
       "last_seen_tweet_id": null,
       "resolved_user_id": null
     }
+  },
+  "content_drafts": {
+    "drafted_urls": [],
+    "last_drafted_time": {},
+    "posted_count_today": 0,
+    "posted_date": "2026-07-14"
   },
   "filler": {
     "posted_count_today": 3,
@@ -178,9 +184,9 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958055,
-    "last_eth_block": 25532542,
-    "posted_count_today": 3,
+    "last_btc_block_height": 958061,
+    "last_eth_block": 25533435,
+    "posted_count_today": 4,
     "posted_date": "2026-07-14",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -219,7 +225,8 @@
       "46892d56f00b1846e65b1ba7717f5e7af34187ebfb47d2b39c4871a99a3ef23b",
       "ff3f056d1f5682f4967549ca26ffd4b70e8e9305d83aeccb2681780f57df32ff",
       "f342d6c105f559740c2199de808d703e60c9c0c5ea6bfe69b1dd70acbdc82cdc",
-      "068a343bba45ec88401f5b5f749d2b622fa5a89c21a668d9d4a4503a177e9a35"
+      "068a343bba45ec88401f5b5f749d2b622fa5a89c21a668d9d4a4503a177e9a35",
+      "42f1ab9427e78a3c5573428f5c4bae362f1601083578b5130359691f40f2063f"
     ]
   }
 }
