@@ -1,34 +1,43 @@
 {
   "ai_manager": {
     "account_replies_today": {},
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-14",
-    "last_call_time": null,
-    "posts_today": 1,
+    "last_call_time": 1784070951.080709,
+    "posts_today": 2,
     "recent_post_texts": [
-      "Cooler than expected June CPI (-0.4%) and the whole market ripped. ETH up 7%, BTC back near 65k, SOL and XRP both up nearly 5%. Rate hike fears fading fast, and risk assets are loving it."
+      "Cooler than expected June CPI (-0.4%) and the whole market ripped. ETH up 7%, BTC back near 65k, SOL and XRP both up nearly 5%. Rate hike fears fading fast, and risk assets are loving it.",
+      "Stablecoin infrastructure is quietly becoming the real story this cycle. Circle just landed Japan's biggest card network for 40M merchants, Velocity raised $38M for treasury tooling, and Binance is leaning into stablecoins for its super app push. Rails matter\u2026"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
     "resolved_accounts": {
-      "WatcherGuru": {}
+      "AshCrypto": {},
+      "CoinGecko": {},
+      "CoinMarketCap": {},
+      "ManicDYOR": {},
+      "TedPillows": {},
+      "WatcherGuru": {},
+      "coinbase": {},
+      "saylor": {},
+      "solana": {}
     }
   },
   "budget": {
     "daily": {
       "date": "2026-07-14",
-      "posts_used": 59,
-      "usd_used": 3.105
+      "posts_used": 60,
+      "usd_used": 3.12
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 69,
-    "usd_used": 4.365
+    "posts_used": 70,
+    "usd_used": 4.38
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.0087
+    "usd_used": 0.0191
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -39,14 +48,17 @@
     }
   },
   "content_drafts": {
-    "drafted_urls": [],
+    "drafted_urls": [
+      "https://www.coindesk.com/business/2026/07/14/binance-bets-on-becoming-a-crypto-super-app-as-stablecoins-reshape-growth",
+      "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes"
+    ],
     "last_drafted_time": {
       "BTC": 1784068876.314268,
       "ETH": 1784068876.314268,
       "SOL": 1784069172.81282,
       "XRP": 1784069172.81282
     },
-    "posted_count_today": 4,
+    "posted_count_today": 6,
     "posted_date": "2026-07-14"
   },
   "filler": {
@@ -208,8 +220,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958074,
-    "last_eth_block": 25533955,
+    "last_btc_block_height": 958075,
+    "last_eth_block": 25534102,
     "posted_count_today": 3,
     "posted_date": "2026-07-14",
     "seen_btc_txids": [
