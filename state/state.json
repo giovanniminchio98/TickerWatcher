@@ -1,19 +1,19 @@
 {
   "budget": {
     "daily": {
-      "date": "2026-07-14",
-      "posts_used": 61,
-      "usd_used": 3.135
+      "date": "2026-07-15",
+      "posts_used": 5,
+      "usd_used": 0.445
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 71,
-    "usd_used": 4.395
+    "posts_used": 76,
+    "usd_used": 4.84
   },
   "comment_engagement": {
     "WatcherGuru": {
       "commented_today": 0,
-      "date": "2026-07-14",
+      "date": "2026-07-15",
       "last_seen_tweet_id": null,
       "resolved_user_id": null
     }
@@ -22,10 +22,12 @@
     "drafted_urls": [],
     "last_drafted_time": {
       "BTC": 1784070075.619121,
-      "ETH": 1784070075.619121
+      "ETH": 1784070075.619121,
+      "SOL": 1784073678.717217,
+      "XRP": 1784073678.717217
     },
     "posted_count_today": 2,
-    "posted_date": "2026-07-14"
+    "posted_date": "2026-07-15"
   },
   "filler": {
     "posted_count_today": 5,
@@ -132,8 +134,8 @@
     "last_posted_date": "2026-07-14"
   },
   "news": {
-    "posted_count_today": 6,
-    "posted_date": "2026-07-14",
+    "posted_count_today": 2,
+    "posted_date": "2026-07-15",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -152,7 +154,9 @@
       "https://cointelegraph.com/news/ai-enabled-businesses-freelancers-could-add-262b-in-stablecoin-volumes-swyftx?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.coindesk.com/policy/2026/07/14/wikipedia-blackout-could-hurt-how-ai-engines-like-chatgpt-understand-crypto",
       "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes",
-      "https://www.coindesk.com/business/2026/07/14/circle-signs-mou-with-japan-s-largest-card-network-to-explore-stablecoin-payments"
+      "https://www.coindesk.com/business/2026/07/14/circle-signs-mou-with-japan-s-largest-card-network-to-explore-stablecoin-payments",
+      "https://www.coindesk.com/business/2026/07/14/binance-bets-on-becoming-a-crypto-super-app-as-stablecoins-reshape-growth",
+      "https://cointelegraph.com/news/velocity-raises-38m-to-build-stablecoin-treasury-infrastructure-for-enterprises?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ]
   },
   "polls": {
@@ -175,8 +179,8 @@
     "last_run_date": null
   },
   "scheduled_daily": {
-    "last_posted_date": "2026-07-14",
-    "rotate_index": 2
+    "last_posted_date": "2026-07-15",
+    "rotate_index": 3
   },
   "self_reply": {
     "pending": []
@@ -186,9 +190,9 @@
   },
   "whale": {
     "last_btc_block_height": 958075,
-    "last_eth_block": 25533435,
-    "posted_count_today": 4,
-    "posted_date": "2026-07-14",
+    "last_eth_block": 25534330,
+    "posted_count_today": 0,
+    "posted_date": "2026-07-15",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
       "c6c5708341f94f764bda90b91dc44f94d473eabf213d1418aecfde1e0d5ddc23",
