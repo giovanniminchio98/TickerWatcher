@@ -58,10 +58,13 @@ ctx.budget.record_spend().
 """
 import logging
 import random
+import re
 
 from src import telegram_client
 from src.formatting import fmt_pct, fmt_price, truncate
 from src.sources import ai_manager_brain, news_rss, twelvedata
+
+CASHTAG_RE = re.compile(r"\$[A-Za-z]{1,6}\b")
 
 logger = logging.getLogger("tickerwatch.triggers.ai_manager")
 
@@ -198,6 +201,26 @@ def _preferred_link(snapshot, post):
     return None
 
 
+def _enforce_single_cashtag(text):
+    """X hard-rejects (403 Forbidden) any single post with more than one
+    $cashtag -- confirmed live (a post naming both $STRF and $STRC failed
+    to send entirely). Keeps the first cashtag intact (genuinely nice to
+    have: free, and X renders it with a live price card) and strips just
+    the leading '$' from any additional ones, so the post still reads
+    naturally instead of failing to send at all."""
+    matches = list(CASHTAG_RE.finditer(text))
+    if len(matches) <= 1:
+        return text
+    parts = []
+    last_end = 0
+    for i, m in enumerate(matches):
+        parts.append(text[last_end:m.start()])
+        parts.append(m.group() if i == 0 else m.group()[1:])
+        last_end = m.end()
+    parts.append(text[last_end:])
+    return "".join(parts)
+
+
 def _send_audit_message(queued_items, declined_posts, repost_results):
     lines = ["🤖 AI Manager batch decision:"]
     if queued_items:
@@ -247,7 +270,7 @@ def _drain_queue(ctx, cfg, state):
         return False
 
     item = state["post_queue"].pop(0)
-    text = truncate(item["text"], ai_manager_brain.MAX_POST_LEN)
+    text = _enforce_single_cashtag(truncate(item["text"], ai_manager_brain.MAX_POST_LEN))
     second_part = item.get("second_part")
 
     tweet_id = ctx.x.post(text)
@@ -266,7 +289,8 @@ def _drain_queue(ctx, cfg, state):
     channel_link = ("Read more", link_url) if link_url else None
     ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text, channel_link=channel_link)
     if second_part and ctx.budget.can_spend(has_link=False):
-        reply_id = ctx.x.reply(truncate(second_part, ai_manager_brain.MAX_POST_LEN), tweet_id)
+        reply_text = _enforce_single_cashtag(truncate(second_part, ai_manager_brain.MAX_POST_LEN))
+        reply_id = ctx.x.reply(reply_text, tweet_id)
         if reply_id:
             # already mirrored to the channel above via channel_text, skip duplicate
             ctx.budget.record_spend(has_link=False, text=second_part, mirror_to_channel=False)
