@@ -9,18 +9,10 @@
     "calls_today": 7,
     "date": "2026-07-15",
     "last_call_time": 1784147954.860419,
-    "post_queue": [
-      {
-        "link_url": "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
-        "queued_at": 1784147954.860419,
-        "reasoning": "Evergreen deep-dive that adds new mechanism-level detail (T+2 settlement concept) not covered in the earlier DTCC post, giving genuine added value rather than repeating it. Framed as a concept explainer so it stays accurate hours later.",
-        "second_part": "Traditional stock trades take about two business days to settle (called T+2) due to multiple intermediaries. Tokenized versions can settle on-chain in minutes, cutting clearinghouse delays and reducing counterparty risk while trades wait to clear. \ud83d\udd17",
-        "text": "DTCC (the clearinghouse behind nearly every US stock trade) just moved tokenized securities from pilot to live trading. Sounds technical, but it changes something basic: how fast trades actually settle. \ud83c\udfe6\u26a1 Here's the mechanism:"
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 1,
-    "posts_today": 7,
+    "posts_since_last_second_part": 0,
+    "posts_today": 8,
     "recent_post_texts": [
       "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story.",
       "ETH just notched its best daily close in 42 days and is up nearly 5% today, closing in on $1,900. Meanwhile BTC is holding near $65K post-CPI. Risk appetite is clearly back across the board.",
@@ -28,7 +20,8 @@
       "JUST IN: DTCC just pushed tokenized securities into live trading, not a pilot. \ud83c\udfe6\u26a1 That's Wall Street's core settlement plumbing actually running on blockchain rails now. BTC steady near $65K while this kind of institutional infrastructure quietly builds under\u2026",
       "DeFi protocols run on 'oracles' -- price feeds that pipe exchange data into smart contracts. If that feed gets spoofed or manipulated, attackers can drain a protocol fast, like the $18M hit on Ostium. Your collateral is only as safe as the data feeding it. \ud83d\udd10\ud83d\udcc9",
       "Binance's next move: becoming a stablecoin-powered 'super app.' Stablecoins already move enormous volume every month as the plumbing for trading, payments, and remittances. Whoever controls that flow controls a huge slice of crypto's daily economy. \ud83d\udcb5\ud83c\udf10",
-      "JUST IN: Cantor Fitzgerald (Wall Street dealer) and Securitize (a tokenization platform) are teaming up on blockchain-based IPOs, companies going public via crypto rails. \ud83c\udfe6\u26d3\ufe0f BTC holds near $65K while this kind of institutional plumbing keeps expanding. \ud83d\udcc8"
+      "JUST IN: Cantor Fitzgerald (Wall Street dealer) and Securitize (a tokenization platform) are teaming up on blockchain-based IPOs, companies going public via crypto rails. \ud83c\udfe6\u26d3\ufe0f BTC holds near $65K while this kind of institutional plumbing keeps expanding. \ud83d\udcc8",
+      "DTCC (the clearinghouse behind nearly every US stock trade) just moved tokenized securities from pilot to live trading. Sounds technical, but it changes something basic: how fast trades actually settle. \ud83c\udfe6\u26a1 Here's the mechanism:"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -86,13 +79,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 31,
-      "usd_used": 1.205
+      "posts_used": 33,
+      "usd_used": 1.235
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 102,
-    "usd_used": 5.6
+    "posts_used": 104,
+    "usd_used": 5.63
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -385,7 +378,10 @@
       "2077470309838393387",
       "2077469549704671343",
       "2077453397989503131",
-      "2077407350089019393"
+      "2077407350089019393",
+      "2077490920229060677",
+      "2077424786175635773",
+      "2077478604250689813"
     ]
   },
   "retweets": {
