@@ -1,0 +1,4 @@
+{
+  "_comment": "Hard monthly cap for image-generation spend (DALL-E via OpenAI, opt-in via OPENAI_API_KEY presence) -- a third, independent budget from X ($30) and Claude ($20), since it's a separate provider not part of that original $50 structural ceiling. Only 4-6 images/month-worth of posts/day at ~$0.04-0.08/image realistically costs $5-15/month, so $10 gives real headroom without risking a runaway bill.",
+  "monthly_usd_cap": 10.0
+}

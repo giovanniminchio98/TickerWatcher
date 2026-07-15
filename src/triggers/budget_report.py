@@ -45,7 +45,14 @@ def run(ctx):
         c_pct = (c_used / c_cap * 100) if c_cap else 0
         text += f"\nClaude API: ${c_used:.2f}/${c_cap:.2f} ({c_pct:.0f}% used)"
 
-    sent = telegram_client.send_message(text)
+    ib = ctx.state.get("image_budget")
+    icfg = ctx.config.get("image_budget")
+    if ib and icfg:
+        i_used, i_cap = ib["usd_used"], icfg["monthly_usd_cap"]
+        i_pct = (i_used / i_cap * 100) if i_cap else 0
+        text += f"\nImage generation: ${i_used:.2f}/${i_cap:.2f} ({i_pct:.0f}% used)"
+
+    sent = telegram_client.send_cost_message(text)
     if sent:
         state["last_report_date"] = today_str
     return sent

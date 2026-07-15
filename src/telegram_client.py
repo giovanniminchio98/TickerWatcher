@@ -4,13 +4,21 @@ pipeline/budget -- this is what tells you when the X budget cap is close, so
 it must keep working even after the X side goes quiet for the month. Missing/
 invalid credentials are logged and skipped, never crash the run.
 
-Two separate destinations:
-  - TELEGRAM_CHAT_ID: your private bot chat, for technical messages only
-    (budget progress, low-budget alerts, daily recap).
+Three separate destinations:
+  - TELEGRAM_CHAT_ID: your private bot chat -- operational messages only
+    (reply suggestions, the AI Manager audit, quiet-run heartbeat, outright
+    API failure alerts). No cost/budget numbers here anymore, see below.
   - TELEGRAM_CHANNEL_ID: a public-ish Telegram channel that mirrors every
     actual post, more generously than X (e.g. links X's posts drop for cost/
     reach reasons get restored here, since Telegram is free). Optional --
     if unset, channel sends are silently skipped, same as missing bot creds.
+  - TELEGRAM_COST_CHAT_ID: your private cost-tracking chat -- every dollar
+    figure lives here instead (per-post budget progress, daily recap,
+    low-budget/recharge-credits alerts across all three budgets: X, Claude,
+    and image generation). Split out from the bot chat specifically so
+    operational noise and financial tracking don't get tangled together.
+    Optional -- if unset, falls back to the bot chat so cost visibility
+    never silently disappears just because this wasn't configured yet.
 """
 import html
 import logging
@@ -76,3 +84,13 @@ def send_message(text):
 def send_channel_message(text):
     """Public-ish channel -- a full mirror of every post that actually fired."""
     return _send("TELEGRAM_CHANNEL_ID", text, "channel")
+
+
+def send_cost_message(text):
+    """Private cost-tracking chat -- every dollar figure (budget progress,
+    daily recap, low-budget/recharge alerts) lives here instead of the bot
+    chat. Falls back to the bot chat if TELEGRAM_COST_CHAT_ID isn't set, so
+    cost visibility never just silently disappears."""
+    if not os.environ.get("TELEGRAM_COST_CHAT_ID"):
+        return _send("TELEGRAM_CHAT_ID", text, "bot-chat (cost fallback)")
+    return _send("TELEGRAM_COST_CHAT_ID", text, "cost-chat")

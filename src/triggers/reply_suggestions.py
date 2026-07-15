@@ -1,11 +1,14 @@
 """Telegram-only (bot chat) digest of the biggest recent candidate posts to
-manually reply to -- a stopgap while X API replies stay blocked by the
-anti-spam/reputation gate (see README's reply-audience note). Reuses
-config/reply_targets.json's account pool, the same candidates AI Manager
-itself considers, ranked by real engagement (likes + retweets) so the posts
-most worth jumping into surface first. Never posts to X, never costs
-anything, never counts toward anything_fired -- same "Telegram-only side
-channel" pattern as content_drafts.py.
+manually reply to -- covers exactly the accounts reply_manager.py's AI
+replies can't (bigger, non-reply_only accounts in config/reply_targets.json
+whose tweet-level reply restrictions 403 our API replies regardless of
+content, see README's reply-audience note). reply_manager.py already
+handles the smaller reply_only accounts automatically, so this digest would
+be redundant for those -- it only ever surfaces the bigger accounts, ranked
+by real engagement (likes + retweets) so the posts most worth jumping into
+surface first. Never posts to X, never costs anything, never counts toward
+anything_fired -- same "Telegram-only side channel" pattern as
+content_drafts.py.
 
 Candidates older than max_age_hours (config, default 6) are dropped before
 ranking -- replying to a post from many hours ago reads as stale and the
@@ -14,8 +17,8 @@ signal; recency matters too.
 
 A tweet is shown at most once (tracked in state, capped like every other
 tweet-id list in this codebase) and is skipped if AI Manager already
-replied to or reposted it -- no point suggesting a manual reply to
-something already acted on.
+reposted it -- no point suggesting a manual reply to something already
+acted on.
 """
 import logging
 from datetime import timedelta
@@ -26,15 +29,13 @@ logger = logging.getLogger("tickerwatch.triggers.reply_suggestions")
 
 
 def _candidates(ctx, state, max_age_hours):
-    acted_ids = set(ctx.state.get("ai_manager", {}).get("replied_tweet_ids", [])) | set(
-        ctx.state.get("ai_manager", {}).get("reposted_tweet_ids", [])
-    )
+    acted_ids = set(ctx.state.get("ai_manager", {}).get("reposted_tweet_ids", []))
     shown_ids = set(state.get("shown_tweet_ids", []))
     cutoff = ctx.now - timedelta(hours=max_age_hours)
 
     candidates = []
     for target in ctx.config["reply_targets"]["targets"]:
-        if not target.get("enabled"):
+        if not target.get("enabled") or target.get("reply_only"):
             continue
         handle = target["handle"]
         acct_state = state.setdefault("resolved_accounts", {}).setdefault(handle, {})
