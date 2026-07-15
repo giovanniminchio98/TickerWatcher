@@ -75,7 +75,16 @@ def _build_prompt(snapshot):
         "- Reposts: a candidate is either a plain retweet (genuinely worth amplifying as-is, no "
         "comment needed) or a quote-tweet (add a short, sharp take that gives it your own "
         f"perspective -- same rules as a reply: no generic compliments, under {MAX_QUOTE_LEN} "
-        f"characters if quoting), at most {snapshot['max_reposts_per_call']} reposts total.\n"
+        f"characters if quoting), at most {snapshot['max_reposts_per_call']} reposts total."
+        + (
+            " Right now, prefer plain retweets over quote-tweets when a candidate is a close call "
+            "between the two -- quote-tweets are currently unreliable on this account (an X-side "
+            "restriction on newer/lower-history accounts), while plain retweets consistently "
+            "succeed. Still use a quote-tweet if it's clearly the better call, just don't reach "
+            "for it on marginal candidates."
+            if snapshot.get("prefer_plain_retweets") else ""
+        )
+        + "\n"
         "- The same candidate_index must never be used for both a reply and a repost -- pick "
         "the single best action for each candidate, not multiple.\n"
         "- Keep a consistent voice with the account's own recent posts shown below.\n\n"
