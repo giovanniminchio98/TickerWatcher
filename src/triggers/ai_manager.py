@@ -111,13 +111,16 @@ def _ready_for_call(ctx, cfg, state):
 
 
 def _price_snapshot_lines(ctx):
-    """Crypto only, from ctx.prices (already fetched once per run by
-    main.py). Stock quotes were dropped entirely -- confirmed live that
-    even a chunked/paced batch across watchlist.stocks_broad kept hitting
-    Twelve Data's free-tier per-minute limit, adding real latency for
-    unreliable results. Earnings/press releases (see _earnings_snapshot,
-    _press_releases_snapshot) cover the same stock universe without that
-    fragility, so stock price context comes from those instead."""
+    """Crypto comes from ctx.prices (already fetched once per run by
+    main.py). Stocks use watchlist.stocks_broad (30 tickers) via
+    twelvedata.get_quotes_batch -- chunked into 5-symbol requests with a
+    full 60s pause between chunks (confirmed live that a shorter 15s
+    pause still hit Twelve Data's free-tier per-minute limit). Adds ~5
+    minutes to a call that needs it, deliberately accepted to get real
+    stock data reliably rather than dropping the feature. Never raises,
+    so no try/except needed here -- a symbol just won't have a line if
+    its chunk didn't come through. Falls back to the smaller 'stocks'
+    list if stocks_broad isn't configured."""
     lines = []
     for asset in ctx.config["watchlist"]["crypto"]:
         info = ctx.prices.get(asset["coingecko_id"])
@@ -126,6 +129,13 @@ def _price_snapshot_lines(ctx):
         lines.append(
             f"{asset['symbol']}: ${fmt_price(info['usd'])} ({fmt_pct(info.get('usd_24h_change'))} 24h)"
         )
+
+    stocks = ctx.config["watchlist"].get("stocks_broad") or ctx.config["watchlist"].get("stocks", [])
+    quotes = twelvedata.get_quotes_batch([asset["symbol"] for asset in stocks])
+    for asset in stocks:
+        q = quotes.get(asset["symbol"])
+        if q:
+            lines.append(f"{asset['symbol']}: ${fmt_price(q['price'])} ({fmt_pct(q['percent_change'])})")
     return lines
 
 
