@@ -50,13 +50,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 13,
-      "usd_used": 0.565
+      "posts_used": 14,
+      "usd_used": 0.58
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 84,
-    "usd_used": 4.96
+    "posts_used": 85,
+    "usd_used": 4.975
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -88,7 +88,7 @@
     "posted_date": "2026-07-15"
   },
   "filler": {
-    "posted_count_today": 1,
+    "posted_count_today": 2,
     "posted_date": "2026-07-15",
     "shuffled_bag": [
       53,
@@ -182,8 +182,7 @@
       67,
       33,
       72,
-      1,
-      95
+      1
     ]
   },
   "flashback": {
@@ -245,8 +244,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958116,
-    "last_eth_block": 25536592,
+    "last_btc_block_height": 958120,
+    "last_eth_block": 25536723,
     "posted_count_today": 4,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
