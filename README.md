@@ -263,18 +263,24 @@ examples as pure style reference (see "Filler" above) — Claude may write an
 original post in that spirit if nothing price/news-driven is post-worthy,
 as long as it's genuinely good and not filler for filler's sake.
 
-**No images, no links, by deliberate choice — the profile itself should be
-enough to inform a reader end to end.** Instead of image/link "extras",
-Claude decides `second_part` per post: an optional genuine continuation
-posted immediately as its own reply, when a topic has real depth worth
-adding (more mechanism, a concrete example, the second half of a
-comparison — never a restatement or filler). Nudged by
+**No images, no links on X, by deliberate choice — the profile itself
+should be enough to inform a reader end to end.** Instead of image/link
+"extras", Claude decides `second_part` per post: an optional genuine
+continuation posted immediately as its own reply, when a topic has real
+depth worth adding (more mechanism, a concrete example, the second half of
+a comparison — never a restatement or filler). Nudged by
 `second_part_every_n_posts` (default 4, i.e. roughly 1 in every 4 posts)
 and how many posts have gone out since the last one that used it — but
 it's a loose guide, not a rule: a genuinely deep topic gets a `second_part`
 regardless of the count, and a routine post stays a single tweet even when
-one's "due." Most posts are a single tweet. (`src/sources/image_gen.py`,
-DALL-E-based image generation, is untouched and still callable — this
+one's "due." Most posts are a single tweet. Whenever a post does get a
+`second_part`, its main text ends with a short, natural pointer to it
+(varied wording, not the same phrase every time) so a reader knows to
+check the reply. Telegram is the one exception to "no links": when a post
+is based on a specific news article (`news_index`), the channel copy
+always shows that article's real source link — X itself still never
+carries one. (`src/sources/image_gen.py`, DALL-E-based image generation,
+is untouched and still callable — this
 trigger just doesn't use it right now; flip it back on later if that
 changes.)
 
