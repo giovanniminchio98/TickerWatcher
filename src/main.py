@@ -1,16 +1,22 @@
 """
 TickerWatch orchestrator. Runs every trigger in strict priority order so the
 most important content (whale alerts, news) always gets a shot at the budget
-before filler content (flashback, polls) does. Every trigger call is wrapped
-in its own try/except: one broken data source is logged and skipped, it never
-takes down the whole run. State is always saved at the end, even on partial
-failure, so dedup/budget tracking never goes backwards.
+before lower-priority content (flashback, polls) does. Every trigger call is
+wrapped in its own try/except: one broken data source is logged and skipped,
+it never takes down the whole run. State is always saved at the end, even on
+partial failure, so dedup/budget tracking never goes backwards.
+
+If nothing posts/replies/reposts this run, one Telegram bot-chat message
+confirms the pipeline still ran and checked everything -- otherwise a
+genuinely quiet run (nothing worth doing) would look identical to a broken
+one from the outside.
 
 Toggle a post type off by flipping it to False in ENABLED below.
 """
 import logging
 import sys
 
+from src import telegram_client
 from src.budget import Budget
 from src.claude_budget import ClaudeBudget
 from src.config import load_all
@@ -62,7 +68,13 @@ ENABLED = {
     "content_drafts": True,
     "ai_manager": True,
     "reply_suggestions": True,
-    "filler": True,
+    # disabled by default: ai_manager's own post decision now absorbs
+    # filler's old role (a handful of filler.json's generic-engagement
+    # examples are handed to Claude as style reference), but only as an
+    # optional, quality-gated fallback -- not a mechanical "always post
+    # something." Code kept intact -- flip back to True to restore the old
+    # unconditional behavior.
+    "filler": False,
     "budget_report": True,
 }
 
@@ -108,12 +120,11 @@ def main():
     anything_fired |= bool(_safe_run("self_reply", self_reply.run, ctx))
     anything_fired |= bool(_safe_run("ai_manager", ai_manager.run, ctx))
 
-    # last resort: only posts if nothing above did, so the account still
-    # posts roughly once per check instead of going silent on quiet hours
+    # disabled by default (see ENABLED) -- kept callable if re-enabled
     _safe_run("filler", filler.run, ctx, anything_fired)
 
-    _safe_run("retweets", retweets.run, ctx)
-    _safe_run("comment_engagement", comment_engagement.run, ctx)
+    anything_fired |= bool(_safe_run("retweets", retweets.run, ctx))
+    anything_fired |= bool(_safe_run("comment_engagement", comment_engagement.run, ctx))
 
     # Telegram-only draft ideas -- never posts to X, so it never counts
     # toward anything_fired (that would wrongly suppress filler)
@@ -127,6 +138,15 @@ def main():
     # independent of the X pipeline/budget above -- always attempted, since
     # this is what tells you when to top up X credits
     _safe_run("budget_report", budget_report.run, ctx)
+
+    if not anything_fired:
+        # confirms the pipeline is alive and checked everything even when
+        # nothing was worth posting/replying/reposting -- distinguishes a
+        # genuinely quiet run from a silently broken one
+        telegram_client.send_message(
+            "✅ TickerWatch check complete — no post/reply/repost this run "
+            "(nothing warranted it). Everything's running fine."
+        )
 
     logger.info("Budget: %s", budget.remaining_summary())
     logger.info("Budget: %s", claude_budget.remaining_summary())

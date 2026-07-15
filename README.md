@@ -53,11 +53,10 @@ on the monthly budget):
 5. **Historical flashback** — filler, max once/day, only if nothing else fired
 6. **Polls** — ~1x/week engagement mechanic
 7. **Self-reply updates** — replies to the bot's *own* tweets only, never others'
-8. **Filler** — absolute last resort, only posts if nothing above did this run.
-   Picks from `config/filler.json`'s ~100 generic engagement questions/facts
-   (no repeats until the list is exhausted, then reshuffles). This is what
-   keeps the account posting roughly once/hour even on quiet news/market
-   days — see the cost note below before raising check frequency further.
+8. **Filler** (disabled by default — see "Filler" below) — absolute last
+   resort, only posts if nothing above did this run. Picks from
+   `config/filler.json`'s ~100 generic engagement questions/facts (no
+   repeats until the list is exhausted, then reshuffles).
 
 Plus a separate **retweet pipeline** (disabled by default — see below), a
 **content-drafts pipeline** that never touches X at all: it sends
@@ -170,6 +169,24 @@ whether a given post is worth replying to at all (rather than replying every
 time a cap allows it). The code is left intact; flip `comment_engagement`
 back to `True` if you want both running side by side.
 
+### Filler (disabled by default — absorbed into AI Manager)
+
+`src/triggers/filler.py` used to be the account's "never go quiet" safety
+net: if nothing higher-priority posted this run, it mechanically picked one
+of `config/filler.json`'s ~100 generic engagement prompts and posted it
+unconditionally, no judgment at all about whether it was actually worth
+posting right now.
+
+**Set to `False` in `main.py`'s `ENABLED` dict** — AI Manager's own post
+decision absorbs this role now, but as an optional, quality-gated fallback
+rather than a mechanical one: a handful of `filler.json`'s examples are
+handed to Claude purely as style reference (never posted verbatim), and it
+may write something in that spirit only if it's genuinely good. Posting
+nothing is explicitly the preferred outcome over posting mediocre filler —
+see the AI Manager prompt below. Code is left intact; flip `filler` back to
+`True` if account growth stalls and you'd rather trade quality for
+guaranteed hourly posting volume again.
+
 ### AI Manager (opt-in via ANTHROPIC_API_KEY) — autonomous post + reply + repost decisions
 
 `src/triggers/ai_manager.py` is the furthest point of this project's shift
@@ -195,6 +212,12 @@ index, not by asking the model to reproduce a tweet ID, to avoid a
 transcription error acting on the wrong tweet; the same candidate is never
 both replied to and reposted in the same call — Claude picks one action per
 candidate.
+
+The snapshot also includes a handful of `filler.json`'s generic-engagement
+examples as pure style reference (see "Filler" above) — Claude may write an
+original post in that spirit if nothing price/news-driven is post-worthy,
+but only if it's genuinely good; posting nothing is the explicitly preferred
+outcome over posting mediocre filler.
 
 Cadence is controlled by `config/ai_manager.json`
 (`min_hours_between_calls` + `max_calls_per_day`) so it settles into roughly
@@ -366,16 +389,20 @@ Watch the Telegram per-post/daily notifications for the first week or two to
 see where your real news volume lands, and adjust `max_articles_per_day`
 (or `monthly_usd_cap`) accordingly.
 
-**Filler adds on top of the real-content range above.** With hourly checks
-and `filler.max_per_day` at 24 (i.e. "fill every empty hour"), most hours
-have no real content, so filler ends up posting roughly 600-650 times/month
-— **~$9-9.75/month on its own**. Combined with real content, monthly total
-could range from ~$10.50 (quiet news) up toward or past the cap (active
-news + heavy filler). If a busy month does push past the cap, the budget
-guard just does its job: it stops posting non-critical content for the rest
-of the month rather than overspending — you'd see this as the account going
+**Filler is disabled by default** (see "Filler" above — AI Manager's own
+post decision absorbs its role now, but only posts an evergreen/engagement
+take when it's genuinely good, not mechanically every empty hour), so the
+numbers below only apply if you re-enable it. **If re-enabled, filler adds
+on top of the real-content range above:** with hourly checks and
+`filler.max_per_day` at 24 (i.e. "fill every empty hour"), most hours have
+no real content, so filler would post roughly 600-650 times/month — **~$9-
+9.75/month on its own**. Combined with real content, monthly total could
+range from ~$10.50 (quiet news) up toward or past the cap (active news +
+heavy filler). If a busy month does push past the cap, the budget guard
+just does its job: it stops posting non-critical content for the rest of
+the month rather than overspending — you'd see this as the account going
 quiet plus the 90% Telegram alert firing well before it happens. Two levers
-if you want more headroom before that point:
+if you want more headroom before that point (with filler re-enabled):
 
 - lower `filler.max_per_day` in `config/thresholds.json` (e.g. to 10-12,
   roughly "fill every other empty hour"), or
@@ -531,6 +558,28 @@ actually moves the supply/demand math, not just headlines.
 Reasoning: genuinely notable number, worth adding independent context to
 ```
 
+**Bot chat, reply suggestions** — sent every run by `reply_suggestions.py`
+whenever there are new candidates, a stopgap for manual replying while X API
+replies stay blocked (see "Reply suggestions" above); tap a link to open
+straight to that post and reply from the X app yourself:
+
+```
+💬 Reply candidates (biggest right now, tap to open + comment):
+
+@WatcherGuru (1.2K likes / 340 RTs): $2.1B in crypto shorts liquidated in
+the past 24 hours
+https://x.com/WatcherGuru/status/1234567890
+```
+
+**Bot chat, quiet-run confirmation** — sent whenever nothing posted/replied/
+reposted this run, so a genuinely quiet check never looks indistinguishable
+from a silently broken one:
+
+```
+✅ TickerWatch check complete — no post/reply/repost this run (nothing
+warranted it). Everything's running fine.
+```
+
 **Bot chat, outright API failure** — distinct from the budget alerts above
 (which fire when spend is fine but approaching a cap): `src/ops_alerts.py`
 fires when an X or Claude API call itself fails outright (bad/expired
@@ -599,8 +648,8 @@ ever blocks or breaks the rest of the run.
 - **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary), `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run), and `max_articles_per_day` (hard daily cap on the only post type that still carries a link — this is the main cost lever).
 - **`config/accounts.json`** — accounts `retweets.py` would auto-retweet if re-enabled (disabled by default, see [Retweets](#retweets-disabled-by-default--superseded-by-ai-manager)). `user_id` is optional and auto-resolves from `handle` on first use. Set `"enabled": true` to activate an account.
 - **`config/reply_targets.json`** — accounts to *comment or repost* under, now used as the shared candidate pool for AI Manager's reply AND repost decisions (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--reply--repost-decisions)) and, if re-enabled, comment-engagement. Just add a `handle` and set `enabled: true` — `user_id` auto-resolves on first use, no manual lookup needed. Plus a `times_per_day` hard cap per account.
-- **`config/thresholds.json`** — whale minimums (and `max_alerts_per_day`), price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, `filler.max_per_day` (how many empty-hour fillers/day at most), and `content_drafts` (Telegram-only draft cadence/cooldowns).
-- **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
+- **`config/thresholds.json`** — whale minimums (and `max_alerts_per_day`), price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, `filler.max_per_day` (only relevant if `filler` is re-enabled, see "Filler" above), and `content_drafts` (Telegram-only draft cadence/cooldowns).
+- **`config/filler.json`** — the ~100 generic engagement prompts/facts. `filler.py` itself is disabled by default (see "Filler" above), but this file is still in active use: AI Manager samples a few entries each call as style reference for its own optional generic-post fallback. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly X API cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/claude_budget.json`** — the monthly Claude API cap, sized alongside `budget.json`'s to sum to the account-wide ceiling (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/ai_manager.json`** — AI Manager's model, call cadence, and post/reply/repost daily caps (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--reply--repost-decisions)).
