@@ -9,6 +9,8 @@
     "calls_today": 5,
     "date": "2026-07-15",
     "last_call_time": 1784124295.447629,
+    "post_queue": [],
+    "posts_since_last_extra": 0,
     "posts_today": 3,
     "recent_post_texts": [
       "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story.",
@@ -71,13 +73,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 25,
-      "usd_used": 0.93
+      "posts_used": 26,
+      "usd_used": 0.945
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 96,
-    "usd_used": 5.325
+    "posts_used": 97,
+    "usd_used": 5.34
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -352,7 +354,10 @@
       "2077386792781676585",
       "2077411109242290463",
       "2077416064628003188",
-      "2077365846595248478"
+      "2077365846595248478",
+      "2077423022022021553",
+      "2077426351103996416",
+      "2077435150439162360"
     ]
   },
   "retweets": {
@@ -373,9 +378,9 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958166,
-    "last_eth_block": 25539117,
-    "posted_count_today": 7,
+    "last_btc_block_height": 958173,
+    "last_eth_block": 25539414,
+    "posted_count_today": 8,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -422,7 +427,8 @@
       "9468009006e9c84e9c35c72a89c69229533f6a2592fbe5629f8a0e3f5a745a69",
       "2097b4d8c4cdd185ccaaa51c38f0333a4fa6bdd7472e1a6b7acc3a3a8996a076",
       "463db8a9b57f9f429366010633a82615eba3c1c2b51daff3ca05fec0735c8c19",
-      "2beeb5bf1a25aa96631cb66432e4fadb01ed4c48ddfbc208dd50ac0595d057eb"
+      "2beeb5bf1a25aa96631cb66432e4fadb01ed4c48ddfbc208dd50ac0595d057eb",
+      "513ded4389b870f275ba1bd4e3529472d2ab389b76528f0f69d265d0f40ddbda"
     ]
   }
 }
