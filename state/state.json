@@ -71,18 +71,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 24,
-      "usd_used": 0.915
+      "posts_used": 25,
+      "usd_used": 0.93
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 95,
-    "usd_used": 5.31
+    "posts_used": 96,
+    "usd_used": 5.325
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.2639
+    "usd_used": 0.2852
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -254,9 +254,9 @@
   },
   "reply_manager": {
     "account_replies_today": {},
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-15",
-    "last_call_time": 1784122881.530562,
+    "last_call_time": 1784127697.77387,
     "replied_tweet_ids": [],
     "replies_today": 0,
     "resolved_accounts": {
@@ -346,7 +346,10 @@
       "2077389447122108818",
       "2077376262687862911",
       "2077362002884775994",
-      "2077384627304427611"
+      "2077384627304427611",
+      "2077392916918493677",
+      "2077404933905908125",
+      "2077386792781676585"
     ]
   },
   "retweets": {
@@ -367,9 +370,9 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958160,
-    "last_eth_block": 25538535,
-    "posted_count_today": 6,
+    "last_btc_block_height": 958163,
+    "last_eth_block": 25538818,
+    "posted_count_today": 7,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -415,7 +418,8 @@
       "504ab9e611537cc13dc6c40e339fd3bb8983b29f8a83136ebc1a0a082f50ef52",
       "9468009006e9c84e9c35c72a89c69229533f6a2592fbe5629f8a0e3f5a745a69",
       "2097b4d8c4cdd185ccaaa51c38f0333a4fa6bdd7472e1a6b7acc3a3a8996a076",
-      "463db8a9b57f9f429366010633a82615eba3c1c2b51daff3ca05fec0735c8c19"
+      "463db8a9b57f9f429366010633a82615eba3c1c2b51daff3ca05fec0735c8c19",
+      "2beeb5bf1a25aa96631cb66432e4fadb01ed4c48ddfbc208dd50ac0595d057eb"
     ]
   }
 }
