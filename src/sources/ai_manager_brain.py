@@ -223,11 +223,14 @@ def decide(snapshot, model):
             # Generous headroom: confirmed live that this model spends some
             # of max_tokens on an unrequested reasoning/thinking block before
             # the actual answer -- 1200 let thinking consume the whole budget
-            # (no text block at all), and 3000 still wasn't enough once the
-            # prompt grew (filler examples, bigger candidate pool). Batching
-            # multiple posts per call needs more output room still, so this
-            # is raised again to give real headroom for a 2+ post batch.
-            max_tokens=6000,
+            # (no text block at all), 3000 wasn't enough once the prompt grew
+            # (filler examples, bigger candidate pool), 6000 still hit a very
+            # early truncation (cut off at char 37) once the prompt grew
+            # further still (second_part rules, no-link rules, the DTCC
+            # clarity example, stock data). Raised again -- this has been the
+            # reliable fix each time it recurs, and cost only scales with
+            # actual tokens used, not this ceiling.
+            max_tokens=8000,
             messages=[{"role": "user", "content": prompt}],
         )
     except Exception as e:
