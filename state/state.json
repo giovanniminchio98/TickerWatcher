@@ -14,26 +14,19 @@
         "image_prompt": null,
         "link_url": "https://t.me/tickerwatch",
         "queued_at": 1784138483.141987,
-        "reasoning": "Evergreen explainer using the Ostium exploit as a concrete example of a recurring DeFi risk, useful hours later regardless of price moves.",
-        "text": "DeFi protocols run on 'oracles' -- price feeds that pipe exchange data into smart contracts. If that feed gets spoofed or manipulated, attackers can drain a protocol fast, like the $18M hit on Ostium. Your collateral is only as safe as the data feeding it. \ud83d\udd10\ud83d\udcc9",
-        "wants_extras": false
-      },
-      {
-        "image_prompt": null,
-        "link_url": "https://t.me/tickerwatch",
-        "queued_at": 1784138483.141987,
         "reasoning": "Evergreen take on stablecoin infrastructure tied to real news about Binance's strategy, doesn't rely on live price framing.",
         "text": "Binance's next move: becoming a stablecoin-powered 'super app.' Stablecoins already move enormous volume every month as the plumbing for trading, payments, and remittances. Whoever controls that flow controls a huge slice of crypto's daily economy. \ud83d\udcb5\ud83c\udf10",
         "wants_extras": false
       }
     ],
-    "posts_since_last_extra": 0,
-    "posts_today": 4,
+    "posts_since_last_extra": 1,
+    "posts_today": 5,
     "recent_post_texts": [
       "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story.",
       "ETH just notched its best daily close in 42 days and is up nearly 5% today, closing in on $1,900. Meanwhile BTC is holding near $65K post-CPI. Risk appetite is clearly back across the board.",
       "Saylor says Strategy stays 'very secure' unless BTC craters to $8K-$10K, over 85% below today's $65K. Shows just how much margin of safety is baked into the leverage model even after all the debt-fueled buying. \ud83d\udcc9\ud83d\udcaa\u20bf",
-      "JUST IN: DTCC just pushed tokenized securities into live trading, not a pilot. \ud83c\udfe6\u26a1 That's Wall Street's core settlement plumbing actually running on blockchain rails now. BTC steady near $65K while this kind of institutional infrastructure quietly builds under\u2026"
+      "JUST IN: DTCC just pushed tokenized securities into live trading, not a pilot. \ud83c\udfe6\u26a1 That's Wall Street's core settlement plumbing actually running on blockchain rails now. BTC steady near $65K while this kind of institutional infrastructure quietly builds under\u2026",
+      "DeFi protocols run on 'oracles' -- price feeds that pipe exchange data into smart contracts. If that feed gets spoofed or manipulated, attackers can drain a protocol fast, like the $18M hit on Ostium. Your collateral is only as safe as the data feeding it. \ud83d\udd10\ud83d\udcc9"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -91,13 +84,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 28,
-      "usd_used": 1.16
+      "posts_used": 29,
+      "usd_used": 1.175
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 99,
-    "usd_used": 5.555
+    "posts_used": 100,
+    "usd_used": 5.57
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -381,7 +374,10 @@
       "2077415115297833295",
       "2077442611787526174",
       "2077439392382136697",
-      "2077412479328760105"
+      "2077412479328760105",
+      "2077453303500145141",
+      "2077440040184000657",
+      "2077401487513182341"
     ]
   },
   "retweets": {
@@ -399,7 +395,7 @@
     "pending": []
   },
   "telegram": {
-    "last_report_date": "2026-07-14"
+    "last_report_date": "2026-07-15"
   },
   "whale": {
     "last_btc_block_height": 958176,
