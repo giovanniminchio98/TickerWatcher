@@ -2,21 +2,25 @@
   "ai_manager": {
     "account_replies_today": {},
     "account_reposts_today": {
-      "AshCrypto": 1
+      "AshCrypto": 2,
+      "CoinMarketCap": 1
     },
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-15",
-    "last_call_time": null,
-    "posts_today": 1,
+    "last_call_time": 1784114526.397826,
+    "posts_today": 2,
     "recent_post_texts": [
-      "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story."
+      "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story.",
+      "ETH just notched its best daily close in 42 days and is up nearly 5% today, closing in on $1,900. Meanwhile BTC is holding near $65K post-CPI. Risk appetite is clearly back across the board."
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
     "reposted_tweet_ids": [
-      "2077157602149212621"
+      "2077157602149212621",
+      "2077226331960656108",
+      "2077338680440590686"
     ],
-    "reposts_today": 1,
+    "reposts_today": 3,
     "resolved_accounts": {
       "AshCrypto": {
         "resolved_user_id": "3185716686"
@@ -62,18 +66,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 15,
-      "usd_used": 0.595
+      "posts_used": 18,
+      "usd_used": 0.64
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 86,
-    "usd_used": 4.99
+    "posts_used": 89,
+    "usd_used": 5.035
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.1153
+    "usd_used": 0.1804
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -292,7 +296,10 @@
       "2077320975515824371",
       "2077316005206847666",
       "2077324736049172532",
-      "2077339027896930368"
+      "2077339027896930368",
+      "2077287049124598143",
+      "2077289304024666372",
+      "2077309696621568266"
     ]
   },
   "retweets": {
@@ -313,8 +320,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958147,
-    "last_eth_block": 25537623,
+    "last_btc_block_height": 958148,
+    "last_eth_block": 25537725,
     "posted_count_today": 5,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
