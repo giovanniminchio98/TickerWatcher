@@ -1,5 +1,5 @@
 {
-  "_comment": "Autonomous post+repost decision-maker (src/triggers/ai_manager.py), retargeted to a slower, fixed 4-6 posts/day cadence rather than a high-volume feed -- min_hours_between_calls plus max_posts_per_day bound it to roughly that range even though the workflow itself runs hourly. Replies now run separately/faster in config/reply_manager.json + src/triggers/reply_manager.py. fallback_link_url is used when a post has no image available (OPENAI_API_KEY unset, or generation failed) -- e.g. the public Telegram channel link; leave blank to just post without a link/image in that case rather than blocking the post entirely.",
+  "_comment": "Autonomous post+repost decision-maker (src/triggers/ai_manager.py), retargeted to a slower, fixed 4-6 posts/day cadence rather than a high-volume feed -- min_hours_between_calls plus max_posts_per_day bound it to roughly that range even though the workflow itself runs hourly. Replies now run separately/faster in config/reply_manager.json + src/triggers/reply_manager.py. When a post has no image available (OPENAI_API_KEY unset, or generation failed), the link fallback prefers the real source URL of whichever news article the post is actually based on (Claude's news_index) -- fallback_link_url (here: the public Telegram channel) is only used when the post isn't based on one specific article. Leave fallback_link_url blank to just post without a link/image in that case rather than blocking the post entirely.",
   "model": "claude-sonnet-5",
   "min_hours_between_calls": 4.0,
   "max_calls_per_day": 8,
@@ -8,5 +8,5 @@
   "max_reposts_per_call": 5,
   "max_reply_candidates_per_account": 5,
   "prefer_plain_retweets": true,
-  "fallback_link_url": ""
+  "fallback_link_url": "https://t.me/tickerwatch"
 }

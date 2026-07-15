@@ -19,7 +19,9 @@ src/sources/image_gen.py, DALL-E) turns that prompt into the actual image,
 since Claude itself can't generate images. If no image ends up available
 (OPENAI_API_KEY unset, or generation fails), the caller falls back to
 attaching a real link instead -- every post carries one or the other,
-never neither.
+never neither. The link is the real source URL of whichever NEWS item the
+post is actually based on (news_index), when there is one; otherwise it's
+a generic fallback (e.g. the Telegram channel) -- see ai_manager.py.
 
 Reposting was previously a separate mechanical trigger (retweets.py, now
 disabled) that retweeted every new post from every monitored account
@@ -101,6 +103,11 @@ def _build_prompt(snapshot):
         "elements -- the specific asset/event/number/mood involved, not a generic stock photo. "
         "Style-neutral is fine (the generator picks the visual style); focus on WHAT should be "
         "depicted. Leave image_prompt null only if should_post is false.\n"
+        "- If you decide to post, also set news_index: the index (from the NEWS list below) of "
+        "the specific article this post is actually based on, if there is one -- its real source "
+        "URL becomes the post's fallback link when no image ends up available. Set news_index to "
+        "null if the post isn't based on one specific article (e.g. a pure price observation or a "
+        "generic engagement post) -- never guess an index just to fill the field.\n"
         "- Reposts: a candidate is either a plain retweet (genuinely worth amplifying as-is, no "
         "comment needed) or a quote-tweet (add a short, sharp take that gives it your own "
         f"perspective -- no generic compliments, under {MAX_QUOTE_LEN} characters if quoting), at "
@@ -126,7 +133,7 @@ def _build_prompt(snapshot):
         "Respond with ONLY raw JSON (no markdown fences, no commentary), exactly matching this "
         "shape:\n"
         '{"post": {"should_post": bool, "text": string or null, "image_prompt": string or null, '
-        '"reasoning": string}, '
+        '"news_index": int or null, "reasoning": string}, '
         '"reposts": [{"candidate_index": int, "action": "retweet" or "quote", '
         '"text": string or null, "reasoning": string}]}\n'
         '"text" for a "retweet" action must be null. "reposts" may be an empty list. '
