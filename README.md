@@ -231,11 +231,14 @@ provider does the actual rendering:
 - **`src/sources/image_gen.py`** calls OpenAI's Images API (DALL-E 3),
   opt-in via `OPENAI_API_KEY` presence, using Claude's `image_prompt`.
 - If that key isn't set yet, or generation fails for any reason, the post
-  falls back to a real link instead — `config/ai_manager.json`'s
-  `fallback_link_url` (e.g. your public Telegram channel), attached as a
-  follow-up reply rather than in the main post, same reach-optimization
-  pattern `news_alerts.py` already uses (X's algorithm suppresses reach on
-  posts with a link in the post itself). If `fallback_link_url` is also
+  falls back to a real link instead — attached as a follow-up reply rather
+  than in the main post, same reach-optimization pattern `news_alerts.py`
+  already uses (X's algorithm suppresses reach on posts with a link in the
+  post itself). The link **prefers the real source URL of whichever news
+  article the post is actually based on** (Claude's `news_index`, when
+  there is one) — only falling back to `config/ai_manager.json`'s generic
+  `fallback_link_url` (e.g. your public Telegram channel) when the post
+  isn't anchored to one specific article. If `fallback_link_url` is also
   blank, the post still goes out without either rather than being blocked
   entirely — "post nothing" is a worse failure than "post without the extra."
 - A third, independent budget (`ctx.image_budget`, `config/image_budget.json`,

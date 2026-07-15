@@ -16,10 +16,12 @@ Claude actually picks a candidate.
 Every post always carries an image (via src.sources.image_gen, DALL-E,
 opt-in via OPENAI_API_KEY) or, if no image ends up available, a real link
 attached as a follow-up reply -- same "link lives in a reply, not the main
-post" reach-optimization pattern news_alerts.py already uses. The link
-fallback target is config/ai_manager.json's fallback_link_url (e.g. the
-public Telegram channel) -- if that's not configured either, the post still
-goes out without a link/image rather than being blocked entirely, since
+post" reach-optimization pattern news_alerts.py already uses. The link is
+the real source URL of whichever news article the post is actually based
+on (Claude's news_index), when there is one -- otherwise
+config/ai_manager.json's fallback_link_url (e.g. the public Telegram
+channel). If neither an image nor any link is available, the post still
+goes out without either rather than being blocked entirely, since
 "post nothing at all" is a worse failure than "post without the extra".
 
 Two independent hard budget caps gate this trigger, each stopping it cleanly
@@ -147,13 +149,21 @@ def _repost_candidates(ctx, cfg, state):
     return candidates
 
 
-def _attach_image_or_link(ctx, text, image_prompt):
+def _preferred_link(ctx, snapshot, post):
+    """The real source URL of the news article this post is actually based
+    on (post['news_index']), if there is one -- otherwise config/ai_manager
+    .json's generic fallback_link_url (e.g. the Telegram channel)."""
+    idx = post.get("news_index")
+    if idx is not None and isinstance(idx, int) and 0 <= idx < len(snapshot["news"]):
+        return snapshot["news"][idx]["url"]
+    return ctx.config["ai_manager"].get("fallback_link_url")
+
+
+def _attach_image_or_link(ctx, image_prompt, fallback_url):
     """Returns (media_id_or_None, link_url_or_None) -- exactly one of these
     is populated when an image or a link fallback is actually available,
     both are None if neither could be produced (a post still goes out
     text-only rather than being blocked entirely)."""
-    fallback_url = ctx.config["ai_manager"].get("fallback_link_url")
-
     if image_prompt and ctx.image_budget.can_spend():
         image_bytes = image_gen.generate_post_image(image_prompt)
         if image_bytes:
@@ -167,12 +177,11 @@ def _attach_image_or_link(ctx, text, image_prompt):
     return None, None
 
 
-def _send_audit_message(decision, post_result, repost_results):
+def _send_audit_message(decision, post_status, repost_results):
     lines = ["🤖 AI Manager decision:"]
     post = decision.get("post") or {}
     if post.get("should_post"):
-        status = "posted" if post_result else "attempted (not sent -- budget/cap reached)"
-        lines.append(f"\n📝 Post ({status}): {post.get('text')}\nReasoning: {post.get('reasoning', '')}")
+        lines.append(f"\n📝 Post ({post_status}): {post.get('text')}\nReasoning: {post.get('reasoning', '')}")
     else:
         lines.append(f"\n📝 No post this call. Reasoning: {post.get('reasoning', '(none given)')}")
 
@@ -230,12 +239,15 @@ def run(ctx):
     state["last_call_time"] = ctx.now.timestamp()
 
     fired = False
-    post_result = None
+    post_status = "skipped -- daily post cap reached"
     post = decision.get("post") or {}
     if post.get("should_post") and post.get("text") and state["posts_today"] < cfg["max_posts_per_day"]:
-        if ctx.budget.can_spend(has_link=False):
+        if not ctx.budget.can_spend(has_link=False):
+            post_status = "not sent -- X budget cap reached"
+        else:
             text = truncate(post["text"], ai_manager_brain.MAX_POST_LEN)
-            media_id, link_url = _attach_image_or_link(ctx, text, post.get("image_prompt"))
+            fallback_url = _preferred_link(ctx, snapshot, post)
+            media_id, link_url = _attach_image_or_link(ctx, post.get("image_prompt"), fallback_url)
             tweet_id = ctx.x.post(text, media_id=media_id)
             if tweet_id:
                 channel_link = ("Read more", link_url) if link_url else None
@@ -247,8 +259,12 @@ def run(ctx):
                         ctx.budget.record_spend(has_link=True, text=link_url, mirror_to_channel=False)
                 state["recent_post_texts"] = (state.get("recent_post_texts", []) + [text])[-10:]
                 state["posts_today"] += 1
-                post_result = tweet_id
+                post_status = "posted"
                 fired = True
+            else:
+                # ctx.x.post() itself failed (X API error) -- distinct from a
+                # budget/cap block, and ops_alerts already fired for this
+                post_status = "failed -- X API call error, see ops_alerts"
 
     repost_results = []
     reposted_ids = state.setdefault("reposted_tweet_ids", [])
@@ -293,5 +309,5 @@ def run(ctx):
             fired = True
 
     state["reposted_tweet_ids"] = reposted_ids[-500:]
-    _send_audit_message(decision, post_result, repost_results)
+    _send_audit_message(decision, post_status, repost_results)
     return fired
