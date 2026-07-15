@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 8,
-      "usd_used": 0.49
+      "posts_used": 9,
+      "usd_used": 0.505
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 79,
-    "usd_used": 4.885
+    "posts_used": 80,
+    "usd_used": 4.9
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -136,7 +136,7 @@
     ]
   },
   "flashback": {
-    "last_posted_date": "2026-07-14"
+    "last_posted_date": "2026-07-15"
   },
   "news": {
     "posted_count_today": 2,
@@ -194,7 +194,7 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958089,
+    "last_btc_block_height": 958092,
     "last_eth_block": 25535229,
     "posted_count_today": 3,
     "posted_date": "2026-07-15",
