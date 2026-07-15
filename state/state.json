@@ -6,21 +6,21 @@
       "CoinMarketCap": 2,
       "WatcherGuru": 2
     },
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-15",
-    "last_call_time": null,
+    "last_call_time": 1784157537.059061,
     "post_queue": [
       {
         "link_url": null,
-        "queued_at": 1784156472.804077,
-        "reasoning": "Evergreen explainer of Strategy's preferred-stock/credit model using facts present in Saylor's own tweets, distinct angle from the earlier post about the $8-10K safety margin, gives genuine depth via second_part.",
-        "second_part": "Saylor calls bitcoin 'digital capital' and Strategy the machine that turns it into 'digital credit,' rated products backed by BTC holdings. The catch: those payouts have to happen regardless of bitcoin's price, which is why Saylor keeps stressing the $8K-$10K safety margin.",
-        "text": "Strategy isn't just 'buy and hold bitcoin' anymore, it's building a credit business on top of it. They issue preferred stock like $STRF and $STRC, essentially loans against their BTC stack that pay investors a fixed yield. Turns a volatile asset into structured income. \ud83c\udfe6\u20bf Here's the mechanism:"
+        "queued_at": 1784157537.059061,
+        "reasoning": "Synthesizes three separate news items (DTCC, Cantor/Securitize, Binance) already covered individually in own recent posts into a fresh, evergreen big-picture take that reads accurately hours later, with a second_part adding real depth on why the trend matters.",
+        "second_part": "Price moves in hours; infrastructure takes years to build and is hard to unwind once adopted. If settlement, IPOs, and stablecoin rails all keep shifting onchain, that's a lasting change to how markets work, not a passing speculative cycle.",
+        "text": "DTCC, Cantor/Securitize, and Binance each made moves this week to put core finance functions onchain: settlement, IPOs, and stablecoin flow. Different companies, same signal: this is infrastructure, not hype. \ud83c\udfe6\u26d3\ufe0f Why it matters:"
       }
     ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 1,
-    "posts_today": 9,
+    "posts_since_last_second_part": 2,
+    "posts_today": 10,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade"
     ],
@@ -33,7 +33,8 @@
       "Binance's next move: becoming a stablecoin-powered 'super app.' Stablecoins already move enormous volume every month as the plumbing for trading, payments, and remittances. Whoever controls that flow controls a huge slice of crypto's daily economy. \ud83d\udcb5\ud83c\udf10",
       "JUST IN: Cantor Fitzgerald (Wall Street dealer) and Securitize (a tokenization platform) are teaming up on blockchain-based IPOs, companies going public via crypto rails. \ud83c\udfe6\u26d3\ufe0f BTC holds near $65K while this kind of institutional plumbing keeps expanding. \ud83d\udcc8",
       "DTCC (the clearinghouse behind nearly every US stock trade) just moved tokenized securities from pilot to live trading. Sounds technical, but it changes something basic: how fast trades actually settle. \ud83c\udfe6\u26a1 Here's the mechanism:",
-      "BTC is basically flat today at $64,831 after ripping to $65K on yesterday's cooling inflation data \u2014 looks like the market's digesting the move, not reversing it. ETH is the real standout, up 2.24% to $1,922, its best levels in weeks. SOL and XRP are quieter.\u2026"
+      "BTC is basically flat today at $64,831 after ripping to $65K on yesterday's cooling inflation data \u2014 looks like the market's digesting the move, not reversing it. ETH is the real standout, up 2.24% to $1,922, its best levels in weeks. SOL and XRP are quieter.\u2026",
+      "ETH is the standout again today, up 2% to $1,923 while BTC sits flat near $64,857 and SOL, XRP barely move. Looks like fresh capital is rotating specifically into ETH after yesterday's CPI-driven rally, not spreading evenly across the market. \ud83d\udcc8\ud83d\udca7"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -91,18 +92,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 34,
-      "usd_used": 1.25
+      "posts_used": 35,
+      "usd_used": 1.265
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 105,
-    "usd_used": 5.645
+    "posts_used": 106,
+    "usd_used": 5.66
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.6222
+    "usd_used": 0.7031
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -405,7 +406,10 @@
       "2077519044534542423",
       "2077496205806809188",
       "2077487174853738665",
-      "2077500103397421551"
+      "2077500103397421551",
+      "2077489455665951051",
+      "2077504089043214480",
+      "2077474469413597431"
     ]
   },
   "retweets": {
