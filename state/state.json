@@ -228,17 +228,51 @@
   },
   "reply_suggestions": {
     "resolved_accounts": {
-      "AshCrypto": {},
-      "CoinGecko": {},
-      "CoinMarketCap": {},
-      "ManicDYOR": {},
-      "TedPillows": {},
-      "WatcherGuru": {},
-      "coinbase": {},
-      "saylor": {},
-      "solana": {}
+      "AshCrypto": {
+        "resolved_user_id": "3185716686"
+      },
+      "CoinGecko": {
+        "resolved_user_id": "2412652615"
+      },
+      "CoinMarketCap": {
+        "resolved_user_id": "2260491445"
+      },
+      "ManicDYOR": {
+        "resolved_user_id": "1609339440442351617"
+      },
+      "TedPillows": {
+        "resolved_user_id": "3222562058"
+      },
+      "WatcherGuru": {
+        "resolved_user_id": "1387497871751196672"
+      },
+      "coinbase": {
+        "resolved_user_id": "574032254"
+      },
+      "cryptotony__": {
+        "resolved_user_id": "893111826254356481"
+      },
+      "gordongekko": {
+        "resolved_user_id": "1354400126857605121"
+      },
+      "iamcryptowolfy": {
+        "resolved_user_id": "1509206479475298305"
+      },
+      "nexocooker": {
+        "resolved_user_id": "2032832046842667008"
+      },
+      "saylor": {
+        "resolved_user_id": "244647486"
+      },
+      "solana": {
+        "resolved_user_id": "951329744804392960"
+      }
     },
-    "shown_tweet_ids": []
+    "shown_tweet_ids": [
+      "2076717295074771407",
+      "2077157095665795291",
+      "2077104917739671853"
+    ]
   },
   "retweets": {
     "last_seen_tweet_id": {}
@@ -258,8 +292,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958128,
-    "last_eth_block": 25536853,
+    "last_btc_block_height": 958133,
+    "last_eth_block": 25536997,
     "posted_count_today": 4,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
