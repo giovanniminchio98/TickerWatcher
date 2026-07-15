@@ -77,7 +77,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.2082
+    "usd_used": 0.2231
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -249,9 +249,9 @@
   },
   "reply_manager": {
     "account_replies_today": {},
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-15",
-    "last_call_time": null,
+    "last_call_time": 1784122881.530562,
     "replied_tweet_ids": [],
     "replies_today": 0,
     "resolved_accounts": {
@@ -332,7 +332,10 @@
       "2077348843201737144",
       "2077370160806309903",
       "2077373110903517205",
-      "2077370821107142791"
+      "2077370821107142791",
+      "2077382795102732298",
+      "2077378991519109294",
+      "2077375219908452364"
     ]
   },
   "retweets": {
@@ -353,8 +356,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958157,
-    "last_eth_block": 25538357,
+    "last_btc_block_height": 958158,
+    "last_eth_block": 25538417,
     "posted_count_today": 6,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
