@@ -186,6 +186,7 @@ def run(ctx):
         "own_recent_posts": state.get("recent_post_texts", []),
         "max_replies_per_call": cfg["max_replies_per_call"],
         "max_reposts_per_call": cfg["max_reposts_per_call"],
+        "prefer_plain_retweets": cfg.get("prefer_plain_retweets", False),
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
