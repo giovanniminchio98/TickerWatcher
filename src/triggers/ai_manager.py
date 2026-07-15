@@ -24,27 +24,23 @@ Claude actually picks a candidate. Reposts are still decided fresh every
 Claude call (not queued) -- the repost candidate pool is only meaningful
 in the moment it's fetched.
 
-Each post's wants_extras field (Claude's own per-post call, nudged by how
-long it's been since the last extras post -- see config's
-extras_every_n_posts) decides whether it gets an image (via
-src.sources.image_gen, DALL-E, opt-in via OPENAI_API_KEY) or, failing
-that, a real link attached as a follow-up reply -- same "link lives in a
-reply, not the main post" reach-optimization pattern news_alerts.py
-already uses. When wants_extras is false, the post goes out as genuine
-plain text: no image attempt, no link attempt at all -- also by far the
-cheapest post shape, and deliberately the majority case (roughly 3 in 4
-posts) so the profile reads as substance, not decoration.
+No images, no links, by deliberate choice (see ai_manager_brain.py's
+docstring) -- instead, each post's second_part field (Claude's own
+per-post call, nudged by how long it's been since the last one that used
+it -- see config's second_part_every_n_posts) decides whether the post
+gets a genuine continuation posted immediately as a reply, when the topic
+has real depth worth adding. Most posts stay a single tweet. This account's
+own profile is meant to be enough to inform a reader end to end, with no
+outbound clicks needed.
 
-Three independent hard budget caps gate this trigger, each stopping it
+Two independent hard budget caps gate this trigger, each stopping it
 cleanly rather than erroring when exhausted:
   - ctx.claude_budget (config/claude_budget.json) -- gates whether a new
     batch-generating Claude call is even attempted (queue draining never
     needs this, since it doesn't call Claude).
-  - ctx.budget (config/budget.json) -- gates whether a decided post/repost
-    is actually sent to X (same shared pool every other trigger uses).
-  - ctx.image_budget (config/image_budget.json) -- gates whether image
-    generation is attempted at all for a wants_extras post; exhausting it
-    just means that post falls back to the link, never a hard stop.
+  - ctx.budget (config/budget.json) -- gates whether a decided post/repost/
+    second_part is actually sent to X (same shared pool every other
+    trigger uses).
 
 Every batch-generating call sends one Telegram bot-chat audit message
 (all queued posts + reasoning, every repost + reasoning, or "no action")
@@ -59,7 +55,7 @@ import random
 
 from src import telegram_client
 from src.formatting import fmt_pct, fmt_price, truncate
-from src.sources import ai_manager_brain, image_gen, news_rss, twelvedata
+from src.sources import ai_manager_brain, news_rss, twelvedata
 
 logger = logging.getLogger("tickerwatch.triggers.ai_manager")
 
@@ -164,43 +160,12 @@ def _repost_candidates(ctx, cfg, state):
     return candidates
 
 
-def _preferred_link(ctx, snapshot, post):
-    """The real source URL of the news article this post is actually based
-    on (post['news_index']), if there is one -- otherwise config/ai_manager
-    .json's generic fallback_link_url (e.g. the Telegram channel)."""
-    idx = post.get("news_index")
-    if idx is not None and isinstance(idx, int) and 0 <= idx < len(snapshot["news"]):
-        return snapshot["news"][idx]["url"]
-    return ctx.config["ai_manager"].get("fallback_link_url")
-
-
-def _attach_image_or_link(ctx, image_prompt, fallback_url):
-    """Returns (media_id_or_None, link_url_or_None, image_bytes_or_None) --
-    exactly one of media_id/link_url is populated when an image or a link
-    fallback is actually available, both are None if neither could be
-    produced (a post still goes out text-only rather than being blocked
-    entirely). image_bytes is returned alongside media_id so the caller can
-    also mirror the same image to Telegram -- X's upload consumes the bytes,
-    Telegram needs its own copy of them."""
-    if image_prompt and ctx.image_budget.can_spend():
-        image_bytes = image_gen.generate_post_image(image_prompt)
-        if image_bytes:
-            media_id = ctx.x.upload_media(image_bytes)
-            if media_id:
-                ctx.image_budget.record_spend()
-                return media_id, None, image_bytes
-
-    if fallback_url:
-        return None, fallback_url, None
-    return None, None, None
-
-
 def _send_audit_message(queued_items, declined_posts, repost_results):
     lines = ["🤖 AI Manager batch decision:"]
     if queued_items:
         lines.append(f"\n📝 {len(queued_items)} post(s) queued (spread out over the next few runs):")
         for item in queued_items:
-            tag = "extras" if item["wants_extras"] else "text-only"
+            tag = "two-part" if item.get("second_part") else "single"
             lines.append(f"\n- ({tag}) {item['text']}\nReasoning: {item['reasoning']}")
     else:
         reasons = "; ".join(p.get("reasoning", "") for p in declined_posts) or "(none given)"
@@ -245,40 +210,34 @@ def _drain_queue(ctx, cfg, state):
 
     item = state["post_queue"].pop(0)
     text = truncate(item["text"], ai_manager_brain.MAX_POST_LEN)
-    media_id, link_url, image_bytes = (None, None, None)
-    if item.get("wants_extras"):
-        media_id, link_url, image_bytes = _attach_image_or_link(
-            ctx, item.get("image_prompt"), item.get("link_url")
-        )
+    second_part = item.get("second_part")
 
-    tweet_id = ctx.x.post(text, media_id=media_id)
+    tweet_id = ctx.x.post(text)
     if not tweet_id:
         # ctx.x.post() itself failed -- ops_alerts already fired for this;
         # drop rather than retry indefinitely on a persistently broken post
         telegram_client.send_message(f"⚠️ AI Manager: queued post failed to send, dropped: {text}")
         return False
 
-    # Telegram is free and has no reason to skip extras the way X's 1-in-4
-    # ratio does -- whenever this post actually got an image or link, the
-    # channel always gets it too, not just the 1/4 that make it onto X.
-    if image_bytes:
-        telegram_client.send_channel_photo(image_bytes, telegram_client.escape_html(text))
-        ctx.budget.record_spend(has_link=False, text=text, mirror_to_channel=False)
-    else:
-        channel_link = ("Read more", link_url) if link_url else None
-        ctx.budget.record_spend(has_link=False, text=text, channel_link=channel_link)
-    if link_url and ctx.budget.can_spend(has_link=True):
-        reply_id = ctx.x.reply(truncate(link_url), tweet_id)
+    # Telegram is free, so the channel copy always includes the second_part
+    # too when there is one, right in the same message -- no separate link
+    # or image involved, just the fuller text.
+    channel_text = f"{text}\n\n{second_part}" if second_part else text
+    ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text)
+    if second_part and ctx.budget.can_spend(has_link=False):
+        reply_id = ctx.x.reply(truncate(second_part, ai_manager_brain.MAX_POST_LEN), tweet_id)
         if reply_id:
-            # already mirrored to the channel above via channel_link, skip duplicate
-            ctx.budget.record_spend(has_link=True, text=link_url, mirror_to_channel=False)
+            # already mirrored to the channel above via channel_text, skip duplicate
+            ctx.budget.record_spend(has_link=False, text=second_part, mirror_to_channel=False)
 
-    has_extras = bool(media_id or link_url)
+    has_second_part = bool(second_part)
     state["recent_post_texts"] = (state.get("recent_post_texts", []) + [text])[-10:]
     state["posts_today"] += 1
-    state["posts_since_last_extra"] = 0 if has_extras else state.get("posts_since_last_extra", 0) + 1
+    state["posts_since_last_second_part"] = (
+        0 if has_second_part else state.get("posts_since_last_second_part", 0) + 1
+    )
     telegram_client.send_message(
-        f"📝 Posted ({'extras' if has_extras else 'text-only'}): {text}\nReasoning: {item.get('reasoning', '')}"
+        f"📝 Posted ({'two-part' if has_second_part else 'single'}): {text}\nReasoning: {item.get('reasoning', '')}"
     )
     return True
 
@@ -289,7 +248,7 @@ def run(ctx):
     today_str = ctx.now.strftime("%Y-%m-%d")
     _roll_day(state, today_str)
     state.setdefault("post_queue", [])
-    state.setdefault("posts_since_last_extra", 0)
+    state.setdefault("posts_since_last_second_part", 0)
 
     fired = _drain_queue(ctx, cfg, state)
 
@@ -312,8 +271,8 @@ def run(ctx):
         "max_reposts_per_call": cfg["max_reposts_per_call"],
         "prefer_plain_retweets": cfg.get("prefer_plain_retweets", False),
         "posts_per_batch": cfg.get("posts_per_batch", 1),
-        "extras_every_n_posts": cfg.get("extras_every_n_posts", 4),
-        "posts_since_last_extra": state.get("posts_since_last_extra", 0),
+        "second_part_every_n_posts": cfg.get("second_part_every_n_posts", 4),
+        "posts_since_last_second_part": state.get("posts_since_last_second_part", 0),
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
@@ -344,12 +303,9 @@ def run(ctx):
         if not post.get("should_post") or not post.get("text"):
             declined_posts.append(post)
             continue
-        link_url = _preferred_link(ctx, snapshot, post)
         queued_items.append({
             "text": post["text"],
-            "image_prompt": post.get("image_prompt"),
-            "link_url": link_url,
-            "wants_extras": bool(post.get("wants_extras")),
+            "second_part": post.get("second_part"),
             "reasoning": post.get("reasoning", ""),
             "queued_at": ctx.now.timestamp(),
         })

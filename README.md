@@ -263,36 +263,20 @@ examples as pure style reference (see "Filler" above) — Claude may write an
 original post in that spirit if nothing price/news-driven is post-worthy,
 as long as it's genuinely good and not filler for filler's sake.
 
-**Each post's `wants_extras` decides its own shape — most posts are
-deliberately plain text.** Claude sets `wants_extras` per post, nudged by
-`extras_every_n_posts` (default 4, i.e. roughly 1 in every 4 posts) and how
-many posts have gone out since the last one that had extras — but it's a
-loose guide, not a rule: a genuinely important/visual post gets extras
-regardless of the count, and a routine post can skip extras even when one's
-"due." When `wants_extras` is true, Claude also writes `image_prompt` — a
-vivid, specific description of an image that visually represents that
-post's key elements. Claude itself can't generate images (text/vision-in,
-text-out only), so a separate provider does the actual rendering:
-
-- **`src/sources/image_gen.py`** calls OpenAI's Images API (DALL-E 3),
-  opt-in via `OPENAI_API_KEY` presence, using Claude's `image_prompt`.
-- If that key isn't set yet, or generation fails for any reason, the post
-  falls back to a real link instead — attached as a follow-up reply rather
-  than in the main post, same reach-optimization pattern `news_alerts.py`
-  already uses (X's algorithm suppresses reach on posts with a link in the
-  post itself). The link **prefers the real source URL of whichever news
-  article the post is actually based on** (Claude's `news_index`, when
-  there is one) — only falling back to `config/ai_manager.json`'s generic
-  `fallback_link_url` (e.g. your public Telegram channel) when the post
-  isn't anchored to one specific article.
-- A third, independent budget (`ctx.image_budget`, `config/image_budget.json`,
-  default $10/month cap) gates whether generation is even attempted —
-  exhausting it just means that post falls back to the link, never a hard
-  stop.
-- When `wants_extras` is false, the post goes out as genuine plain
-  text — no image attempt, no link attempt at all. This is also by far the
-  cheapest post shape (see cost math below), and deliberately the majority
-  case, so the profile reads as substance rather than decoration.
+**No images, no links, by deliberate choice — the profile itself should be
+enough to inform a reader end to end.** Instead of image/link "extras",
+Claude decides `second_part` per post: an optional genuine continuation
+posted immediately as its own reply, when a topic has real depth worth
+adding (more mechanism, a concrete example, the second half of a
+comparison — never a restatement or filler). Nudged by
+`second_part_every_n_posts` (default 4, i.e. roughly 1 in every 4 posts)
+and how many posts have gone out since the last one that used it — but
+it's a loose guide, not a rule: a genuinely deep topic gets a `second_part`
+regardless of the count, and a routine post stays a single tweet even when
+one's "due." Most posts are a single tweet. (`src/sources/image_gen.py`,
+DALL-E-based image generation, is untouched and still callable — this
+trigger just doesn't use it right now; flip it back on later if that
+changes.)
 
 `config/ai_manager.json` controls cadence: `min_hours_between_calls` +
 `max_calls_per_day` bound Claude calls to roughly 6-7/day, `posts_per_batch`
@@ -310,7 +294,7 @@ anything. `calls_today` still increments on every attempt regardless, so a
 persistently broken call can't retry more than `max_calls_per_day` times in
 one day.
 
-**Three independent hard budget caps**, each stopping this trigger cleanly
+**Two independent hard budget caps**, each stopping this trigger cleanly
 (never erroring) the instant it's reached:
 
 - `config/claude_budget.json`'s `monthly_usd_cap` (default $20) — gates
@@ -319,18 +303,13 @@ one day.
   each response's *real* token usage (`src/claude_budget.py`), not an
   estimate.
 - `config/budget.json`'s `monthly_usd_cap` (default $30) — gates whether a
-  decided post/repost actually gets sent to X, same shared pool every
-  other trigger already uses.
-- `config/image_budget.json`'s `monthly_usd_cap` (default $10) — gates
-  whether image generation is attempted for a `wants_extras` post;
-  exhausting it just means that post falls back to the link.
+  decided post/repost/`second_part` actually gets sent to X, same shared
+  pool every other trigger already uses.
 
-**The first two caps are sized so their sum is the account-wide monthly
-ceiling.** $20 + $30 = $50: if the target total spend changes, split it the
-same way rather than just raising one cap — that's what makes "never above
-$X/month total" a structural guarantee instead of an estimate that could be
-wrong. Image generation sits *outside* that $50 structure since it's a
-genuinely separate provider/bill — budget for it as a small add-on.
+**These caps are sized so their sum is the account-wide monthly ceiling.**
+$20 + $30 = $50: if the target total spend changes, split it the same way
+rather than just raising one cap — that's what makes "never above $X/month
+total" a structural guarantee instead of an estimate that could be wrong.
 
 Since nothing here is manually approved before it posts, every
 batch-generating call sends one audit message to your **private Telegram
@@ -523,26 +502,20 @@ if you want more headroom before that point (with filler re-enabled):
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
 actions/month (~$1-2) on top of the total above.
 
-**AI Manager's posts specifically — the plain/extras mix matters a lot.**
-Most posts (`wants_extras: false`, roughly 3 in 4) are genuine plain text —
-no image attempt, no link attempt — at the base $0.015/post rate. The
-remaining `wants_extras: true` posts (~1 in 4, `extras_every_n_posts`) carry
-either an image (still ~$0.015 + ~$0.04-0.08 DALL-E cost — media attachment
-doesn't trigger the $0.20 link surcharge) or, until `OPENAI_API_KEY` is set,
-a link as a follow-up reply (does trigger the surcharge, ~$0.20/post total).
-At 12 posts/day (9 plain + 3 with extras):
+**AI Manager's posts specifically — no images, no links means a flat, low
+rate.** Every post is a plain, link-free tweet at the base $0.015 rate —
+there's no $0.20 link surcharge to worry about since links are never used
+here at all. A post's optional `second_part` (roughly 1 in 4,
+`second_part_every_n_posts`) is just another $0.015 reply, not a cost
+multiplier. At 12 posts/day with 3 of them getting a `second_part` (15
+total tweets):
 
-| Extras fallback | Cost/day | Monthly (30d) |
-|---|---|---|
-| Image (DALL-E, `OPENAI_API_KEY` set) | 9×$0.015 + 3×$0.055 ≈ $0.30 | **~$9/month** |
-| Link (`fallback_link_url`, no image available) | 9×$0.015 + 3×$0.215 ≈ $0.78 | **~$23.40/month** |
+15 × $0.015 ≈ $0.225/day → **~$6.75/month**
 
-That's roughly a 4x cost difference on the extras slots specifically — set
-`OPENAI_API_KEY` when you can, since sustained link-fallback use eats most
-of the $30 X cap on its own, leaving little headroom for whale/news/price
-alerts. Reposts (retweet/quote, capped at 3/day) add on top of this at the
-usual ~$0.015/action rate (replies are manual-only for now, see "Reply
-Manager").
+Simple and cheap regardless of format mix, since nothing here varies in
+price the way image-vs-link used to. Reposts (retweet/quote, capped at
+3/day) add on top of this at the same ~$0.015/action rate (replies are
+manual-only for now, see "Reply Manager").
 
 **Claude call cost stays flat regardless of post volume**, since batching
 means posts/day scales without scaling calls/day. At ~6-7 calls/day and
@@ -571,13 +544,13 @@ exactly the sum, never more), not just a hopeful estimate. The daily recap
 time to your **cost-tracking Telegram chat** (see below), so drift in any
 direction shows up quickly.
 
-**A third, genuinely separate budget** covers image generation
-(`config/image_budget.json`, default $10/month cap, `src/image_budget.py`)
-— DALL-E is a different provider (OpenAI) with its own bill, so this sits
-*outside* the $50 X+Claude structure rather than being folded into it.
-Realistic cost at 4-6 images/day is ~$5-10/month (standard quality,
-$0.04/image) — budget for it as a small add-on, and top up OpenAI credits
-separately from X/Anthropic.
+**A third budget exists but is currently unused by AI Manager**: image
+generation (`config/image_budget.json`, default $10/month cap,
+`src/image_budget.py`) — DALL-E is a different provider (OpenAI) with its
+own bill, sitting *outside* the $50 X+Claude structure. AI Manager doesn't
+use images right now (see "AI Manager" above), so this stays at $0 unless
+that changes later — the code (`src/sources/image_gen.py`) is untouched
+and ready if it does.
 
 Note: `claude-sonnet-5`'s introductory pricing ($2/$10 per 1M input/output
 tokens) runs through 2026-08-31, after which it reverts to $3/$15 — a ~50%
@@ -621,7 +594,7 @@ src/
                   price_alerts, scheduled_daily, historical_flashback, polls,
                   self_reply, filler, retweets, comment_engagement,
                   content_drafts, ai_manager, reply_manager, budget_report)
-  image_budget.py     third, independent budget cap for image generation (OpenAI/DALL-E), separate from X+Claude's $50
+  image_budget.py     third, independent budget cap for image generation (OpenAI/DALL-E) -- currently unused by AI Manager, kept ready if that changes
   telegram_client.py  bot-chat + channel + cost-chat message senders, free, independent of the X budget
 .github/workflows/tickerwatch.yml   cron schedule + secret wiring + state commit
 ```
@@ -639,7 +612,7 @@ in this repo, and add:
 | `ETHERSCAN_API_KEY` | [etherscan.io/apis](https://etherscan.io/apis) → free signup → create API key | Required (for ETH whale alerts) |
 | `COINGECKO_API_KEY` | [coingecko.com/en/api/pricing](https://www.coingecko.com/en/api/pricing) → free Demo plan (no card) | Optional — improves rate limits, code falls back to keyless public API without it |
 | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Optional — enables real LLM paraphrasing of news headlines (Claude Haiku, a fraction of a cent/call), and is *required* for AI Manager's autonomous decisions, content-drafts' draft text, and (if re-enabled) Reply Manager's or comment-engagement's reply text — none of those have a safe generic fallback. |
-| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) → requires adding billing credit separately from your Anthropic/X accounts | Optional — enables AI Manager's real per-post generated image (DALL-E 3). Without it, posts fall back to `fallback_link_url` instead — the account still works fine, just image-less until this is added. |
+| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) → requires adding billing credit separately from your Anthropic/X accounts | Not currently used — AI Manager doesn't generate images right now (see "AI Manager"). The code (`src/sources/image_gen.py`) is untouched if this is revisited later. |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables operational notifications in your private bot chat |
 | `TELEGRAM_CHANNEL_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables the public-ish channel that mirrors every post |
 | `TELEGRAM_COST_CHAT_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables the dedicated cost-tracking chat; falls back to the bot chat if unset, so cost visibility never disappears |
@@ -664,19 +637,16 @@ Three separate destinations, kept deliberately apart:
 - **A Telegram channel** (`TELEGRAM_CHANNEL_ID`) — a mirror of *original
   posts only* (whale/news/price/scheduled/flashback/polls/self-reply/AI
   Manager's own post decision). Since Telegram is free, the channel copy can
-  be *more generous* than the X post itself: it always includes the news
-  article's source URL, regardless of whether the X-side reply carrying
-  that same link ended up firing. Same reasoning extends to AI Manager's
-  `wants_extras` posts specifically — whenever one of those has a real
-  image (not just a link), the channel gets the actual image forwarded as
-  a photo (`telegram_client.send_channel_photo`), not just its caption
-  text. X only carries extras on roughly 1 in 4 posts by deliberate design
-  (cost/reach), but the channel always shows whatever extras a post
-  actually has — no reason to hold back on the free side. Replies and
-  reposts (retweets/quote-tweets) never mirror here
-  (`Budget.record_spend`'s `mirror_to_channel=False`) — the channel is
-  meant to read as "everything this account itself wrote," not a log of
-  every engagement action.
+  be *more generous* than the X post itself: news alerts always include the
+  article's source URL here regardless of whether the X-side reply carrying
+  that same link ended up firing, and AI Manager's `second_part` (when a
+  post has one) is folded straight into the same channel message rather
+  than needing a second one. Replies and reposts (retweets/quote-tweets)
+  never mirror here (`Budget.record_spend`'s `mirror_to_channel=False`) —
+  the channel is meant to read as "everything this account itself wrote,"
+  not a log of every engagement action. (`telegram_client.send_channel_photo`
+  also exists for forwarding a real image, unused while AI Manager doesn't
+  generate any — see "AI Manager" above.)
 
 **Cost chat, per-post** — sent right after every single successful post/reply/retweet:
 
@@ -849,7 +819,7 @@ ever blocks or breaks the rest of the run.
 - **`config/budget.json`** — the monthly X API cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/claude_budget.json`** — the monthly Claude API cap, sized alongside `budget.json`'s to sum to the account-wide ceiling (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/image_budget.json`** — the monthly image-generation (DALL-E) cap, a separate provider/bill outside the X+Claude $50 structure (see [Cost math](#cost-math-and-the-budget-cap)).
-- **`config/ai_manager.json`** — AI Manager's model, call cadence, post/repost daily caps, and `fallback_link_url` (used when no image is available for a post) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--repost-decisions).
+- **`config/ai_manager.json`** — AI Manager's model, call cadence, post/repost daily caps, `posts_per_batch`, and `second_part_every_n_posts` (how often a post gets a genuine continuation reply) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--repost-decisions).
 - **`config/reply_manager.json`** — Reply Manager's model, call cadence, and daily reply cap — see [Reply Manager](#reply-manager-disabled-by-default--xs-reply-restriction-isnt-a-per-account-setting).
 - **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).
 

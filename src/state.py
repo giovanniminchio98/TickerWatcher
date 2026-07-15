@@ -32,7 +32,7 @@ DEFAULT_STATE = {
         "account_reposts_today": {},
         "resolved_accounts": {},
         "post_queue": [],
-        "posts_since_last_extra": 0,
+        "posts_since_last_second_part": 0,
     },
     "reply_manager": {
         "last_call_time": None,
