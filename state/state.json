@@ -4,9 +4,9 @@
     "account_reposts_today": {
       "AshCrypto": 1
     },
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-15",
-    "last_call_time": 1784100893.965956,
+    "last_call_time": 1784113277.144753,
     "posts_today": 1,
     "recent_post_texts": [
       "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story."
@@ -39,6 +39,18 @@
       "coinbase": {
         "resolved_user_id": "574032254"
       },
+      "cryptotony__": {
+        "resolved_user_id": "893111826254356481"
+      },
+      "gordongekko": {
+        "resolved_user_id": "1354400126857605121"
+      },
+      "iamcryptowolfy": {
+        "resolved_user_id": "1509206479475298305"
+      },
+      "nexocooker": {
+        "resolved_user_id": "2032832046842667008"
+      },
       "saylor": {
         "resolved_user_id": "244647486"
       },
@@ -50,18 +62,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 14,
-      "usd_used": 0.58
+      "posts_used": 15,
+      "usd_used": 0.595
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 85,
-    "usd_used": 4.975
+    "posts_used": 86,
+    "usd_used": 4.99
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.0513
+    "usd_used": 0.1153
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -277,7 +289,10 @@
       "2077052307460518391",
       "2077297913382748160",
       "2077325960521699414",
-      "2077320975515824371"
+      "2077320975515824371",
+      "2077316005206847666",
+      "2077324736049172532",
+      "2077339027896930368"
     ]
   },
   "retweets": {
@@ -298,9 +313,9 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958138,
-    "last_eth_block": 25537323,
-    "posted_count_today": 4,
+    "last_btc_block_height": 958147,
+    "last_eth_block": 25537623,
+    "posted_count_today": 5,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -344,7 +359,8 @@
       "52320b59ae724715eab4b3ec4d0cdb800139ccb8e5cdd24d9c7035bdf1a288e9",
       "cd75eab3a09ab5916e87b5535cbe90e07252f3edfcc48d0ebd4e49c7d3e52cf1",
       "504ab9e611537cc13dc6c40e339fd3bb8983b29f8a83136ebc1a0a082f50ef52",
-      "9468009006e9c84e9c35c72a89c69229533f6a2592fbe5629f8a0e3f5a745a69"
+      "9468009006e9c84e9c35c72a89c69229533f6a2592fbe5629f8a0e3f5a745a69",
+      "2097b4d8c4cdd185ccaaa51c38f0333a4fa6bdd7472e1a6b7acc3a3a8996a076"
     ]
   }
 }
