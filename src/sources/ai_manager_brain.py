@@ -23,14 +23,21 @@ never empty hype -- that's non-negotiable regardless of format. The
 sentence on what it means, a few emoji, and JUST IN/BREAKING or a specific
 ticker/name mention when it's genuinely warranted (never decorative).
 
-No images and no links, by deliberate choice: instead of image/link
+No images and no links on X, by deliberate choice: instead of image/link
 "extras", Claude can give a post real depth via second_part -- a genuine
 continuation posted immediately as its own reply when a topic has enough
-substance to expand on, rather than an image or an outbound click. The
-account's own profile is meant to be enough to inform a reader end to end.
+substance to expand on, rather than an image or an outbound click. When a
+post does use second_part, the main text ends with a short, natural
+pointer to it so a reader knows to check the reply. The account's own
+profile is meant to be enough to inform a reader end to end on X itself.
 (Image generation code -- src/sources/image_gen.py/DALL-E -- is untouched
 and still callable if this changes later; this trigger just doesn't use
 it right now.)
+
+news_index (which specific NEWS item, if any, a post is based on) is
+still collected, but purely for Telegram: the channel mirror shows that
+article's real source link alongside the post, even though X itself never
+carries a link here -- see ai_manager.py's _preferred_link.
 
 Reposting was previously a separate mechanical trigger (retweets.py, now
 disabled) that retweeted every new post from every monitored account
@@ -153,7 +160,15 @@ def _build_prompt(snapshot):
         "had one -- but treat that as a loose guide, not a rule: give a genuinely deep topic its "
         "second_part regardless of the count, and leave a routine post single even if one is 'due'. "
         f"Leave second_part null when it isn't warranted. Same {MAX_POST_LEN}-character limit and "
-        "same plain-language/no-link rules apply to second_part as to the main post.\n"
+        "same plain-language/no-link rules apply to second_part as to the main post. Whenever you "
+        "do use a second_part, end the main post's text with a short, natural pointer to it (e.g. "
+        "'here's why:', 'the mechanism:', '\U0001F9F5👇', or similar, varied rather than the same "
+        "phrase every time) so a reader knows to check the reply -- never leave the main post "
+        "reading as fully self-contained when more is actually coming.\n"
+        "- If a post is based on one specific article from the NEWS list below, set news_index to "
+        "its index -- its real source link gets shown alongside the post in this account's Telegram "
+        "channel (never on X itself, X never carries a link here). Leave news_index null when the "
+        "post isn't based on one specific article -- never guess an index just to fill the field.\n"
         "- Reposts: a candidate is either a plain retweet (genuinely worth amplifying as-is, no "
         "comment needed) or a quote-tweet (add a short, sharp take that gives it your own "
         f"perspective -- no generic compliments, under {MAX_QUOTE_LEN} characters if quoting), at "
@@ -179,7 +194,7 @@ def _build_prompt(snapshot):
         "Respond with ONLY raw JSON (no markdown fences, no commentary), exactly matching this "
         "shape:\n"
         '{"posts": [{"should_post": bool, "text": string or null, "second_part": string or null, '
-        '"reasoning": string}, ...], '
+        '"news_index": int or null, "reasoning": string}, ...], '
         '"reposts": [{"candidate_index": int, "action": "retweet" or "quote", '
         '"text": string or null, "reasoning": string}]}\n'
         f'"posts" may contain 0 to {posts_per_batch} items -- only include items where should_post '

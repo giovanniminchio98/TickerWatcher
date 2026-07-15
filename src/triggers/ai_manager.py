@@ -24,14 +24,20 @@ Claude actually picks a candidate. Reposts are still decided fresh every
 Claude call (not queued) -- the repost candidate pool is only meaningful
 in the moment it's fetched.
 
-No images, no links, by deliberate choice (see ai_manager_brain.py's
+No images, no links on X, by deliberate choice (see ai_manager_brain.py's
 docstring) -- instead, each post's second_part field (Claude's own
 per-post call, nudged by how long it's been since the last one that used
 it -- see config's second_part_every_n_posts) decides whether the post
 gets a genuine continuation posted immediately as a reply, when the topic
 has real depth worth adding. Most posts stay a single tweet. This account's
-own profile is meant to be enough to inform a reader end to end, with no
-outbound clicks needed.
+own profile is meant to be enough to inform a reader end to end on X, with
+no outbound clicks needed there.
+
+Telegram is the one exception: when a post is based on a specific news
+article (Claude's news_index), the channel copy always shows that
+article's real source link (`_preferred_link`) -- X itself still never
+carries a link here. Same reasoning already used elsewhere in this
+codebase (Telegram is free, so it can be more generous than the X post).
 
 Two independent hard budget caps gate this trigger, each stopping it
 cleanly rather than erroring when exhausted:
@@ -160,6 +166,16 @@ def _repost_candidates(ctx, cfg, state):
     return candidates
 
 
+def _preferred_link(snapshot, post):
+    """The real source URL of the news article this post is actually based
+    on (post['news_index']), if there is one -- Telegram-only (see module
+    docstring), X never carries a link here regardless."""
+    idx = post.get("news_index")
+    if idx is not None and isinstance(idx, int) and 0 <= idx < len(snapshot["news"]):
+        return snapshot["news"][idx]["url"]
+    return None
+
+
 def _send_audit_message(queued_items, declined_posts, repost_results):
     lines = ["🤖 AI Manager batch decision:"]
     if queued_items:
@@ -220,10 +236,13 @@ def _drain_queue(ctx, cfg, state):
         return False
 
     # Telegram is free, so the channel copy always includes the second_part
-    # too when there is one, right in the same message -- no separate link
-    # or image involved, just the fuller text.
+    # too when there is one, right in the same message, plus the real news
+    # link when the post is based on one specific article (item["link_url"])
+    # -- X gets none of this, it only ever posts plain link-free text.
     channel_text = f"{text}\n\n{second_part}" if second_part else text
-    ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text)
+    link_url = item.get("link_url")
+    channel_link = ("Read more", link_url) if link_url else None
+    ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text, channel_link=channel_link)
     if second_part and ctx.budget.can_spend(has_link=False):
         reply_id = ctx.x.reply(truncate(second_part, ai_manager_brain.MAX_POST_LEN), tweet_id)
         if reply_id:
@@ -306,6 +325,7 @@ def run(ctx):
         queued_items.append({
             "text": post["text"],
             "second_part": post.get("second_part"),
+            "link_url": _preferred_link(snapshot, post),
             "reasoning": post.get("reasoning", ""),
             "queued_at": ctx.now.timestamp(),
         })
