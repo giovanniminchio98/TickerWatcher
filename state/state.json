@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 5,
-      "usd_used": 0.445
+      "posts_used": 6,
+      "usd_used": 0.46
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 76,
-    "usd_used": 4.84
+    "posts_used": 77,
+    "usd_used": 4.855
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -19,14 +19,17 @@
     }
   },
   "content_drafts": {
-    "drafted_urls": [],
+    "drafted_urls": [
+      "https://www.coindesk.com/business/2026/07/14/binance-bets-on-becoming-a-crypto-super-app-as-stablecoins-reshape-growth",
+      "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes"
+    ],
     "last_drafted_time": {
       "BTC": 1784070075.619121,
       "ETH": 1784070075.619121,
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-15"
   },
   "filler": {
@@ -189,9 +192,9 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958075,
+    "last_btc_block_height": 958079,
     "last_eth_block": 25534330,
-    "posted_count_today": 0,
+    "posted_count_today": 1,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -231,7 +234,8 @@
       "ff3f056d1f5682f4967549ca26ffd4b70e8e9305d83aeccb2681780f57df32ff",
       "f342d6c105f559740c2199de808d703e60c9c0c5ea6bfe69b1dd70acbdc82cdc",
       "068a343bba45ec88401f5b5f749d2b622fa5a89c21a668d9d4a4503a177e9a35",
-      "42f1ab9427e78a3c5573428f5c4bae362f1601083578b5130359691f40f2063f"
+      "42f1ab9427e78a3c5573428f5c4bae362f1601083578b5130359691f40f2063f",
+      "52320b59ae724715eab4b3ec4d0cdb800139ccb8e5cdd24d9c7035bdf1a288e9"
     ]
   }
 }
