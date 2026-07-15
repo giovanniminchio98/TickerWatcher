@@ -2,13 +2,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 7,
-      "usd_used": 0.475
+      "posts_used": 8,
+      "usd_used": 0.49
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 78,
-    "usd_used": 4.87
+    "posts_used": 79,
+    "usd_used": 4.885
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -26,12 +26,12 @@
       "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report"
     ],
     "last_drafted_time": {
-      "BTC": 1784070075.619121,
-      "ETH": 1784070075.619121,
+      "BTC": 1784084477.987536,
+      "ETH": 1784084477.987536,
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 6,
+    "posted_count_today": 8,
     "posted_date": "2026-07-15"
   },
   "filler": {
@@ -194,9 +194,9 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958083,
-    "last_eth_block": 25534330,
-    "posted_count_today": 2,
+    "last_btc_block_height": 958089,
+    "last_eth_block": 25535229,
+    "posted_count_today": 3,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -238,7 +238,8 @@
       "068a343bba45ec88401f5b5f749d2b622fa5a89c21a668d9d4a4503a177e9a35",
       "42f1ab9427e78a3c5573428f5c4bae362f1601083578b5130359691f40f2063f",
       "52320b59ae724715eab4b3ec4d0cdb800139ccb8e5cdd24d9c7035bdf1a288e9",
-      "cd75eab3a09ab5916e87b5535cbe90e07252f3edfcc48d0ebd4e49c7d3e52cf1"
+      "cd75eab3a09ab5916e87b5535cbe90e07252f3edfcc48d0ebd4e49c7d3e52cf1",
+      "504ab9e611537cc13dc6c40e339fd3bb8983b29f8a83136ebc1a0a082f50ef52"
     ]
   }
 }
