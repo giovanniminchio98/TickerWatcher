@@ -1,14 +1,67 @@
 {
+  "ai_manager": {
+    "account_replies_today": {},
+    "account_reposts_today": {
+      "AshCrypto": 1
+    },
+    "calls_today": 1,
+    "date": "2026-07-15",
+    "last_call_time": 1784100893.965956,
+    "posts_today": 1,
+    "recent_post_texts": [
+      "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story."
+    ],
+    "replied_tweet_ids": [],
+    "replies_today": 0,
+    "reposted_tweet_ids": [
+      "2077157602149212621"
+    ],
+    "reposts_today": 1,
+    "resolved_accounts": {
+      "AshCrypto": {
+        "resolved_user_id": "3185716686"
+      },
+      "CoinGecko": {
+        "resolved_user_id": "2412652615"
+      },
+      "CoinMarketCap": {
+        "resolved_user_id": "2260491445"
+      },
+      "ManicDYOR": {
+        "resolved_user_id": "1609339440442351617"
+      },
+      "TedPillows": {
+        "resolved_user_id": "3222562058"
+      },
+      "WatcherGuru": {
+        "resolved_user_id": "1387497871751196672"
+      },
+      "coinbase": {
+        "resolved_user_id": "574032254"
+      },
+      "saylor": {
+        "resolved_user_id": "244647486"
+      },
+      "solana": {
+        "resolved_user_id": "951329744804392960"
+      }
+    }
+  },
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 11,
-      "usd_used": 0.535
+      "posts_used": 13,
+      "usd_used": 0.565
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 82,
-    "usd_used": 4.93
+    "posts_used": 84,
+    "usd_used": 4.96
+  },
+  "claude_budget": {
+    "low_budget_alert_sent_period": null,
+    "period": "2026-07",
+    "usd_used": 0.0513
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -192,8 +245,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958112,
-    "last_eth_block": 25536125,
+    "last_btc_block_height": 958116,
+    "last_eth_block": 25536592,
     "posted_count_today": 4,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
