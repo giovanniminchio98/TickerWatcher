@@ -172,9 +172,10 @@ class XClient:
 
     def get_recent_tweets_with_metrics(self, user_id, since_id=None, max_results=5):
         """Same as get_recent_tweets_with_text but also returns each tweet's
-        public engagement metrics, for reply_suggestions.py to rank candidates
-        by "biggest" (most liked/retweeted) rather than just newest. Newest-first
-        list of {"id": str, "text": str, "like_count": int, "retweet_count": int}."""
+        public engagement metrics and timestamp, for reply_suggestions.py to
+        rank candidates by "biggest" (most liked/retweeted) while filtering
+        out stale ones by age. Newest-first list of {"id": str, "text": str,
+        "like_count": int, "retweet_count": int, "created_at": datetime or None}."""
         if DRY_RUN:
             logger.info("[DRY RUN] would fetch tweets+metrics for user %s since %s", user_id, since_id)
             return []
@@ -185,7 +186,7 @@ class XClient:
                 max_results=max_results,
                 exclude=["retweets", "replies"],
                 user_auth=True,
-                tweet_fields=["public_metrics"],
+                tweet_fields=["public_metrics", "created_at"],
             )
             if not resp.data:
                 return []
@@ -197,6 +198,7 @@ class XClient:
                     "text": t.text,
                     "like_count": metrics.get("like_count", 0),
                     "retweet_count": metrics.get("retweet_count", 0),
+                    "created_at": t.created_at,
                 })
             return out
         except Exception:

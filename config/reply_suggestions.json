@@ -1,5 +1,6 @@
 {
-  "_comment": "Telegram-only (bot chat) digest of the biggest recent posts from config/reply_targets.json's accounts, for manual replying while X API replies are blocked by the anti-spam/reputation gate -- see README. Never touches X, never costs anything.",
+  "_comment": "Telegram-only (bot chat) digest of the biggest recent posts from config/reply_targets.json's accounts, for manual replying while X API replies are blocked by the anti-spam/reputation gate -- see README. Never touches X, never costs anything. max_age_hours drops candidates older than that before ranking, since replying to a stale post reads badly regardless of how much engagement it got.",
   "enabled": true,
-  "max_per_run": 3
+  "max_per_run": 3,
+  "max_age_hours": 6
 }
