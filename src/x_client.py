@@ -53,9 +53,9 @@ class XClient:
             logger.exception("Failed to upload media")
             return None
 
-    def post(self, text, poll_options=None, poll_duration_minutes=None, media_id=None):
+    def post(self, text, poll_options=None, poll_duration_minutes=None, media_id=None, quote_tweet_id=None):
         if DRY_RUN:
-            logger.info("[DRY RUN] would post (media_id=%s):\n%s", media_id, text)
+            logger.info("[DRY RUN] would post (media_id=%s, quote_tweet_id=%s):\n%s", media_id, quote_tweet_id, text)
             return "dryrun-tweet-id"
         try:
             kwargs = {"text": text}
@@ -64,6 +64,8 @@ class XClient:
                 kwargs["poll_duration_minutes"] = poll_duration_minutes or 1440
             if media_id:
                 kwargs["media_ids"] = [media_id]
+            if quote_tweet_id:
+                kwargs["quote_tweet_id"] = quote_tweet_id
             resp = self.client.create_tweet(**kwargs)
             tweet_id = str(resp.data["id"])
             logger.info("Posted tweet %s: https://x.com/i/web/status/%s\n%s", tweet_id, tweet_id, text)

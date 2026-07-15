@@ -1,13 +1,19 @@
 """Post type 11 (opt-in via ANTHROPIC_API_KEY presence): fully autonomous
-post + reply decision-maker, meant to run unattended for months.
+post + reply + repost decision-maker, meant to run unattended for months.
 
 Unlike every other trigger in this pipeline (which is mechanical/templated,
 deciding WHETHER to fire but not WHAT to say beyond a fixed format), this one
-hands both decisions to Claude in a single call: whether to publish an
-original post right now, and which (if any) of a handful of candidate posts
-from other monitored accounts are worth replying to. See
-src/sources/ai_manager_brain.py for the prompt/parsing and README's "AI
-Manager" section for the full design rationale.
+hands all three decisions to Claude in a single call: whether to publish an
+original post right now, which (if any) candidate posts from other monitored
+accounts are worth replying to, and which (if any) of those same candidates
+are worth reposting (plain retweet or a quote-tweet with Claude's own
+comment). See src/sources/ai_manager_brain.py for the prompt/parsing and
+README's "AI Manager" section for the full design rationale.
+
+Reposting absorbs retweets.py's old role too (now disabled in main.py) --
+that trigger retweeted every new post from every monitored account
+unconditionally with zero judgment, which didn't fit "AI decides everything";
+here a repost only happens when Claude actually picks it.
 
 Runs on its own cadence independent of the hourly workflow schedule --
 min_hours_between_calls + max_calls_per_day (config/ai_manager.json) bound it
@@ -45,8 +51,11 @@ def _roll_day(state, today_str):
         state["calls_today"] = 0
         state["posts_today"] = 0
         state["replies_today"] = 0
+        state["reposts_today"] = 0
         for acct in state.get("account_replies_today", {}):
             state["account_replies_today"][acct] = 0
+        for acct in state.get("account_reposts_today", {}):
+            state["account_reposts_today"][acct] = 0
 
 
 def _ready_for_call(ctx, cfg, state):
@@ -92,17 +101,20 @@ def _news_snapshot(ctx, limit=6):
 
 def _reply_candidates(ctx, cfg, state):
     """Reuses config/reply_targets.json (same file/auto-resolve pattern as
-    comment_engagement.py) as the pool of accounts to consider replying to."""
+    comment_engagement.py) as the shared pool of accounts to consider both
+    replying to and reposting -- a tweet already acted on (either way) is
+    excluded so it never comes up as a candidate again."""
     candidates = []
-    replied_ids = set(state.get("replied_tweet_ids", []))
-    acct_caps = state.setdefault("account_replies_today", {})
+    acted_ids = set(state.get("replied_tweet_ids", [])) | set(state.get("reposted_tweet_ids", []))
+    reply_caps = state.setdefault("account_replies_today", {})
+    repost_caps = state.setdefault("account_reposts_today", {})
 
     for target in ctx.config["reply_targets"]["targets"]:
         if not target.get("enabled"):
             continue
         handle = target["handle"]
         cap = max(0, target.get("times_per_day", 1))
-        if acct_caps.get(handle, 0) >= cap:
+        if reply_caps.get(handle, 0) >= cap and repost_caps.get(handle, 0) >= cap:
             continue
 
         acct_state = state.setdefault("resolved_accounts", {}).setdefault(handle, {})
@@ -117,13 +129,13 @@ def _reply_candidates(ctx, cfg, state):
             user_id, max_results=cfg["max_reply_candidates_per_account"]
         )
         for tweet in tweets:
-            if tweet["id"] in replied_ids:
+            if tweet["id"] in acted_ids:
                 continue
             candidates.append({"handle": handle, "tweet_id": tweet["id"], "text": tweet["text"]})
     return candidates
 
 
-def _send_audit_message(decision, post_result, reply_results):
+def _send_audit_message(decision, post_result, reply_results, repost_results):
     lines = ["🤖 AI Manager decision:"]
     post = decision.get("post") or {}
     if post.get("should_post"):
@@ -140,6 +152,17 @@ def _send_audit_message(decision, post_result, reply_results):
             )
     else:
         lines.append("\n💬 No replies this call.")
+
+    reposts = decision.get("reposts") or []
+    if reposts:
+        for rp in repost_results:
+            label = "Quote-tweet" if rp["action"] == "quote" else "Retweet"
+            extra = f": {rp['text']}" if rp.get("text") else ""
+            lines.append(
+                f"\n🔁 {label} of @{rp['handle']} ({rp['status']}){extra}\nReasoning: {rp['reasoning']}"
+            )
+    else:
+        lines.append("\n🔁 No reposts this call.")
 
     telegram_client.send_message("\n".join(lines))
 
@@ -162,6 +185,7 @@ def run(ctx):
         "reply_candidates": _reply_candidates(ctx, cfg, state),
         "own_recent_posts": state.get("recent_post_texts", []),
         "max_replies_per_call": cfg["max_replies_per_call"],
+        "max_reposts_per_call": cfg["max_reposts_per_call"],
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
@@ -217,5 +241,49 @@ def run(ctx):
             fired = True
 
     state["replied_tweet_ids"] = replied_ids[-500:]
-    _send_audit_message(decision, post_result, reply_results)
+
+    repost_results = []
+    reposted_ids = state.setdefault("reposted_tweet_ids", [])
+    repost_caps = state.setdefault("account_reposts_today", {})
+    used_indices = {r.get("candidate_index") for r in (decision.get("replies") or [])}
+    for rp in (decision.get("reposts") or [])[: cfg["max_reposts_per_call"]]:
+        idx = rp.get("candidate_index")
+        if idx is None or idx < 0 or idx >= len(snapshot["reply_candidates"]) or idx in used_indices:
+            continue
+        action = rp.get("action")
+        if action not in ("retweet", "quote"):
+            continue
+        candidate = snapshot["reply_candidates"][idx]
+        handle = candidate["handle"]
+        cap = next(
+            (t.get("times_per_day", 1) for t in ctx.config["reply_targets"]["targets"] if t["handle"] == handle),
+            1,
+        )
+        if state["reposts_today"] >= cfg["max_reposts_per_day"] or repost_caps.get(handle, 0) >= cap:
+            continue
+        if not ctx.budget.can_spend(has_link=False):
+            break
+
+        if action == "quote":
+            text = truncate(rp.get("text") or "", ai_manager_brain.MAX_QUOTE_LEN)
+            result_id = ctx.x.post(text, quote_tweet_id=candidate["tweet_id"])
+        else:
+            text = None
+            result_id = ctx.x.retweet(candidate["tweet_id"]) and candidate["tweet_id"]
+
+        status = "sent" if result_id else "failed"
+        repost_results.append({
+            "handle": handle, "action": action, "text": text,
+            "reasoning": rp.get("reasoning", ""), "status": status,
+        })
+        if result_id:
+            spend_desc = f"{action} of @{handle}'s post {candidate['tweet_id']}"
+            ctx.budget.record_spend(has_link=False, text=spend_desc)
+            reposted_ids.append(candidate["tweet_id"])
+            repost_caps[handle] = repost_caps.get(handle, 0) + 1
+            state["reposts_today"] += 1
+            fired = True
+
+    state["reposted_tweet_ids"] = reposted_ids[-500:]
+    _send_audit_message(decision, post_result, reply_results, repost_results)
     return fired

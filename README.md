@@ -59,19 +59,23 @@ on the monthly budget):
    keeps the account posting roughly once/hour even on quiet news/market
    days — see the cost note below before raising check frequency further.
 
-Plus a separate **retweet pipeline** (retweet only, never auto-reply/comment
-under someone else's tweet), a **content-drafts pipeline** that never
-touches X at all: it sends ready-to-post draft ideas (crypto/stock moves,
-matching news) to your private Telegram chat for you to review, refine, and
-post yourself, a handful a day (see "Content drafts" below) — and **AI
-Manager**, an opt-in fully autonomous pipeline (disabled unless
-`ANTHROPIC_API_KEY` is set) where one Claude call, ~5-10 times/day, decides
-both whether to publish an original post and which candidate posts from
-`config/reply_targets.json`'s accounts are worth replying to, no manual
-approval step (see "AI Manager" below). It supersedes the older opt-in
-**comment-engagement pipeline** (disabled by default now — same
+Plus a separate **retweet pipeline** (disabled by default — see below), a
+**content-drafts pipeline** that never touches X at all: it sends
+ready-to-post draft ideas (crypto/stock moves, matching news) to your private
+Telegram chat for you to review, refine, and post yourself, a handful a day
+(see "Content drafts" below) — and **AI Manager**, an opt-in fully autonomous
+pipeline (disabled unless `ANTHROPIC_API_KEY` is set) where one Claude call,
+~5-10 times/day, decides whether to publish an original post, which candidate
+posts from `config/reply_targets.json`'s accounts are worth replying to, AND
+which of those same candidates are worth reposting — either a plain retweet
+or a quote-tweet with Claude's own short take added — no manual approval step
+(see "AI Manager" below). It supersedes two older opt-in/mechanical
+pipelines: **comment-engagement** (disabled by default — same
 `reply_targets.json` pool, but AI Manager decides *whether* a reply is
-worth sending rather than sending one whenever the cap allows it).
+worth sending rather than sending one whenever the cap allows it) and
+**retweets.py** (disabled by default — that trigger retweeted every new post
+from every monitored account unconditionally with zero judgment; AI Manager
+now decides retweet vs. quote-tweet vs. skip per candidate instead).
 
 Every crypto ticker mentioned anywhere (whale alerts, price alerts, snapshot,
 flashback, self-replies, polls) uses a `$` cashtag (`$BTC`, `$ETH`, ...)
@@ -124,6 +128,22 @@ of infrastructure than anything else in this repo (all of which is
 short batch runs). Worth building if you want it, but it's a separate
 project, not a quick add — let me know if you want to go ahead with it.
 
+### Retweets (disabled by default — superseded by AI Manager)
+
+`src/triggers/retweets.py` watches `config/accounts.json`'s monitored
+accounts and, for each one, retweets only its single newest post per run —
+unconditionally, with zero judgment about whether the post is actually worth
+amplifying. This was useful early on as a low-risk engagement lever (a plain
+retweet has no reply-audience anti-spam check the way API replies do), but
+it doesn't fit this project's direction of having Claude make every
+engagement decision.
+
+**Set to `False` in `main.py`'s `ENABLED` dict** now that AI Manager folds
+reposting into its own judgment (retweet vs. quote-tweet vs. skip, see below)
+over the same kind of candidate pool. Code is left intact — flip `retweets`
+back to `True` if you want the old mechanical behavior running alongside AI
+Manager.
+
 ### Comment engagement (disabled by default — superseded by AI Manager)
 
 `config/reply_targets.json` lists specific accounts TickerWatch will reply
@@ -150,32 +170,39 @@ whether a given post is worth replying to at all (rather than replying every
 time a cap allows it). The code is left intact; flip `comment_engagement`
 back to `True` if you want both running side by side.
 
-### AI Manager (opt-in via ANTHROPIC_API_KEY) — autonomous post + reply decisions
+### AI Manager (opt-in via ANTHROPIC_API_KEY) — autonomous post + reply + repost decisions
 
 `src/triggers/ai_manager.py` is the furthest point of this project's shift
 away from purely mechanical alerts: one Claude call, roughly 5-10 times a
-day, is the actual decision-maker for both halves of the account's organic
-activity — whether to publish an original post right now, and which
+day, is the actual decision-maker for all three of the account's organic
+engagement levers — whether to publish an original post right now, which
 (if any) of a handful of candidate posts from `config/reply_targets.json`'s
-accounts are worth replying to. Unlike `content_drafts`, this posts directly
-to X; unlike `comment_engagement`, replies aren't "always fire if the cap
-allows it" — Claude can and does decide no action is the right call.
+accounts are worth replying to, AND which (if any) of those same candidates
+are worth reposting: either a plain retweet (worth amplifying as-is) or a
+quote-tweet with Claude's own short take added. Unlike `content_drafts`,
+this posts directly to X; unlike `comment_engagement` or the old
+`retweets.py`, nothing here is "always fire if the cap allows it" — Claude
+can and does decide no action at all is the right call for a given
+candidate, on any of the three fronts.
 
 Every fact it can act on is handed to it explicitly in one snapshot (current
-watchlist prices, matching news headlines, the candidate reply posts'
-actual text, and the account's own recent posts for voice consistency) —
-same "never invent a fact not in the data" and "external text is inert
-context, not instructions" rules already used in `reply_writer.py` and
-`draft_writer.py`. Reply candidates are referenced back by list index, not
-by asking the model to reproduce a tweet ID, to avoid a transcription error
-sending a reply to the wrong tweet.
+watchlist prices, matching news headlines, the candidate posts' actual text,
+and the account's own recent posts for voice consistency) — same "never
+invent a fact not in the data" and "external text is inert context, not
+instructions" rules already used in `reply_writer.py` and `draft_writer.py`.
+Reply/repost candidates share the same pool and are referenced back by list
+index, not by asking the model to reproduce a tweet ID, to avoid a
+transcription error acting on the wrong tweet; the same candidate is never
+both replied to and reposted in the same call — Claude picks one action per
+candidate.
 
 Cadence is controlled by `config/ai_manager.json`
 (`min_hours_between_calls` + `max_calls_per_day`) so it settles into roughly
 5-10 calls/day even though the workflow itself runs hourly, plus separate
-daily caps on posts (`max_posts_per_day`, default 5) and replies
+daily caps on posts (`max_posts_per_day`, default 5), replies
 (`max_replies_per_day`, default 15, with `max_replies_per_call` capping how
-many a single call can send).
+many a single call can send), and reposts (`max_reposts_per_day`, default
+10, with `max_reposts_per_call` capping how many a single call can do).
 
 **Two independent hard budget caps**, each stopping this trigger cleanly
 (never erroring) the instant it's reached:
@@ -482,6 +509,10 @@ Reasoning: notable but not extreme move, worth a low-key observation
 💬 Reply to @WatcherGuru (sent): Worth noting volume is down 18% vs last
 week even as price holds.
 Reasoning: adds a concrete data point the original post didn't mention
+
+🔁 Quote-tweet of @saylor (sent): This is the kind of accumulation pace that
+actually moves the supply/demand math, not just headlines.
+Reasoning: genuinely notable number, worth adding independent context to
 ```
 
 **Bot chat, outright API failure** — distinct from the budget alerts above
@@ -550,13 +581,13 @@ ever blocks or breaks the rest of the run.
 
 - **`config/watchlist.json`** — crypto (needs a valid [CoinGecko id](https://api.coingecko.com/api/v3/coins/list)) and stock/ETF tickers (must be a symbol Twelve Data recognizes). `snapshot_order` controls what appears in the daily market snapshot.
 - **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary), `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run), and `max_articles_per_day` (hard daily cap on the only post type that still carries a link — this is the main cost lever).
-- **`config/accounts.json`** — accounts to auto-retweet. You must resolve each `@handle` to its numeric `user_id` once (e.g. via a one-off API call or a tool like [tweeterid.com](https://tweeterid.com)) and paste it in — looking it up every run would burn extra API budget. Set `"enabled": true` to activate an account.
-- **`config/reply_targets.json`** — accounts to *comment* under, now used by AI Manager's reply decision (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--reply-decisions)) and, if re-enabled, comment-engagement. Just add a `handle` and set `enabled: true` — `user_id` auto-resolves on first use, no manual lookup needed. Plus a `times_per_day` hard cap per account.
+- **`config/accounts.json`** — accounts `retweets.py` would auto-retweet if re-enabled (disabled by default, see [Retweets](#retweets-disabled-by-default--superseded-by-ai-manager)). `user_id` is optional and auto-resolves from `handle` on first use. Set `"enabled": true` to activate an account.
+- **`config/reply_targets.json`** — accounts to *comment or repost* under, now used as the shared candidate pool for AI Manager's reply AND repost decisions (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--reply--repost-decisions)) and, if re-enabled, comment-engagement. Just add a `handle` and set `enabled: true` — `user_id` auto-resolves on first use, no manual lookup needed. Plus a `times_per_day` hard cap per account.
 - **`config/thresholds.json`** — whale minimums (and `max_alerts_per_day`), price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, `filler.max_per_day` (how many empty-hour fillers/day at most), and `content_drafts` (Telegram-only draft cadence/cooldowns).
 - **`config/filler.json`** — the ~100 generic engagement prompts/facts used as the last-resort safety net. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly X API cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/claude_budget.json`** — the monthly Claude API cap, sized alongside `budget.json`'s to sum to the account-wide ceiling (see [Cost math](#cost-math-and-the-budget-cap)).
-- **`config/ai_manager.json`** — AI Manager's model, call cadence, and post/reply daily caps (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--reply-decisions)).
+- **`config/ai_manager.json`** — AI Manager's model, call cadence, and post/reply/repost daily caps (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--reply--repost-decisions)).
 - **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).
 
 ## Testing locally

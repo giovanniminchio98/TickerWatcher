@@ -48,7 +48,11 @@ ENABLED = {
     "historical_flashback": True,
     "polls": True,
     "self_reply": True,
-    "retweets": True,
+    # disabled by default: ai_manager now owns the repost decision over the
+    # same monitored-accounts pool, with judgment (retweet, quote-tweet with
+    # its own comment, or skip) instead of retweeting every new post
+    # unconditionally. Code kept intact -- flip back to True to run both.
+    "retweets": False,
     # disabled by default: ai_manager now owns the reply decision over the
     # same config/reply_targets.json pool, with more judgment (only replies
     # when it decides a candidate is genuinely worth it, not every time).
