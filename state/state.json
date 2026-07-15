@@ -7,7 +7,7 @@
     },
     "calls_today": 3,
     "date": "2026-07-15",
-    "last_call_time": 1784114526.397826,
+    "last_call_time": null,
     "posts_today": 2,
     "recent_post_texts": [
       "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story.",
@@ -251,7 +251,7 @@
     "account_replies_today": {},
     "calls_today": 1,
     "date": "2026-07-15",
-    "last_call_time": 1784120475.227414,
+    "last_call_time": null,
     "replied_tweet_ids": [],
     "replies_today": 0,
     "resolved_accounts": {
