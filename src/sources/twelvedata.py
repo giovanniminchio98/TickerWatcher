@@ -7,7 +7,6 @@ press_releases are both Basic-plan (free) endpoints.
 """
 import logging
 import os
-import time
 
 import requests
 
@@ -15,8 +14,6 @@ logger = logging.getLogger("tickerwatch.twelvedata")
 
 BASE_URL = "https://api.twelvedata.com"
 TIMEOUT = 15
-QUOTE_CHUNK_SIZE = 5
-QUOTE_CHUNK_PAUSE_SECONDS = 15
 
 
 def get_quote(symbol):
@@ -32,58 +29,6 @@ def get_quote(symbol):
         "price": float(data["close"]),
         "percent_change": float(data["percent_change"]),
     }
-
-
-def get_quotes_batch(symbols):
-    """Fetches many symbols in small chunks (QUOTE_CHUNK_SIZE, comma-joined
-    per request) with a pause between chunks (QUOTE_CHUNK_PAUSE_SECONDS),
-    rather than one big request -- confirmed live that even a 30-symbol
-    batch in one shot can 429 against Twelve Data's free-tier per-minute
-    limit. Each chunk is independent: a chunk that fails (429 or anything
-    else) is logged and skipped, never aborting the rest -- a partial
-    result (whatever chunks succeeded) beats nothing. Never raises.
-
-    Pacing is deliberately modest (not a full minute between chunks) to
-    stay well inside the workflow's 10-minute job timeout even in the
-    worst case (6 chunks for 30 symbols = 5 pauses = ~75s added) --
-    accepting a higher miss rate on any given chunk in exchange for not
-    risking the whole run (Claude call, posting, state commit) getting
-    killed by the timeout.
-
-    Returns {symbol: {"price": float, "percent_change": float}, ...} --
-    any symbol not present (bad ticker, per-symbol error, or its whole
-    chunk failing) is just absent from the dict."""
-    if not symbols:
-        return {}
-
-    quotes = {}
-    for i in range(0, len(symbols), QUOTE_CHUNK_SIZE):
-        chunk = symbols[i : i + QUOTE_CHUNK_SIZE]
-        if i > 0:
-            time.sleep(QUOTE_CHUNK_PAUSE_SECONDS)
-        try:
-            params = {"symbol": ",".join(chunk), "apikey": os.environ["TWELVEDATA_API_KEY"]}
-            resp = requests.get(f"{BASE_URL}/quote", params=params, timeout=TIMEOUT)
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception:
-            logger.exception("Twelve Data quote chunk failed for %s", chunk)
-            continue
-
-        # a single-symbol request returns one flat quote object instead of
-        # a dict keyed by symbol -- normalize to the keyed shape
-        if len(chunk) == 1:
-            data = {chunk[0]: data}
-
-        for symbol, entry in data.items():
-            if not isinstance(entry, dict) or entry.get("status") == "error" or "close" not in entry:
-                logger.warning("Twelve Data batch error for %s: %s", symbol, entry)
-                continue
-            quotes[symbol] = {
-                "price": float(entry["close"]),
-                "percent_change": float(entry["percent_change"]),
-            }
-    return quotes
 
 
 def get_price_on_date(symbol, date_str):
