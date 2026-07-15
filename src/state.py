@@ -19,7 +19,7 @@ DEFAULT_STATE = {
     "flashback": {"last_posted_date": None},
     "polls": {"last_posted_date": None},
     "self_reply": {"pending": []},
-    "retweets": {"last_seen_tweet_id": {}},
+    "retweets": {"last_seen_tweet_id": {}, "resolved_accounts": {}},
     "comment_engagement": {},
     "ai_manager": {
         "last_call_time": None,
