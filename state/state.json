@@ -35,8 +35,8 @@
     "posted_date": "2026-07-15"
   },
   "filler": {
-    "posted_count_today": 5,
-    "posted_date": "2026-07-14",
+    "posted_count_today": 0,
+    "posted_date": "2026-07-15",
     "shuffled_bag": [
       53,
       36,
@@ -131,8 +131,7 @@
       72,
       1,
       95,
-      60,
-      9
+      60
     ]
   },
   "flashback": {
@@ -194,7 +193,7 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958092,
+    "last_btc_block_height": 958101,
     "last_eth_block": 25535229,
     "posted_count_today": 3,
     "posted_date": "2026-07-15",
