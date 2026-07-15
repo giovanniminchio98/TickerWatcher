@@ -23,7 +23,11 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 15, not 10: AI Manager's stock quote batch deliberately paces ~5
+    # minutes across its Twelve Data chunks (see twelvedata.py) to respect
+    # the free tier's per-minute limit -- needs real headroom on top of
+    # that plus the rest of a normal run (~80-90s observed baseline).
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
