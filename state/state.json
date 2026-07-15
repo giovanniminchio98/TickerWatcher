@@ -6,7 +6,7 @@
       "CoinMarketCap": 2,
       "WatcherGuru": 2
     },
-    "calls_today": 0,
+    "calls_today": 1,
     "date": "2026-07-15",
     "last_call_time": null,
     "post_queue": [],
@@ -90,7 +90,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.4339
+    "usd_used": 0.5393
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -253,9 +253,12 @@
   },
   "price": {
     "last_alert_price": {
+      "AAPL": 327.57001,
       "BTC": 61980,
       "ETH": 1759.85,
+      "QQQ": 717.69,
       "SOL": 74.48,
+      "SPY": 754.72998,
       "XRP": 1.059
     },
     "last_alert_time": {}
@@ -384,7 +387,10 @@
       "2077478604250689813",
       "2077498670396653970",
       "2077429487793574189",
-      "2077461632687411679"
+      "2077461632687411679",
+      "2077491800319590894",
+      "2077500505152954848",
+      "2077519044534542423"
     ]
   },
   "retweets": {
