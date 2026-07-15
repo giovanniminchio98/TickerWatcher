@@ -10,6 +10,8 @@ calling the X API. Always test with DRY_RUN=1 first (see README).
 import logging
 import os
 
+from src import ops_alerts
+
 logger = logging.getLogger("tickerwatch.x_client")
 
 DRY_RUN = os.environ.get("DRY_RUN", "0") == "1"
@@ -51,9 +53,9 @@ class XClient:
             logger.exception("Failed to upload media")
             return None
 
-    def post(self, text, poll_options=None, poll_duration_minutes=None, media_id=None):
+    def post(self, text, poll_options=None, poll_duration_minutes=None, media_id=None, quote_tweet_id=None):
         if DRY_RUN:
-            logger.info("[DRY RUN] would post (media_id=%s):\n%s", media_id, text)
+            logger.info("[DRY RUN] would post (media_id=%s, quote_tweet_id=%s):\n%s", media_id, quote_tweet_id, text)
             return "dryrun-tweet-id"
         try:
             kwargs = {"text": text}
@@ -62,12 +64,15 @@ class XClient:
                 kwargs["poll_duration_minutes"] = poll_duration_minutes or 1440
             if media_id:
                 kwargs["media_ids"] = [media_id]
+            if quote_tweet_id:
+                kwargs["quote_tweet_id"] = quote_tweet_id
             resp = self.client.create_tweet(**kwargs)
             tweet_id = str(resp.data["id"])
             logger.info("Posted tweet %s: https://x.com/i/web/status/%s\n%s", tweet_id, tweet_id, text)
             return tweet_id
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to post tweet")
+            ops_alerts.notify_x_failure(f"post: {e}")
             return None
 
     def reply(self, text, in_reply_to_tweet_id):
@@ -79,8 +84,9 @@ class XClient:
             reply_id = str(resp.data["id"])
             logger.info("Posted reply %s to %s: https://x.com/i/web/status/%s\n%s", reply_id, in_reply_to_tweet_id, reply_id, text)
             return reply_id
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to post reply")
+            ops_alerts.notify_x_failure(f"reply: {e}")
             return None
 
     def retweet(self, tweet_id):
@@ -90,8 +96,9 @@ class XClient:
         try:
             self.client.retweet(tweet_id)
             return True
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to retweet %s", tweet_id)
+            ops_alerts.notify_x_failure(f"retweet: {e}")
             return False
 
     def get_user_id(self, handle):
@@ -104,7 +111,11 @@ class XClient:
             logger.info("[DRY RUN] would resolve user id for @%s", handle)
             return None
         try:
-            resp = self.client.get_user(username=handle.lstrip("@"))
+            # tweepy defaults get_user() to user_auth=False (OAuth 2.0 App-only
+            # Bearer auth), which we never configure (no bearer_token) --
+            # explicit user_auth=True is required to use our OAuth 1.0a
+            # credentials, the same ones that already work fine for posting.
+            resp = self.client.get_user(username=handle.lstrip("@"), user_auth=True)
             if not resp.data:
                 return None
             return str(resp.data.id)
@@ -121,11 +132,14 @@ class XClient:
             logger.info("[DRY RUN] would fetch tweets for user %s since %s", user_id, since_id)
             return []
         try:
+            # see get_user_id's comment -- get_users_tweets also defaults to
+            # user_auth=False (App-only Bearer auth) unless told otherwise.
             resp = self.client.get_users_tweets(
                 id=user_id,
                 since_id=since_id,
                 max_results=max_results,
                 exclude=["retweets", "replies"],
+                user_auth=True,
             )
             if not resp.data:
                 return []
@@ -147,6 +161,7 @@ class XClient:
                 since_id=since_id,
                 max_results=max_results,
                 exclude=["retweets", "replies"],
+                user_auth=True,
             )
             if not resp.data:
                 return []

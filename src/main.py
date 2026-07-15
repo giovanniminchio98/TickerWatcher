@@ -12,12 +12,14 @@ import logging
 import sys
 
 from src.budget import Budget
+from src.claude_budget import ClaudeBudget
 from src.config import load_all
 from src.context import Context
 from src.sources import coingecko
 from src.state import load_state, save_state
 from src.x_client import DRY_RUN, XClient
 from src.triggers import (
+    ai_manager,
     budget_report,
     comment_engagement,
     content_drafts,
@@ -46,9 +48,18 @@ ENABLED = {
     "historical_flashback": True,
     "polls": True,
     "self_reply": True,
-    "retweets": True,
-    "comment_engagement": True,
+    # disabled by default: ai_manager now owns the repost decision over the
+    # same monitored-accounts pool, with judgment (retweet, quote-tweet with
+    # its own comment, or skip) instead of retweeting every new post
+    # unconditionally. Code kept intact -- flip back to True to run both.
+    "retweets": False,
+    # disabled by default: ai_manager now owns the reply decision over the
+    # same config/reply_targets.json pool, with more judgment (only replies
+    # when it decides a candidate is genuinely worth it, not every time).
+    # Code kept intact -- flip back to True to run both side by side.
+    "comment_engagement": False,
     "content_drafts": True,
+    "ai_manager": True,
     "filler": True,
     "budget_report": True,
 }
@@ -80,9 +91,10 @@ def main():
     config = load_all()
     state = load_state()
     budget = Budget(state, config["budget"])
+    claude_budget = ClaudeBudget(state, config["claude_budget"])
     prices = _fetch_prices(config)
     x_client = XClient()
-    ctx = Context(config, state, budget, x_client, prices)
+    ctx = Context(config, state, budget, x_client, prices, claude_budget=claude_budget)
 
     anything_fired = False
     anything_fired |= bool(_safe_run("whale_alerts", whale_alerts.run, ctx))
@@ -92,6 +104,7 @@ def main():
     anything_fired |= bool(_safe_run("historical_flashback", historical_flashback.run, ctx, anything_fired))
     anything_fired |= bool(_safe_run("polls", polls.run, ctx))
     anything_fired |= bool(_safe_run("self_reply", self_reply.run, ctx))
+    anything_fired |= bool(_safe_run("ai_manager", ai_manager.run, ctx))
 
     # last resort: only posts if nothing above did, so the account still
     # posts roughly once per check instead of going silent on quiet hours
@@ -109,6 +122,7 @@ def main():
     _safe_run("budget_report", budget_report.run, ctx)
 
     logger.info("Budget: %s", budget.remaining_summary())
+    logger.info("Budget: %s", claude_budget.remaining_summary())
     if DRY_RUN:
         logger.info("DRY_RUN: not persisting state (dedup/budget bookkeeping stays untouched)")
     else:

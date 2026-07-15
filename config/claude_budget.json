@@ -1,0 +1,4 @@
+{
+  "_comment": "Hard safety net against the Claude API bill for src/triggers/ai_manager.py. Paired with config/budget.json's monthly_usd_cap (X API) -- the two caps are sized so their sum is the account-wide monthly ceiling (see README): raising one should be matched by lowering the other, not just added on top.",
+  "monthly_usd_cap": 20.0
+}

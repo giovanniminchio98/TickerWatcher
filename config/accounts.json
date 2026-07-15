@@ -1,7 +1,14 @@
 {
-  "_comment": "Accounts to auto-retweet. 'user_id' is the numeric X user ID (not the @handle) - resolve it once with GET /2/users/by/username/:username and paste it here, since the retweet endpoint needs it and looking it up every run burns API reads/budget.",
+  "_comment": "Accounts to auto-retweet (retweet only, never reply/comment). 'user_id' is optional -- leave it blank and it auto-resolves from 'handle' on first use (one read call, then cached in state), same pattern as config/reply_targets.json. Only the single newest tweet per account is ever retweeted per run, even on the first run for a newly-enabled account, so enabling several at once doesn't cause a backlog burst.",
   "monitored_accounts": [
-    { "handle": "coindesk", "user_id": "", "enabled": false },
-    { "handle": "cointelegraph", "user_id": "", "enabled": false }
+    { "handle": "AshCrypto", "user_id": "", "enabled": true },
+    { "handle": "CoinGecko", "user_id": "", "enabled": true },
+    { "handle": "solana", "user_id": "", "enabled": true },
+    { "handle": "WatcherGuru", "user_id": "", "enabled": true },
+    { "handle": "saylor", "user_id": "", "enabled": true },
+    { "handle": "coinbase", "user_id": "", "enabled": true },
+    { "handle": "TedPillows", "user_id": "", "enabled": true },
+    { "handle": "CoinMarketCap", "user_id": "", "enabled": true },
+    { "handle": "ManicDYOR", "user_id": "", "enabled": true }
   ]
 }

@@ -1,0 +1,12 @@
+{
+  "_comment": "Fully autonomous post+reply+repost decision-maker (src/triggers/ai_manager.py). One Claude call decides whether to post something original, which candidate replies (if any) to send, AND which candidates (if any) to repost (plain retweet or quote-tweet with its own comment) -- given a full data snapshot, see README's 'AI Manager' section. min_hours_between_calls plus max_calls_per_day bound it to roughly 5-10 calls/day even though the workflow itself runs hourly.",
+  "model": "claude-sonnet-5",
+  "min_hours_between_calls": 2.5,
+  "max_calls_per_day": 8,
+  "max_posts_per_day": 5,
+  "max_replies_per_day": 15,
+  "max_replies_per_call": 3,
+  "max_reposts_per_day": 10,
+  "max_reposts_per_call": 3,
+  "max_reply_candidates_per_account": 5
+}

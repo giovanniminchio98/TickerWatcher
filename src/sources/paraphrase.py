@@ -21,6 +21,9 @@ import logging
 import os
 import re
 
+from src import ops_alerts
+from src.sources.claude_utils import extract_text
+
 logger = logging.getLogger("tickerwatch.paraphrase")
 
 MAX_PARAPHRASE_LEN = 200
@@ -59,7 +62,7 @@ def _llm_paraphrase_with_sentiment(title, summary):
         max_tokens=120,
         messages=[{"role": "user", "content": prompt}],
     )
-    raw = resp.content[0].text.strip()
+    raw = extract_text(resp)
     lines = [l.strip() for l in raw.splitlines() if l.strip()]
     text = lines[0] if lines else raw
     sentiment = lines[-1].lower() if len(lines) > 1 else None
@@ -75,8 +78,9 @@ def paraphrase_with_sentiment(title, summary):
     if os.environ.get("ANTHROPIC_API_KEY"):
         try:
             return _llm_paraphrase_with_sentiment(title, summary)
-        except Exception:
+        except Exception as e:
             logger.exception("LLM paraphrase failed, falling back to mechanical condense")
+            ops_alerts.notify_claude_failure(f"paraphrase: {e}")
     return _mechanical_condense(title), None
 
 
