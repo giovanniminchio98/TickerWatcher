@@ -62,14 +62,23 @@ ENABLED = {
     # its own comment, or skip) instead of retweeting every new post
     # unconditionally. Code kept intact -- flip back to True to run both.
     "retweets": False,
-    # disabled by default: reply_manager now owns the reply decision over
-    # the same config/reply_targets.json pool, with more judgment (only
-    # replies when it decides a candidate is genuinely worth it, not every
-    # time). Code kept intact -- flip back to True to run both side by side.
+    # disabled by default: comment-engagement's role was absorbed by
+    # reply_manager, which is itself now also disabled (see below) -- kept
+    # off rather than reactivated, since the reply-audience 403 blocks both
+    # equally. Code kept intact -- flip back to True if that ever changes.
     "comment_engagement": False,
     "content_drafts": True,
     "ai_manager": True,
-    "reply_manager": True,
+    # disabled by default: X's "you must be mentioned or otherwise engaged
+    # by the author" reply restriction hit every account we tried,
+    # including the smaller reply_only ones added specifically on the
+    # theory they'd be more permissive -- confirmed live it's not a
+    # per-account setting, it's a blanket API limitation no target account
+    # choice gets around. Automated replies are pointless until/unless that
+    # changes, so this is off; reposting (retweet/quote) of the bigger
+    # accounts still works fine and is unaffected, see ai_manager.py.
+    # Code kept intact -- flip back to True if the restriction ever eases.
+    "reply_manager": False,
     "reply_suggestions": True,
     # disabled by default: ai_manager's own post decision now absorbs
     # filler's old role (a handful of filler.json's generic-engagement
@@ -123,6 +132,8 @@ def main():
     anything_fired |= bool(_safe_run("polls", polls.run, ctx))
     anything_fired |= bool(_safe_run("self_reply", self_reply.run, ctx))
     anything_fired |= bool(_safe_run("ai_manager", ai_manager.run, ctx))
+
+    # disabled by default (see ENABLED) -- kept callable if re-enabled
     anything_fired |= bool(_safe_run("reply_manager", reply_manager.run, ctx))
 
     # disabled by default (see ENABLED) -- kept callable if re-enabled
@@ -135,9 +146,10 @@ def main():
     # toward anything_fired (that would wrongly suppress filler)
     _safe_run("content_drafts", content_drafts.run, ctx)
 
-    # Telegram-only digest of the biggest reply candidates, for manual replies
-    # while X API replies are blocked (see reply_suggestions.py) -- same
-    # "never touches X" reasoning as content_drafts, doesn't affect filler
+    # Telegram-only digest of reply candidates across every reply_targets
+    # account (big and small alike) -- with reply_manager disabled, manual
+    # is the only reply path now, see reply_suggestions.py. Same "never
+    # touches X" reasoning as content_drafts, doesn't affect filler
     _safe_run("reply_suggestions", reply_suggestions.run, ctx)
 
     # independent of the X pipeline/budget above -- always attempted, since

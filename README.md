@@ -68,11 +68,13 @@ roughly 4-6 times/day, decides whether to publish an original post (a fixed
 shape: real market/news view + consequence + emoji + an AI-generated image
 or link) and which candidate posts from `config/reply_targets.json`'s
 bigger accounts are worth reposting — no manual approval step (see "AI
-Manager" below) — and **Reply Manager**, a second, much faster-cadence
-Claude call (roughly hourly) that only handles replies, only to the
-smaller accounts marked `reply_only` (see "Reply Manager" below). Together
-they supersede three older opt-in/mechanical pipelines: **comment-engagement**
-(disabled by default — Reply Manager now owns replies with more judgment),
+Manager" below). A second, faster-cadence trigger (**Reply Manager**) was
+built to handle replies automatically, but is disabled by default — X's
+reply restriction turned out to hit every account regardless of size, so
+automated replies aren't viable right now (see "Reply Manager" below);
+manual replying via "Reply suggestions"' Telegram digest is the reply path
+instead. This supersedes three older opt-in/mechanical pipelines:
+**comment-engagement** (disabled by default — same restriction applies),
 **retweets.py** (disabled by default — AI Manager now decides retweet vs.
 quote-tweet vs. skip per candidate instead of retweeting everything), and
 **filler.py** (disabled by default — AI Manager's own post decision absorbs
@@ -289,35 +291,24 @@ never intervene.
 Requires `ANTHROPIC_API_KEY` — without it, this trigger does nothing (same
 "no safe fallback" reasoning as every other Claude-backed trigger).
 
-### Reply Manager (opt-in via ANTHROPIC_API_KEY) — fast-cadence reply decisions
+### Reply Manager (disabled by default — X's reply restriction isn't a per-account setting)
 
-`src/triggers/reply_manager.py` is where replies live now, split out from
-AI Manager specifically to run on a much faster cadence (roughly hourly,
-`config/reply_manager.json`'s `min_hours_between_calls`, default 0.9)
-independent of AI Manager's slow 4-6 posts/day rhythm — capped at
-`max_replies_per_day` (default 10) total.
+`src/triggers/reply_manager.py` was built to run replies on a much faster
+cadence (roughly hourly) than AI Manager's slow 4-6 posts/day rhythm,
+scoped to accounts marked `reply_only: true` in `config/reply_targets.json`
+— smaller/mid accounts added specifically on the theory that X's "you must
+be mentioned or otherwise engaged by the author" reply restriction was a
+per-account setting bigger accounts commonly enable and smaller ones don't.
 
-**Only ever considers accounts marked `reply_only: true`** in
-`config/reply_targets.json` — the smaller/mid accounts added specifically
-because bigger, more established accounts commonly restrict who can reply
-to their own posts (X's tweet-level conversation-control setting), which
-made replies to them 403 regardless of how good the reply was when this
-logic lived inside AI Manager. Those bigger accounts are still reposted
-(retweet/quote) by AI Manager as before — this trigger just never attempts
-to reply to them.
-
-Never calls Claude if there are no fresh candidates to consider that hour —
-a cheap mechanical check runs first, so a quiet hour costs nothing rather
-than spending a Claude call just to be told "no replies." Uses a lighter,
-dedicated prompt (`src/sources/reply_manager_brain.py`) than AI Manager's
-full snapshot, since it only needs the candidates themselves and the
-account's own recent voice, not prices/news/filler examples too.
-
-Same two-budget gating and "don't start the cooldown on a failed call"
-retry behavior as AI Manager (see above) — a dropped call retries next run
-instead of waiting out a full cooldown for nothing.
-
-Requires `ANTHROPIC_API_KEY` — without it, this trigger does nothing.
+**Confirmed live that theory was wrong.** The smaller `reply_only` accounts
+hit the exact same 403 as the bigger ones — this is a blanket API
+limitation, not something any choice of target account gets around. Since
+automated replies can't succeed regardless of target, this trigger is
+**disabled by default** (`main.py`'s `ENABLED` dict) — reposting
+(retweet/quote) of the bigger accounts is unaffected and still works fine
+via AI Manager, and manual replying (see "Reply suggestions" below) is now
+the only reply path, for every account. Code is left intact in case the
+restriction ever eases — flip `reply_manager` back to `True` to try again.
 
 ### Content drafts (Telegram-only, opt-in via ANTHROPIC_API_KEY)
 
@@ -362,19 +353,16 @@ does nothing without it.
 
 ### Reply suggestions (Telegram-only)
 
-`src/triggers/reply_suggestions.py` covers exactly the accounts Reply
-Manager's AI replies can't: the bigger, non-`reply_only` accounts in
-`config/reply_targets.json` whose tweet-level reply restrictions 403 our
-API replies regardless of content (see AI Manager's notes above). Reply
-Manager already handles the smaller `reply_only` accounts automatically, so
-this digest would be redundant for those — it only ever surfaces the
-bigger accounts. Every run it drops anything older than `max_age_hours`
-(default 6 — replying to a stale post reads badly no matter how much
-engagement it got), ranks what's left by real engagement (likes +
-retweets), and sends the top few (`max_per_run`, default 3) to your
-**private Telegram bot chat only** as a direct `x.com/.../status/...` link
-plus a text snippet — tap the link, X opens straight to that post, write
-your own reply from there.
+`src/triggers/reply_suggestions.py` is the only reply path now that Reply
+Manager is disabled (see above — X's reply restriction turned out to hit
+every account regardless of size, not just the bigger ones). Covers every
+enabled account in `config/reply_targets.json`, big and small alike. Every
+run it drops anything older than `max_age_hours` (default 6 — replying to
+a stale post reads badly no matter how much engagement it got), ranks
+what's left by real engagement (likes + retweets), and sends the top few
+(`max_per_run`, default 3) to your **private Telegram bot chat only** as a
+direct `x.com/.../status/...` link plus a text snippet — tap the link, X
+opens straight to that post, write your own reply from there.
 
 A tweet is only ever suggested once (tracked in state) and is skipped if AI
 Manager already reposted it. Free, mechanical, no `ANTHROPIC_API_KEY`
@@ -496,8 +484,8 @@ reply (does trigger the surcharge, ~$0.20/post total). At 4-6 posts/day:
 That's roughly a 13x cost difference — set `OPENAI_API_KEY` and give the
 image generator real headroom before leaning on the link fallback for very
 long, since sustained link-fallback use eats most or all of the $30 X cap
-on its own. Reposts (retweet/quote) and Reply Manager's replies add on top
-of this at the usual ~$0.015/action rate.
+on its own. Reposts (retweet/quote) add on top of this at the usual
+~$0.015/action rate (replies are manual-only for now, see "Reply Manager").
 
 ### Two-budget design: X API + Claude API summing to one account-wide ceiling, plus a separate image budget
 
@@ -507,8 +495,8 @@ that half of the pipeline cleanly the instant it's hit:
 
 | Budget | File | Default cap | Covers |
 |---|---|---|---|
-| X API | `config/budget.json` | $30/month | Every actual X post/reply/repost from every trigger (whale/news/price/daily/flashback/polls/self-reply/retweets/AI Manager's posts+reposts/Reply Manager's replies) |
-| Claude API | `config/claude_budget.json` | $20/month | Every AI Manager and Reply Manager Claude call, billed on real token usage (`src/claude_budget.py`), not an estimate |
+| X API | `config/budget.json` | $30/month | Every actual X post/repost from every trigger (whale/news/price/daily/flashback/polls/self-reply/retweets/AI Manager's posts+reposts; Reply Manager's replies too, if ever re-enabled) |
+| Claude API | `config/claude_budget.json` | $20/month | Every AI Manager Claude call (and Reply Manager's, if ever re-enabled), billed on real token usage (`src/claude_budget.py`), not an estimate |
 
 **These are sized so they sum to the account-wide monthly ceiling** — the
 combined total this project targets is **$50/month**. If you want to change
@@ -587,7 +575,7 @@ in this repo, and add:
 | `TWELVEDATA_API_KEY` | [twelvedata.com](https://twelvedata.com) → free signup → dashboard API key | Required (for stock/ETF prices) |
 | `ETHERSCAN_API_KEY` | [etherscan.io/apis](https://etherscan.io/apis) → free signup → create API key | Required (for ETH whale alerts) |
 | `COINGECKO_API_KEY` | [coingecko.com/en/api/pricing](https://www.coingecko.com/en/api/pricing) → free Demo plan (no card) | Optional — improves rate limits, code falls back to keyless public API without it |
-| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Optional — enables real LLM paraphrasing of news headlines (Claude Haiku, a fraction of a cent/call), and is *required* for AI Manager's and Reply Manager's autonomous decisions, content-drafts' draft text, and (if re-enabled) comment-engagement's reply text — none of those have a safe generic fallback. |
+| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Optional — enables real LLM paraphrasing of news headlines (Claude Haiku, a fraction of a cent/call), and is *required* for AI Manager's autonomous decisions, content-drafts' draft text, and (if re-enabled) Reply Manager's or comment-engagement's reply text — none of those have a safe generic fallback. |
 | `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) → requires adding billing credit separately from your Anthropic/X accounts | Optional — enables AI Manager's real per-post generated image (DALL-E 3). Without it, posts fall back to `fallback_link_url` instead — the account still works fine, just image-less until this is added. |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables operational notifications in your private bot chat |
 | `TELEGRAM_CHANNEL_ID` | See [Telegram notifications](#telegram-notifications) below | Optional — enables the public-ish channel that mirrors every post |
@@ -671,9 +659,9 @@ actually moves the supply/demand math, not just headlines.
 Reasoning: genuinely notable number, worth adding independent context to
 ```
 
-**Bot chat, Reply Manager audit** — sent whenever it actually sends a reply
-(silent otherwise, since it may run hourly and most hours won't have a
-fresh candidate worth it):
+**Bot chat, Reply Manager audit** — only relevant if `reply_manager` is
+re-enabled (disabled by default, see "Reply Manager" above); would be sent
+whenever it actually sends a reply:
 
 ```
 💬 Reply Manager decision:
@@ -684,9 +672,9 @@ Reasoning: adds a concrete data point the original post didn't mention
 ```
 
 **Bot chat, reply suggestions** — sent every run by `reply_suggestions.py`
-whenever there are new candidates, for manually replying to the bigger
-accounts Reply Manager's AI can't (see "Reply suggestions" above); tap a
-link to open straight to that post and reply from the X app yourself:
+whenever there are new candidates, the only reply path now (see "Reply
+suggestions" above); tap a link to open straight to that post and reply
+from the X app yourself:
 
 ```
 💬 Reply candidates (biggest right now, tap to open + comment):
@@ -785,14 +773,14 @@ ever blocks or breaks the rest of the run.
 - **`config/watchlist.json`** — crypto (needs a valid [CoinGecko id](https://api.coingecko.com/api/v3/coins/list)) and stock/ETF tickers (must be a symbol Twelve Data recognizes). `snapshot_order` controls what appears in the daily market snapshot.
 - **`config/keywords.json`** — `keywords` (case-insensitive substring match against RSS title+summary), `rss_feeds` (only feeds with `"whitelisted": true` are checked; add/remove feeds freely, but broken feed URLs are just logged and skipped, never crash the run), and `max_articles_per_day` (hard daily cap on the only post type that still carries a link — this is the main cost lever).
 - **`config/accounts.json`** — accounts `retweets.py` would auto-retweet if re-enabled (disabled by default, see [Retweets](#retweets-disabled-by-default--superseded-by-ai-manager)). `user_id` is optional and auto-resolves from `handle` on first use. Set `"enabled": true` to activate an account.
-- **`config/reply_targets.json`** — accounts to *repost or reply to*, split by role: non-`reply_only` accounts are AI Manager's repost candidate pool (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--repost-decisions)), `reply_only: true` accounts are Reply Manager's exclusive candidate pool (see [Reply Manager](#reply-manager-opt-in-via-anthropic_api_key--fast-cadence-reply-decisions)) — smaller/mid accounts added specifically because bigger accounts' tweet-level reply restrictions block replies (their posts still get reposted by AI Manager just fine). Just add a `handle` and set `enabled: true` — `user_id` auto-resolves on first use, no manual lookup needed. Plus a `times_per_day` hard cap per account.
+- **`config/reply_targets.json`** — accounts to *repost or (manually) reply to*: non-`reply_only` accounts are AI Manager's repost candidate pool (see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--repost-decisions)); `reply_only: true` marks accounts Reply Manager would have exclusively targeted before it was disabled (see [Reply Manager](#reply-manager-disabled-by-default--xs-reply-restriction-isnt-a-per-account-setting)) — kept as metadata in case that trigger is ever re-enabled. Every enabled account (both kinds) now shows up in "Reply suggestions" for manual replying. Just add a `handle` and set `enabled: true` — `user_id` auto-resolves on first use, no manual lookup needed. Plus a `times_per_day` hard cap per account.
 - **`config/thresholds.json`** — whale minimums (and `max_alerts_per_day`), price % trigger, milestone price levels per symbol, poll day/asset, self-reply timing window, daily-post rotation, `filler.max_per_day` (only relevant if `filler` is re-enabled, see "Filler" above), and `content_drafts` (Telegram-only draft cadence/cooldowns).
 - **`config/filler.json`** — the ~100 generic engagement prompts/facts. `filler.py` itself is disabled by default (see "Filler" above), but this file is still in active use: AI Manager samples a few entries each call as style reference for its own optional generic-post fallback. Add/remove freely; just keep entries factual or purely rhetorical (no specific prices/dates, since those need to trace to a real live source).
 - **`config/budget.json`** — the monthly X API cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/claude_budget.json`** — the monthly Claude API cap, sized alongside `budget.json`'s to sum to the account-wide ceiling (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/image_budget.json`** — the monthly image-generation (DALL-E) cap, a separate provider/bill outside the X+Claude $50 structure (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/ai_manager.json`** — AI Manager's model, call cadence, post/repost daily caps, and `fallback_link_url` (used when no image is available for a post) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--repost-decisions).
-- **`config/reply_manager.json`** — Reply Manager's model, call cadence, and daily reply cap — see [Reply Manager](#reply-manager-opt-in-via-anthropic_api_key--fast-cadence-reply-decisions).
+- **`config/reply_manager.json`** — Reply Manager's model, call cadence, and daily reply cap — see [Reply Manager](#reply-manager-disabled-by-default--xs-reply-restriction-isnt-a-per-account-setting).
 - **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).
 
 ## Testing locally
