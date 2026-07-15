@@ -7,23 +7,30 @@ most worth jumping into surface first. Never posts to X, never costs
 anything, never counts toward anything_fired -- same "Telegram-only side
 channel" pattern as content_drafts.py.
 
+Candidates older than max_age_hours (config, default 6) are dropped before
+ranking -- replying to a post from many hours ago reads as stale and the
+post has usually already peaked, so raw engagement alone isn't enough of a
+signal; recency matters too.
+
 A tweet is shown at most once (tracked in state, capped like every other
 tweet-id list in this codebase) and is skipped if AI Manager already
 replied to or reposted it -- no point suggesting a manual reply to
 something already acted on.
 """
 import logging
+from datetime import timedelta
 
 from src import telegram_client
 
 logger = logging.getLogger("tickerwatch.triggers.reply_suggestions")
 
 
-def _candidates(ctx, state):
+def _candidates(ctx, state, max_age_hours):
     acted_ids = set(ctx.state.get("ai_manager", {}).get("replied_tweet_ids", [])) | set(
         ctx.state.get("ai_manager", {}).get("reposted_tweet_ids", [])
     )
     shown_ids = set(state.get("shown_tweet_ids", []))
+    cutoff = ctx.now - timedelta(hours=max_age_hours)
 
     candidates = []
     for target in ctx.config["reply_targets"]["targets"]:
@@ -42,6 +49,8 @@ def _candidates(ctx, state):
         for t in tweets:
             if t["id"] in shown_ids or t["id"] in acted_ids:
                 continue
+            if t.get("created_at") and t["created_at"] < cutoff:
+                continue
             candidates.append({"handle": handle, **t})
     return candidates
 
@@ -52,7 +61,7 @@ def run(ctx):
         return False
 
     state = ctx.state["reply_suggestions"]
-    candidates = _candidates(ctx, state)
+    candidates = _candidates(ctx, state, cfg.get("max_age_hours", 6))
     if not candidates:
         return False
 
