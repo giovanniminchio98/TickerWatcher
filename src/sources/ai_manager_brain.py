@@ -23,15 +23,14 @@ never empty hype -- that's non-negotiable regardless of format. The
 sentence on what it means, a few emoji, and JUST IN/BREAKING or a specific
 ticker/name mention when it's genuinely warranted (never decorative).
 
-Claude also decides wants_extras per post (nudged by how many posts have
-gone out since the last one that had extras) -- when true, it writes a
-separate image_prompt describing a vivid, specific image (a different
-provider, see src/sources/image_gen.py/DALL-E, turns that into the actual
-image, since Claude itself can't generate images) and/or news_index (the
-real source URL of whichever NEWS item the post is based on becomes the
-fallback link if no image ends up available). When wants_extras is false,
-the post goes out as genuine plain text -- no image attempt, no link
-attempt -- which is also by far the cheapest post shape.
+No images and no links, by deliberate choice: instead of image/link
+"extras", Claude can give a post real depth via second_part -- a genuine
+continuation posted immediately as its own reply when a topic has enough
+substance to expand on, rather than an image or an outbound click. The
+account's own profile is meant to be enough to inform a reader end to end.
+(Image generation code -- src/sources/image_gen.py/DALL-E -- is untouched
+and still callable if this changes later; this trigger just doesn't use
+it right now.)
 
 Reposting was previously a separate mechanical trigger (retweets.py, now
 disabled) that retweeted every new post from every monitored account
@@ -87,8 +86,8 @@ def _build_prompt(snapshot):
     filler_examples = "\n".join(f"- {t}" for t in snapshot.get("filler_examples", [])) or "(none)"
 
     posts_per_batch = snapshot.get("posts_per_batch", 1)
-    extras_every_n = snapshot.get("extras_every_n_posts", 4)
-    since_extra = snapshot.get("posts_since_last_extra", 0)
+    second_part_every_n = snapshot.get("second_part_every_n_posts", 4)
+    since_second_part = snapshot.get("posts_since_last_second_part", 0)
 
     return (
         "You are the sole decision-maker for a crypto/finance/AI/markets X (Twitter) account. "
@@ -103,6 +102,9 @@ def _build_prompt(snapshot):
         "padding to the max with a weak one.\n\n"
         "Hard rules:\n"
         "- Never invent a fact, number, or event not present in the data below.\n"
+        "- Never include a link or URL anywhere, in a post or a second_part. This account relies "
+        "on X's reach staying intact, and the profile itself should be enough to inform a reader "
+        "end to end without needing to click anywhere else.\n"
         "- Every post must be genuinely useful and written in plain, easy-to-follow language -- "
         "explain what's actually happening and why it matters, never a bare headline with nothing "
         "explained, and never empty crypto-degen hype. This account exists to bring real value to "
@@ -118,7 +120,7 @@ def _build_prompt(snapshot):
         "securities from a pilot into real, live trading. Wall Street's settlement backbone now "
         "runs on blockchain, for real, not a test.'\n"
         "  Same facts, same length -- the clear version just defines DTCC inline instead of "
-        "assuming the reader already knows. Write every post this way.\n"
+        "assuming the reader already knows. Write every post (and any second_part) this way.\n"
         "- Because later posts in the batch go out with a delay, only the FIRST post should lean on "
         "'right now' price/news framing. Any additional posts should be more evergreen -- a concept "
         "explainer, a historical comparison, a 'here's what to watch' framing, how something in "
@@ -143,22 +145,15 @@ def _build_prompt(snapshot):
         "reader's time -- that should be rare, not a default. This doesn't lower the bar: a post "
         "still has to be genuinely useful and never filler, it just means look harder before "
         "concluding there's nothing.\n"
-        "- For each post, decide wants_extras: whether it should carry an image or a link. Aim for "
-        f"roughly 1 in every {extras_every_n} posts to carry extras -- {since_extra} post(s) have "
-        "gone out since the last one that had extras, so treat that as a loose guide, not a rule: "
-        "give extras to a post that's genuinely important or visual regardless of the count, and "
-        "feel free to skip extras on a routine post even if the count says one is 'due'. Never "
-        "force extras onto a mediocre post just to hit the ratio, and never withhold them from a "
-        "post that clearly deserves them.\n"
-        "- If wants_extras is true for a post, also write image_prompt: a vivid, specific "
-        "description (for an AI image generator) of a single image that visually represents this "
-        "exact post's key elements -- the specific asset/event/number/mood involved, not a generic "
-        "stock photo. Leave image_prompt null when wants_extras is false or should_post is false.\n"
-        "- If wants_extras is true, also set news_index: the index (from the NEWS list below) of "
-        "the specific article this post is actually based on, if there is one -- its real source "
-        "URL becomes the post's fallback link when no image ends up available. Set news_index to "
-        "null if the post isn't based on one specific article -- never guess an index just to fill "
-        "the field.\n"
+        "- For each post, decide second_part: an optional continuation posted immediately as a "
+        "reply to the post itself, when the topic has genuine depth worth adding -- more mechanism, "
+        "a concrete example, the second half of a comparison, not a restatement or filler. Most "
+        f"posts should stay a single tweet. Aim for roughly 1 in every {second_part_every_n} posts "
+        f"to use a second_part -- {since_second_part} post(s) have gone out since the last one that "
+        "had one -- but treat that as a loose guide, not a rule: give a genuinely deep topic its "
+        "second_part regardless of the count, and leave a routine post single even if one is 'due'. "
+        f"Leave second_part null when it isn't warranted. Same {MAX_POST_LEN}-character limit and "
+        "same plain-language/no-link rules apply to second_part as to the main post.\n"
         "- Reposts: a candidate is either a plain retweet (genuinely worth amplifying as-is, no "
         "comment needed) or a quote-tweet (add a short, sharp take that gives it your own "
         f"perspective -- no generic compliments, under {MAX_QUOTE_LEN} characters if quoting), at "
@@ -183,8 +178,8 @@ def _build_prompt(snapshot):
         f"GENERIC ENGAGEMENT EXAMPLES (style reference only, see the original-post rule above):\n{filler_examples}\n\n"
         "Respond with ONLY raw JSON (no markdown fences, no commentary), exactly matching this "
         "shape:\n"
-        '{"posts": [{"should_post": bool, "text": string or null, "image_prompt": string or null, '
-        '"news_index": int or null, "wants_extras": bool, "reasoning": string}, ...], '
+        '{"posts": [{"should_post": bool, "text": string or null, "second_part": string or null, '
+        '"reasoning": string}, ...], '
         '"reposts": [{"candidate_index": int, "action": "retweet" or "quote", '
         '"text": string or null, "reasoning": string}]}\n'
         f'"posts" may contain 0 to {posts_per_batch} items -- only include items where should_post '
