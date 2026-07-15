@@ -9,7 +9,10 @@ the call count down to ~5-10/day while still covering everything the account
 does. Reposting was previously a separate mechanical trigger (retweets.py,
 now disabled) that retweeted every new post from every monitored account
 unconditionally -- folded in here so it gets the same judgment as replies
-instead of firing blindly.
+instead of firing blindly. Same story for filler.py's old "always post
+something" role: Claude sees a handful of those generic-engagement examples
+as style reference and may write one only if it's genuinely good -- nothing
+posted is explicitly the preferred outcome over posting mediocre filler.
 
 Same "no safe fallback" reasoning as reply_writer.py/draft_writer.py: without
 ANTHROPIC_API_KEY this returns (None, None) rather than posting/replying with
@@ -54,6 +57,7 @@ def _build_prompt(snapshot):
         f'{i}. @{c["handle"]}: """{c["text"]}"""' for i, c in enumerate(snapshot["reply_candidates"])
     ) or "(no candidates available right now)"
     own_recent = "\n".join(f"- {t}" for t in snapshot["own_recent_posts"]) or "(no post history yet)"
+    filler_examples = "\n".join(f"- {t}" for t in snapshot.get("filler_examples", [])) or "(none)"
 
     return (
         "You are the sole decision-maker for a crypto/finance/markets X (Twitter) account. "
@@ -67,7 +71,13 @@ def _build_prompt(snapshot):
         "Hard rules:\n"
         "- Never invent a fact, number, or event not present in the data below.\n"
         "- Original post: no hashtags, no @mentions, at most one emoji if natural, under "
-        f"{MAX_POST_LEN} characters, should read like a real person's take, not a bot alert.\n"
+        f"{MAX_POST_LEN} characters, should read like a real person's take, not a bot alert. "
+        "Primarily react to real prices/news above. If nothing there is genuinely post-worthy, "
+        "you may instead post a generic, evergreen engagement question or observation in the "
+        "spirit of the GENERIC ENGAGEMENT EXAMPLES below (style reference only, never copy one "
+        "verbatim) -- but ONLY if it's genuinely good and doesn't read as filler. Posting nothing "
+        "is the right call, and strictly preferred, over posting something mediocre just to have "
+        "posted something.\n"
         "- Replies: add genuine value (a fact, number, or sharp observation) -- never a generic "
         "compliment, never ask the poster to follow/engage/check anything out, no links, no "
         f"hashtags, no @mentions, under {MAX_REPLY_LEN} characters, at most "
@@ -95,6 +105,7 @@ def _build_prompt(snapshot):
         f"NEWS (indexed):\n{news_lines}\n\n"
         f"REPLY/REPOST CANDIDATES (indexed, shared pool for both decisions):\n{reply_lines}\n\n"
         f"OWN RECENT POSTS (for voice/style, avoid repeating):\n{own_recent}\n\n"
+        f"GENERIC ENGAGEMENT EXAMPLES (style reference only, see the original-post rule above):\n{filler_examples}\n\n"
         "Respond with ONLY raw JSON (no markdown fences, no commentary), exactly matching this "
         "shape:\n"
         '{"post": {"should_post": bool, "text": string or null, "reasoning": string}, '

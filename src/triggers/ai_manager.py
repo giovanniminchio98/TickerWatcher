@@ -15,6 +15,13 @@ that trigger retweeted every new post from every monitored account
 unconditionally with zero judgment, which didn't fit "AI decides everything";
 here a repost only happens when Claude actually picks it.
 
+The original post decision also absorbs filler.py's old role (now disabled)
+of "always post something so the account doesn't go quiet" -- instead of a
+mechanical pick from a fixed list every time nothing else fired, Claude sees
+a few of those same generic-engagement examples purely as style reference
+and may write something in that spirit ONLY if it's genuinely good; posting
+nothing is explicitly the preferred outcome over posting mediocre filler.
+
 Runs on its own cadence independent of the hourly workflow schedule --
 min_hours_between_calls + max_calls_per_day (config/ai_manager.json) bound it
 to roughly 5-10 Claude calls/day even though main.py itself runs hourly.
@@ -41,6 +48,20 @@ import random
 from src import telegram_client
 from src.formatting import fmt_pct, fmt_price, truncate
 from src.sources import ai_manager_brain, news_rss, twelvedata
+
+
+def _filler_examples(ctx, n=5):
+    """A small random sample from config/filler.json's generic engagement
+    prompts, handed to Claude as style reference only (never posted
+    verbatim) for the rare case nothing data-driven is post-worthy but a
+    genuine, non-rubbish generic post would still be nice -- see
+    ai_manager_brain._build_prompt's "GENERIC ENGAGEMENT EXAMPLES" section.
+    Absorbs filler.py's old role of "always post something," but only as an
+    option Claude can take or leave, not a mechanical last resort."""
+    posts = ctx.config.get("filler", {}).get("posts", [])
+    if not posts:
+        return []
+    return random.sample(posts, min(n, len(posts)))
 
 logger = logging.getLogger("tickerwatch.triggers.ai_manager")
 
@@ -184,6 +205,7 @@ def run(ctx):
         "news": _news_snapshot(ctx),
         "reply_candidates": _reply_candidates(ctx, cfg, state),
         "own_recent_posts": state.get("recent_post_texts", []),
+        "filler_examples": _filler_examples(ctx),
         "max_replies_per_call": cfg["max_replies_per_call"],
         "max_reposts_per_call": cfg["max_reposts_per_call"],
         "prefer_plain_retweets": cfg.get("prefer_plain_retweets", False),
