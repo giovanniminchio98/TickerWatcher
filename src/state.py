@@ -33,6 +33,7 @@ DEFAULT_STATE = {
         "resolved_accounts": {},
         "post_queue": [],
         "posts_since_last_second_part": 0,
+        "recent_news_urls": [],
     },
     "reply_manager": {
         "last_call_time": None,

@@ -65,6 +65,11 @@ from src.sources import ai_manager_brain, news_rss, twelvedata
 
 logger = logging.getLogger("tickerwatch.triggers.ai_manager")
 
+# how many posts' worth of news URLs to remember and exclude from future
+# snapshots -- comfortably covers "not again within the next several
+# posts" without permanently blocking a story that's still relevant later
+RECENT_NEWS_URLS_CAP = 6
+
 
 def _filler_examples(ctx, n=5):
     """A small random sample from config/filler.json's generic engagement
@@ -122,10 +127,18 @@ def _price_snapshot_lines(ctx):
     return lines
 
 
-def _news_snapshot(ctx, limit=6):
+def _news_snapshot(ctx, state, limit=6):
+    """Excludes articles referenced by a post within roughly the last
+    RECENT_NEWS_URLS_CAP posts (state["recent_news_urls"]) -- without this,
+    the same real story could resurface call after call, since RSS feeds
+    keep serving the same entries until they age out on the source's end.
+    Not a permanent block: the list is a rolling window, so a story is fair
+    game again once it's rolled off (a different day/week revisit is fine,
+    even good)."""
     kw_cfg = ctx.config["keywords"]
+    already_used = set(state.get("recent_news_urls", []))
     try:
-        return news_rss.fetch_matching_articles(kw_cfg["rss_feeds"], kw_cfg["keywords"], set(), limit)
+        return news_rss.fetch_matching_articles(kw_cfg["rss_feeds"], kw_cfg["keywords"], already_used, limit)
     except Exception:
         logger.exception("News fetch failed for ai_manager")
         return []
@@ -283,7 +296,7 @@ def run(ctx):
 
     snapshot = {
         "prices": _price_snapshot_lines(ctx),
-        "news": _news_snapshot(ctx),
+        "news": _news_snapshot(ctx, state),
         "repost_candidates": _repost_candidates(ctx, cfg, state),
         "own_recent_posts": state.get("recent_post_texts", []),
         "filler_examples": _filler_examples(ctx),
@@ -318,17 +331,24 @@ def run(ctx):
 
     queued_items = []
     declined_posts = []
+    recent_news_urls = state.setdefault("recent_news_urls", [])
     for post in (decision.get("posts") or [])[:take]:
         if not post.get("should_post") or not post.get("text"):
             declined_posts.append(post)
             continue
+        link_url = _preferred_link(snapshot, post)
         queued_items.append({
             "text": post["text"],
             "second_part": post.get("second_part"),
-            "link_url": _preferred_link(snapshot, post),
+            "link_url": link_url,
             "reasoning": post.get("reasoning", ""),
             "queued_at": ctx.now.timestamp(),
         })
+        if link_url:
+            # tracked at queue time (not fire time) so the very next call in
+            # this same run cycle can't re-surface the same article either
+            recent_news_urls.append(link_url)
+    state["recent_news_urls"] = recent_news_urls[-RECENT_NEWS_URLS_CAP:]
     state["post_queue"].extend(queued_items)
 
     repost_results = []
