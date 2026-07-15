@@ -169,3 +169,36 @@ class XClient:
         except Exception:
             logger.exception("Failed to fetch recent tweets+text for user %s", user_id)
             return []
+
+    def get_recent_tweets_with_metrics(self, user_id, since_id=None, max_results=5):
+        """Same as get_recent_tweets_with_text but also returns each tweet's
+        public engagement metrics, for reply_suggestions.py to rank candidates
+        by "biggest" (most liked/retweeted) rather than just newest. Newest-first
+        list of {"id": str, "text": str, "like_count": int, "retweet_count": int}."""
+        if DRY_RUN:
+            logger.info("[DRY RUN] would fetch tweets+metrics for user %s since %s", user_id, since_id)
+            return []
+        try:
+            resp = self.client.get_users_tweets(
+                id=user_id,
+                since_id=since_id,
+                max_results=max_results,
+                exclude=["retweets", "replies"],
+                user_auth=True,
+                tweet_fields=["public_metrics"],
+            )
+            if not resp.data:
+                return []
+            out = []
+            for t in resp.data:
+                metrics = t.public_metrics or {}
+                out.append({
+                    "id": str(t.id),
+                    "text": t.text,
+                    "like_count": metrics.get("like_count", 0),
+                    "retweet_count": metrics.get("retweet_count", 0),
+                })
+            return out
+        except Exception:
+            logger.exception("Failed to fetch recent tweets+metrics for user %s", user_id)
+            return []

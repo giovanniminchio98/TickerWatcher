@@ -28,6 +28,7 @@ from src.triggers import (
     news_alerts,
     polls,
     price_alerts,
+    reply_suggestions,
     retweets,
     scheduled_daily,
     self_reply,
@@ -60,6 +61,7 @@ ENABLED = {
     "comment_engagement": False,
     "content_drafts": True,
     "ai_manager": True,
+    "reply_suggestions": True,
     "filler": True,
     "budget_report": True,
 }
@@ -116,6 +118,11 @@ def main():
     # Telegram-only draft ideas -- never posts to X, so it never counts
     # toward anything_fired (that would wrongly suppress filler)
     _safe_run("content_drafts", content_drafts.run, ctx)
+
+    # Telegram-only digest of the biggest reply candidates, for manual replies
+    # while X API replies are blocked (see reply_suggestions.py) -- same
+    # "never touches X" reasoning as content_drafts, doesn't affect filler
+    _safe_run("reply_suggestions", reply_suggestions.run, ctx)
 
     # independent of the X pipeline/budget above -- always attempted, since
     # this is what tells you when to top up X credits
