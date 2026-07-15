@@ -50,7 +50,12 @@ logging.basicConfig(
 logger = logging.getLogger("tickerwatch.main")
 
 ENABLED = {
-    "whale_alerts": True,
+    # paused: mechanical, no-context alerts that could fire back-to-back
+    # with nothing tying them together -- doesn't fit the "constant quality,
+    # meaningful posts" bar the account is now held to. AI Manager already
+    # covers genuinely notable market moves with real explanation attached.
+    # Code kept intact -- flip back to True to resume.
+    "whale_alerts": False,
     "news_alerts": True,
     "price_alerts": True,
     "scheduled_daily": True,

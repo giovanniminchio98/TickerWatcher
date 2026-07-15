@@ -27,18 +27,25 @@ data source is genuinely free.
 Every run, in strict priority order (higher priority always gets first claim
 on the monthly budget):
 
-1. **Whale/on-chain alerts** — large BTC (blockchain.info) / ETH (Etherscan) transfers.
-   Siren count in the post scales with size (1 🚨 at the minimum threshold, up
-   to 10 at $200M+). The first alert per asset per run also includes a
-   same-asset market context line (🟢/🔴 price + 24h change) reusing data
-   already fetched for the run, so it's free and the alert doesn't read as
-   just a bare number. Capped at `thresholds.whale.max_alerts_per_run`
-   **per chain per run** (BTC and ETH each have their own independent
-   counter), so a busy run can't turn into a wall of alerts for one chain.
-   No coin logo/media on the X post -- tried and pulled back, looked bad.
-   The tx hash/explorer link is also gone from the X post, but the Telegram
-   channel copy still gets the real block-explorer link (Telegram is free),
-   same pattern as news alerts' source URL.
+1. **Whale/on-chain alerts (paused by default)** — large BTC (blockchain.info)
+   / ETH (Etherscan) transfers. Paused because a mechanical, no-context
+   alert (occasionally firing back-to-back with nothing tying them
+   together) doesn't fit the "constant quality, meaningful posts" bar the
+   account is now held to — AI Manager already covers genuinely notable
+   market moves with real explanation attached. Code kept intact (flip
+   `whale_alerts` back to `True` in `main.py`'s `ENABLED` to resume); the
+   rest of this description is how it behaves if re-enabled. Siren count in
+   the post scales with size (1 🚨 at the minimum threshold, up to 10 at
+   $200M+). The first alert per asset per run also includes a same-asset
+   market context line (🟢/🔴 price + 24h change) reusing data already
+   fetched for the run, so it's free and the alert doesn't read as just a
+   bare number. Capped at `thresholds.whale.max_alerts_per_run` **per chain
+   per run** (BTC and ETH each have their own independent counter), so a
+   busy run can't turn into a wall of alerts for one chain. No coin
+   logo/media on the X post -- tried and pulled back, looked bad. The tx
+   hash/explorer link is also gone from the X post, but the Telegram
+   channel copy still gets the real block-explorer link (Telegram is
+   free), same pattern as news alerts' source URL.
 2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
    The main post names the outlet only (no link, e.g. "via CoinDesk"), with
    the real source URL in a follow-up reply -- X's algorithm has suppressed
@@ -63,12 +70,13 @@ Plus a separate **retweet pipeline** (disabled by default — see below), a
 ready-to-post draft ideas (crypto/stock moves, matching news) to your private
 Telegram chat for you to review, refine, and post yourself, a handful a day
 (see "Content drafts" below) — **AI Manager**, an opt-in fully autonomous
-pipeline (disabled unless `ANTHROPIC_API_KEY` is set) where one Claude call,
-roughly 4-6 times/day, decides whether to publish an original post (a fixed
-shape: real market/news view + consequence + emoji + an AI-generated image
-or link) and which candidate posts from `config/reply_targets.json`'s
-bigger accounts are worth reposting — no manual approval step (see "AI
-Manager" below). A second, faster-cadence trigger (**Reply Manager**) was
+pipeline (disabled unless `ANTHROPIC_API_KEY` is set) where a Claude call,
+roughly 6-7 times/day, decides a *batch* of up to 3 original posts each
+time (queued and drained one per subsequent run, so total output is
+10-14 posts/day from far fewer calls) and which candidate posts from
+`config/reply_targets.json`'s bigger accounts are worth reposting — no
+manual approval step (see "AI Manager" below). A second, faster-cadence
+trigger (**Reply Manager**) was
 built to handle replies automatically, but is disabled by default — X's
 reply restriction turned out to hit every account regardless of size, so
 automated replies aren't viable right now (see "Reply Manager" below);
@@ -201,7 +209,7 @@ hype.** This account exists to bring real value to readers, not noise; that
 never changes no matter how the cadence or format evolves.
 
 **Posts are generated in batches, not one Claude call each.** Each Claude
-call decides up to `posts_per_batch` (default 2) original posts at once —
+call decides up to `posts_per_batch` (default 3) original posts at once —
 the first fires right away, any others are queued
 (`state["ai_manager"]["post_queue"]`) and drained one at a time on
 subsequent runs, relying on the hourly cron cadence itself to spread them
@@ -214,8 +222,11 @@ with a delay, only the first is written to lean on "right now" price/news
 framing — additional ones are meant to be more evergreen (a concept
 explainer, a historical comparison, a "what to watch" framing) so they
 still read as accurate a few hours later. A queued post that sits longer
-than `max_queue_age_hours` (default 12) is dropped rather than fired stale.
-It also decides which (if any) of a handful of candidate posts from
+than `max_queue_age_hours` (default 12) is dropped rather than fired stale,
+and a batch is also trimmed to whatever the remaining daily quota can
+actually still take (`max_posts_per_day` minus what's already posted/queued
+today), so Claude is never asked to produce more than could realistically
+fire. It also decides which (if any) of a handful of candidate posts from
 `config/reply_targets.json`'s bigger accounts are worth reposting — either
 a plain retweet or a quote-tweet with Claude's own short take added.
 Replies moved out to their own, much faster trigger (see "Reply Manager"
@@ -228,8 +239,15 @@ open with `JUST IN:`/`BREAKING:` and name specific tickers (`$BTC`,
 `$NVDA`) or big recognizable names when a post is genuinely fresh and
 time-sensitive, purely to aid clarity/engagement, never as decoration on a
 routine take. The plain-language explanation stays mandatory either way.
-Nothing here is "always fire if the cap allows it" — Claude can and does
-decide no action at all is the right call.
+
+**Every call is pushed to actually produce something.** Since a Claude call
+costs money whether or not it results in a post, the prompt explicitly asks
+Claude to make a genuine effort to find at least one worth-it post each
+call — with live prices, news, and generic-engagement examples to draw
+from, there's almost always something real to say. Returning zero posts is
+meant to be rare, not a default "when in doubt, skip" outcome — but the
+quality bar doesn't move: it just means look harder before concluding
+there's nothing, never post something hollow to fill the slot.
 
 Every fact it can act on is handed to it explicitly in one snapshot (current
 watchlist prices, matching news headlines, the candidate posts' actual text,
@@ -243,8 +261,7 @@ wrong tweet.
 The snapshot also includes a handful of `filler.json`'s generic-engagement
 examples as pure style reference (see "Filler" above) — Claude may write an
 original post in that spirit if nothing price/news-driven is post-worthy,
-but only if it's genuinely good; posting nothing is the explicitly preferred
-outcome over posting mediocre filler.
+as long as it's genuinely good and not filler for filler's sake.
 
 **Each post's `wants_extras` decides its own shape — most posts are
 deliberately plain text.** Claude sets `wants_extras` per post, nudged by
@@ -458,14 +475,14 @@ type where a real clickable link exists anywhere in the thread.
 
 | Post type | ~posts/month | Link? | Cost |
 |---|---|---|---|
-| Whale alerts (capped 1/chain/run, cashtag only) | ~12 | no (see below) | $0.18 |
+| Whale alerts (**paused by default**, capped 1/chain/run, cashtag only) | ~12 if re-enabled | no (see below) | $0.18 if re-enabled |
 | News (capped at 2/day, main + source-link reply, ~$0.215/article) | up to ~120 (60 articles) | reply only | up to $12.90 |
 | Price alerts | ~20 | no | $0.30 |
 | Scheduled daily | ~30 | no | $0.45 |
 | Flashback | ~8 | no | $0.12 |
 | Polls | ~4 | no | $0.06 |
 | Self-reply | ~15 | no | $0.23 |
-| **Real-content subtotal** | | | **~$1.34 - $14.24/month**, depending on how often news actually matches |
+| **Real-content subtotal** | | | **~$1.16 - $14.06/month**, depending on how often news actually matches |
 
 Whale alerts use the asset as a `$` cashtag ($BTC/$ETH) rather than plain
 text or a hashtag-only mention — confirmed via a live billing test that this
