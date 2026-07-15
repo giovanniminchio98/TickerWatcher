@@ -74,7 +74,10 @@ def run(ctx):
                 continue
             reply_id = ctx.x.reply(truncate(comment), tweet["id"])
             if reply_id:
-                ctx.budget.record_spend(has_link=False, text=f"Reply to @{handle}: {comment}")
+                # a reply isn't original content -- never mirror to the public channel
+                ctx.budget.record_spend(
+                    has_link=False, text=f"Reply to @{handle}: {comment}", mirror_to_channel=False
+                )
                 acct_state["commented_today"] += 1
                 fired = True
 

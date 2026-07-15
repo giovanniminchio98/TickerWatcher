@@ -507,11 +507,15 @@ Two separate destinations, kept deliberately apart:
 - **Your private bot chat** (`TELEGRAM_CHAT_ID`) — technical messages only:
   a short confirmation after every post and the daily/low-budget reports.
   No post content here, just budget bookkeeping.
-- **A Telegram channel** (`TELEGRAM_CHANNEL_ID`) — a full mirror of every
-  post that actually fires. Since Telegram is free, the channel copy can be
-  *more generous* than the X post itself: it always includes the news
+- **A Telegram channel** (`TELEGRAM_CHANNEL_ID`) — a mirror of *original
+  posts only* (whale/news/price/scheduled/flashback/polls/self-reply/AI
+  Manager's own post decision). Since Telegram is free, the channel copy can
+  be *more generous* than the X post itself: it always includes the news
   article's source URL, regardless of whether the X-side reply carrying
-  that same link ended up firing.
+  that same link ended up firing. Replies and reposts (retweets/quote-tweets)
+  never mirror here (`Budget.record_spend`'s `mirror_to_channel=False`) —
+  the channel is meant to read as "everything this account itself wrote,"
+  not a log of every engagement action.
 
 **Bot chat, per-post** — sent right after every single successful post/reply/retweet:
 

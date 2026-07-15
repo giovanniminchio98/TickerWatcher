@@ -46,7 +46,10 @@ def run(ctx):
         # test burst.
         tweet_id = new_ids[0]
         if ctx.budget.can_spend(has_link=False) and ctx.x.retweet(tweet_id):
-            ctx.budget.record_spend(has_link=False, text=f"retweet of @{handle}'s post {tweet_id}")
+            # a retweet isn't original content -- never mirror to the public channel
+            ctx.budget.record_spend(
+                has_link=False, text=f"retweet of @{handle}'s post {tweet_id}", mirror_to_channel=False
+            )
             count += 1
 
         state["last_seen_tweet_id"][handle] = new_ids[0]
