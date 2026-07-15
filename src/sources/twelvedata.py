@@ -31,11 +31,17 @@ def get_quote(symbol):
 
 def get_quotes_batch(symbols):
     """Same shape as get_quote, but for many symbols in ONE HTTP request
-    (comma-joined) -- one call at N symbols still costs N of the free
-    tier's 800 API credits/day, but it's a single request rather than N,
-    which is what actually matters for the 8 requests/minute rate limit.
-    Callers fetching a broad list (e.g. AI Manager's ~50-stock universe)
-    should always use this instead of looping get_quote() per symbol.
+    (comma-joined) instead of N separate ones. Confirmed live: Twelve
+    Data's free-tier per-minute limit is credit-based, not request-count
+    based -- each symbol in the batch still counts against it, so a large
+    batch (or one landing soon after other triggers' own Twelve Data
+    calls in the same run) can still 429. Deliberately NOT chunked/paced
+    to work around that (would cost several minutes of added runtime per
+    call) -- same as get_quote, an HTTP error (429 or otherwise) raises
+    here; the caller (ai_manager.py) already wraps this in a try/except
+    and just carries on without stock data that one time, same as any
+    other missing data in this codebase. Kept to a 30-symbol list (see
+    watchlist.stocks_broad) specifically to keep misses rare in practice.
 
     Returns {symbol: {"price": float, "percent_change": float}, ...} --
     a symbol missing from the result (bad ticker, per-symbol error) is
