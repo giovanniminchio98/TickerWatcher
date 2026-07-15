@@ -66,18 +66,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 18,
-      "usd_used": 0.64
+      "posts_used": 19,
+      "usd_used": 0.655
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 89,
-    "usd_used": 5.035
+    "posts_used": 90,
+    "usd_used": 5.05
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.1804
+    "usd_used": 0.1939
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -204,6 +204,11 @@
   "flashback": {
     "last_posted_date": "2026-07-15"
   },
+  "image_budget": {
+    "low_budget_alert_sent_period": null,
+    "period": "2026-07",
+    "usd_used": 0.0
+  },
   "news": {
     "posted_count_today": 2,
     "posted_date": "2026-07-15",
@@ -241,6 +246,28 @@
       "XRP": 1.059
     },
     "last_alert_time": {}
+  },
+  "reply_manager": {
+    "account_replies_today": {},
+    "calls_today": 1,
+    "date": "2026-07-15",
+    "last_call_time": 1784120475.227414,
+    "replied_tweet_ids": [],
+    "replies_today": 0,
+    "resolved_accounts": {
+      "cryptotony__": {
+        "resolved_user_id": "893111826254356481"
+      },
+      "gordongekko": {
+        "resolved_user_id": "1354400126857605121"
+      },
+      "iamcryptowolfy": {
+        "resolved_user_id": "1509206479475298305"
+      },
+      "nexocooker": {
+        "resolved_user_id": "2032832046842667008"
+      }
+    }
   },
   "reply_suggestions": {
     "resolved_accounts": {
@@ -302,7 +329,10 @@
       "2077309696621568266",
       "2077309725868270044",
       "2077318753541349689",
-      "2077348843201737144"
+      "2077348843201737144",
+      "2077370160806309903",
+      "2077373110903517205",
+      "2077370821107142791"
     ]
   },
   "retweets": {
@@ -323,9 +353,9 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958152,
-    "last_eth_block": 25537922,
-    "posted_count_today": 5,
+    "last_btc_block_height": 958154,
+    "last_eth_block": 25538219,
+    "posted_count_today": 6,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
       "7c948afa3a5e9151783519fcb0465b4d96b33e52c534fffd97fcbaff151f1be1",
@@ -370,7 +400,8 @@
       "cd75eab3a09ab5916e87b5535cbe90e07252f3edfcc48d0ebd4e49c7d3e52cf1",
       "504ab9e611537cc13dc6c40e339fd3bb8983b29f8a83136ebc1a0a082f50ef52",
       "9468009006e9c84e9c35c72a89c69229533f6a2592fbe5629f8a0e3f5a745a69",
-      "2097b4d8c4cdd185ccaaa51c38f0333a4fa6bdd7472e1a6b7acc3a3a8996a076"
+      "2097b4d8c4cdd185ccaaa51c38f0333a4fa6bdd7472e1a6b7acc3a3a8996a076",
+      "463db8a9b57f9f429366010633a82615eba3c1c2b51daff3ca05fec0735c8c19"
     ]
   }
 }
