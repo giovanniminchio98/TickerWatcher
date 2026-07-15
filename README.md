@@ -227,6 +227,14 @@ daily caps on posts (`max_posts_per_day`, default 5), replies
 many a single call can send), and reposts (`max_reposts_per_day`, default
 10, with `max_reposts_per_call` capping how many a single call can do).
 
+A call that fails outright or comes back unparseable doesn't start the
+cooldown -- `last_call_time` only updates on a successfully parsed decision,
+so a dropped call is retried on the very next hourly run instead of
+waiting out a full cooldown for a call that never actually produced
+anything. `calls_today` still increments on every attempt regardless, so a
+persistently broken call can't retry more than `max_calls_per_day` times in
+one day.
+
 **Two independent hard budget caps**, each stopping this trigger cleanly
 (never erroring) the instant it's reached:
 

@@ -219,13 +219,21 @@ def run(ctx):
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
-    state["last_call_time"] = ctx.now.timestamp()
     state["calls_today"] += 1
 
     if usage is not None:
         ctx.claude_budget.record_spend(usage, cfg["model"])
     if decision is None:
+        # outright API failure or an unparseable response -- don't start the
+        # cadence cooldown on a call that produced nothing usable, so the
+        # very next hourly run retries immediately instead of waiting out a
+        # full 2.5h+ for a call that never actually happened. calls_today
+        # still increments either way, so a persistently broken call can't
+        # retry more than max_calls_per_day times in one day.
         return False
+
+    # only a successfully parsed decision starts the real cooldown
+    state["last_call_time"] = ctx.now.timestamp()
 
     fired = False
     post_result = None
