@@ -175,21 +175,24 @@ def _preferred_link(ctx, snapshot, post):
 
 
 def _attach_image_or_link(ctx, image_prompt, fallback_url):
-    """Returns (media_id_or_None, link_url_or_None) -- exactly one of these
-    is populated when an image or a link fallback is actually available,
-    both are None if neither could be produced (a post still goes out
-    text-only rather than being blocked entirely)."""
+    """Returns (media_id_or_None, link_url_or_None, image_bytes_or_None) --
+    exactly one of media_id/link_url is populated when an image or a link
+    fallback is actually available, both are None if neither could be
+    produced (a post still goes out text-only rather than being blocked
+    entirely). image_bytes is returned alongside media_id so the caller can
+    also mirror the same image to Telegram -- X's upload consumes the bytes,
+    Telegram needs its own copy of them."""
     if image_prompt and ctx.image_budget.can_spend():
         image_bytes = image_gen.generate_post_image(image_prompt)
         if image_bytes:
             media_id = ctx.x.upload_media(image_bytes)
             if media_id:
                 ctx.image_budget.record_spend()
-                return media_id, None
+                return media_id, None, image_bytes
 
     if fallback_url:
-        return None, fallback_url
-    return None, None
+        return None, fallback_url, None
+    return None, None, None
 
 
 def _send_audit_message(queued_items, declined_posts, repost_results):
@@ -242,9 +245,11 @@ def _drain_queue(ctx, cfg, state):
 
     item = state["post_queue"].pop(0)
     text = truncate(item["text"], ai_manager_brain.MAX_POST_LEN)
-    media_id, link_url = (None, None)
+    media_id, link_url, image_bytes = (None, None, None)
     if item.get("wants_extras"):
-        media_id, link_url = _attach_image_or_link(ctx, item.get("image_prompt"), item.get("link_url"))
+        media_id, link_url, image_bytes = _attach_image_or_link(
+            ctx, item.get("image_prompt"), item.get("link_url")
+        )
 
     tweet_id = ctx.x.post(text, media_id=media_id)
     if not tweet_id:
@@ -253,8 +258,15 @@ def _drain_queue(ctx, cfg, state):
         telegram_client.send_message(f"⚠️ AI Manager: queued post failed to send, dropped: {text}")
         return False
 
-    channel_link = ("Read more", link_url) if link_url else None
-    ctx.budget.record_spend(has_link=False, text=text, channel_link=channel_link)
+    # Telegram is free and has no reason to skip extras the way X's 1-in-4
+    # ratio does -- whenever this post actually got an image or link, the
+    # channel always gets it too, not just the 1/4 that make it onto X.
+    if image_bytes:
+        telegram_client.send_channel_photo(image_bytes, telegram_client.escape_html(text))
+        ctx.budget.record_spend(has_link=False, text=text, mirror_to_channel=False)
+    else:
+        channel_link = ("Read more", link_url) if link_url else None
+        ctx.budget.record_spend(has_link=False, text=text, channel_link=channel_link)
     if link_url and ctx.budget.can_spend(has_link=True):
         reply_id = ctx.x.reply(truncate(link_url), tweet_id)
         if reply_id:

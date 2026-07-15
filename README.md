@@ -666,10 +666,17 @@ Three separate destinations, kept deliberately apart:
   Manager's own post decision). Since Telegram is free, the channel copy can
   be *more generous* than the X post itself: it always includes the news
   article's source URL, regardless of whether the X-side reply carrying
-  that same link ended up firing. Replies and reposts (retweets/quote-tweets)
-  never mirror here (`Budget.record_spend`'s `mirror_to_channel=False`) —
-  the channel is meant to read as "everything this account itself wrote,"
-  not a log of every engagement action.
+  that same link ended up firing. Same reasoning extends to AI Manager's
+  `wants_extras` posts specifically — whenever one of those has a real
+  image (not just a link), the channel gets the actual image forwarded as
+  a photo (`telegram_client.send_channel_photo`), not just its caption
+  text. X only carries extras on roughly 1 in 4 posts by deliberate design
+  (cost/reach), but the channel always shows whatever extras a post
+  actually has — no reason to hold back on the free side. Replies and
+  reposts (retweets/quote-tweets) never mirror here
+  (`Budget.record_spend`'s `mirror_to_channel=False`) — the channel is
+  meant to read as "everything this account itself wrote," not a log of
+  every engagement action.
 
 **Cost chat, per-post** — sent right after every single successful post/reply/retweet:
 

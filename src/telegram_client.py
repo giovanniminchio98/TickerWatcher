@@ -10,8 +10,11 @@ Three separate destinations:
     API failure alerts). No cost/budget numbers here anymore, see below.
   - TELEGRAM_CHANNEL_ID: a public-ish Telegram channel that mirrors every
     actual post, more generously than X (e.g. links X's posts drop for cost/
-    reach reasons get restored here, since Telegram is free). Optional --
-    if unset, channel sends are silently skipped, same as missing bot creds.
+    reach reasons get restored here, since Telegram is free). Also gets the
+    real image whenever a post has one, even though X's own extras ratio
+    means only some posts carry one -- Telegram has no such limit, so any
+    image/link a post has is always shown here. Optional -- if unset,
+    channel sends are silently skipped, same as missing bot creds.
   - TELEGRAM_COST_CHAT_ID: your private cost-tracking chat -- every dollar
     figure lives here instead (per-post budget progress, daily recap,
     low-budget/recharge-credits alerts across all three budgets: X, Claude,
@@ -76,6 +79,30 @@ def _send(chat_id_env, text, label):
         return False
 
 
+def _send_photo(chat_id_env, image_bytes, caption, label):
+    if DRY_RUN:
+        logger.info("[DRY RUN] would send Telegram %s photo, caption:\n%s", label, caption)
+        return True
+
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get(chat_id_env)
+    if not token or not chat_id:
+        logger.info("Telegram %s not configured (TELEGRAM_BOT_TOKEN/%s unset), skipping", label, chat_id_env)
+        return False
+    try:
+        resp = requests.post(
+            f"{BASE_URL}/bot{token}/sendPhoto",
+            data={"chat_id": chat_id, "caption": caption, "parse_mode": "HTML"},
+            files={"photo": ("post.png", image_bytes)},
+            timeout=TIMEOUT,
+        )
+        resp.raise_for_status()
+        return True
+    except Exception:
+        logger.exception("Failed to send Telegram %s photo", label)
+        return False
+
+
 def send_message(text):
     """Private bot chat -- technical messages (budget/recap/alerts) only."""
     return _send("TELEGRAM_CHAT_ID", text, "bot-chat")
@@ -84,6 +111,13 @@ def send_message(text):
 def send_channel_message(text):
     """Public-ish channel -- a full mirror of every post that actually fired."""
     return _send("TELEGRAM_CHANNEL_ID", text, "channel")
+
+
+def send_channel_photo(image_bytes, caption):
+    """Public-ish channel -- forwards the same image a post got on X (when it
+    got one) as a real photo with the post text as caption, since Telegram
+    has no reason to skip it the way X's 1-in-4 extras ratio does."""
+    return _send_photo("TELEGRAM_CHANNEL_ID", image_bytes, caption, "channel")
 
 
 def send_cost_message(text):
