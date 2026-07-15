@@ -264,7 +264,10 @@ def run(ctx):
         status = "sent" if reply_id else "failed"
         reply_results.append({"handle": handle, "text": text, "reasoning": r.get("reasoning", ""), "status": status})
         if reply_id:
-            ctx.budget.record_spend(has_link=False, text=f"Reply to @{handle}: {text}")
+            # replies aren't original posts -- keep the public channel a pure
+            # mirror of what the account itself writes, not a log of every
+            # engagement action (see budget.py's mirror_to_channel)
+            ctx.budget.record_spend(has_link=False, text=f"Reply to @{handle}: {text}", mirror_to_channel=False)
             replied_ids.append(candidate["tweet_id"])
             acct_caps[handle] = acct_caps.get(handle, 0) + 1
             state["replies_today"] += 1
@@ -311,8 +314,10 @@ def run(ctx):
             "reasoning": rp.get("reasoning", ""), "status": status,
         })
         if result_id:
+            # same reasoning as replies above -- a retweet/quote-tweet isn't
+            # original content, so it never mirrors to the public channel
             spend_desc = f"{action} of @{handle}'s post {candidate['tweet_id']}"
-            ctx.budget.record_spend(has_link=False, text=spend_desc)
+            ctx.budget.record_spend(has_link=False, text=spend_desc, mirror_to_channel=False)
             reposted_ids.append(candidate["tweet_id"])
             repost_caps[handle] = repost_caps.get(handle, 0) + 1
             state["reposts_today"] += 1
