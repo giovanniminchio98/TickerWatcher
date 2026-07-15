@@ -68,7 +68,7 @@ logger = logging.getLogger("tickerwatch.triggers.ai_manager")
 # how many posts' worth of news URLs to remember and exclude from future
 # snapshots -- comfortably covers "not again within the next several
 # posts" without permanently blocking a story that's still relevant later
-RECENT_NEWS_URLS_CAP = 6
+RECENT_NEWS_URLS_CAP = 12
 
 
 def _filler_examples(ctx, n=5):
