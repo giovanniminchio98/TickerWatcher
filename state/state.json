@@ -5,9 +5,9 @@
       "AshCrypto": 2,
       "CoinMarketCap": 1
     },
-    "calls_today": 3,
+    "calls_today": 4,
     "date": "2026-07-15",
-    "last_call_time": null,
+    "last_call_time": 1784122141.904559,
     "posts_today": 2,
     "recent_post_texts": [
       "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story.",
@@ -77,7 +77,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.1939
+    "usd_used": 0.2082
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -353,8 +353,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958154,
-    "last_eth_block": 25538219,
+    "last_btc_block_height": 958157,
+    "last_eth_block": 25538357,
     "posted_count_today": 6,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
