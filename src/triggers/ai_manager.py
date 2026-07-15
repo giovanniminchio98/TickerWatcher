@@ -321,9 +321,14 @@ def run(ctx):
     # only a successfully parsed decision starts the real cooldown
     state["last_call_time"] = ctx.now.timestamp()
 
+    # trim to what the daily cap can actually still take -- no point queuing
+    # (and having Claude write) a post that will just sit until it expires
+    remaining_today = max(0, cfg["max_posts_per_day"] - state["posts_today"] - len(state["post_queue"]))
+    take = min(cfg.get("posts_per_batch", 1), remaining_today)
+
     queued_items = []
     declined_posts = []
-    for post in (decision.get("posts") or [])[: cfg.get("posts_per_batch", 1)]:
+    for post in (decision.get("posts") or [])[:take]:
         if not post.get("should_post") or not post.get("text"):
             declined_posts.append(post)
             continue
