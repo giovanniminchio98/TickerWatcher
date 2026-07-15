@@ -9,5 +9,6 @@
   "max_reposts_per_day": 15,
   "max_reposts_per_call": 5,
   "max_reply_candidates_per_account": 5,
-  "prefer_plain_retweets": true
+  "prefer_plain_retweets": true,
+  "prefer_reply_only_accounts": true
 }

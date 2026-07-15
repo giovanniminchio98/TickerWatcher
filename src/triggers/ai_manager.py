@@ -216,6 +216,7 @@ def run(ctx):
         "max_replies_per_call": cfg["max_replies_per_call"],
         "max_reposts_per_call": cfg["max_reposts_per_call"],
         "prefer_plain_retweets": cfg.get("prefer_plain_retweets", False),
+        "prefer_reply_only_accounts": cfg.get("prefer_reply_only_accounts", False),
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])

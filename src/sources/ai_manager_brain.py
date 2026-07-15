@@ -83,7 +83,16 @@ def _build_prompt(snapshot):
         "- Replies: add genuine value (a fact, number, or sharp observation) -- never a generic "
         "compliment, never ask the poster to follow/engage/check anything out, no links, no "
         f"hashtags, no @mentions, under {MAX_REPLY_LEN} characters, at most "
-        f"{snapshot['max_replies_per_call']} replies total.\n"
+        f"{snapshot['max_replies_per_call']} replies total."
+        + (
+            " Right now, prefer candidates marked [reply-only] when choosing who to reply to -- "
+            "larger/more established accounts (not marked [reply-only]) commonly restrict who can "
+            "reply to their posts, which makes our replies fail with a 403 error regardless of how "
+            "good the reply is. Still reply to a non-[reply-only] candidate if it's clearly and "
+            "significantly the better choice, just don't reach for one on a close call."
+            if snapshot.get("prefer_reply_only_accounts") else ""
+        )
+        + "\n"
         "- Reposts: a candidate is either a plain retweet (genuinely worth amplifying as-is, no "
         "comment needed) or a quote-tweet (add a short, sharp take that gives it your own "
         f"perspective -- same rules as a reply: no generic compliments, under {MAX_QUOTE_LEN} "
