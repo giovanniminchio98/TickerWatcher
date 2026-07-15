@@ -226,6 +226,20 @@
     },
     "last_alert_time": {}
   },
+  "reply_suggestions": {
+    "resolved_accounts": {
+      "AshCrypto": {},
+      "CoinGecko": {},
+      "CoinMarketCap": {},
+      "ManicDYOR": {},
+      "TedPillows": {},
+      "WatcherGuru": {},
+      "coinbase": {},
+      "saylor": {},
+      "solana": {}
+    },
+    "shown_tweet_ids": []
+  },
   "retweets": {
     "last_seen_tweet_id": {}
   },
@@ -244,8 +258,8 @@
     "last_report_date": "2026-07-14"
   },
   "whale": {
-    "last_btc_block_height": 958120,
-    "last_eth_block": 25536723,
+    "last_btc_block_height": 958128,
+    "last_eth_block": 25536853,
     "posted_count_today": 4,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
