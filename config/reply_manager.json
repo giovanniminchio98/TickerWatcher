@@ -1,0 +1,9 @@
+{
+  "_comment": "Fast-cadence reply decision-maker (src/triggers/reply_manager.py), split out from ai_manager.py so replies run far more often than the slow 4-6/day post cadence. Only ever considers reply_only accounts in config/reply_targets.json -- bigger accounts commonly restrict who can reply to their posts, so this trigger never wastes a call on candidates that would just 403 regardless of content (see ai_manager.py for those accounts' repost-only treatment).",
+  "model": "claude-sonnet-5",
+  "min_hours_between_calls": 0.9,
+  "max_calls_per_day": 20,
+  "max_replies_per_day": 10,
+  "max_replies_per_call": 2,
+  "max_reply_candidates_per_account": 5
+}

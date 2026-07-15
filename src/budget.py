@@ -7,11 +7,11 @@ so once the cap is hit for the month, only the lowest-priority post types get
 skipped -- whale and news alerts are protected until the very end.
 
 record_spend() also fires a Telegram notification (if configured): a short
-technical confirmation to the private bot chat (just budget progress, no
-post content -- that chat is for you, not a content feed), and a full copy
-of the post to the Telegram channel (channel_text if given, else text) --
-Telegram is free, so the channel copy can be more generous than the X post
-itself (e.g. restoring a link X's post dropped for cost/reach reasons).
+budget-progress confirmation to the private cost-tracking chat (never the
+bot chat -- that one's for operational messages, not dollar figures), and a
+full copy of the post to the Telegram channel (channel_text if given, else
+text) -- Telegram is free, so the channel copy can be more generous than the
+X post itself (e.g. restoring a link X's post dropped for cost/reach reasons).
 
 The channel text is always HTML-escaped here (centrally, once) before
 sending, since Telegram messages go out with parse_mode=HTML -- callers
@@ -90,7 +90,7 @@ class Budget:
             progress = f"{b['posts_used']}/{cfg['monthly_post_cap']} posts"
         else:
             progress = f"${b['usd_used']:.2f}/${cfg['monthly_usd_cap']:.2f}"
-        telegram_client.send_message(f"✅ X post created — {progress}")
+        telegram_client.send_cost_message(f"✅ X post created — {progress}")
         if mirror_to_channel:
             base = channel_text if channel_text is not None else text or "(no text)"
             escaped = telegram_client.escape_html(base)
@@ -120,7 +120,7 @@ class Budget:
                 f"⚠️ TickerWatch budget alert: ${used:.2f}/${cap:.2f} used ({pct:.0f}%) this month.\n"
                 f"Add credits: {X_CONSOLE_URL} (Billing -> Credits)"
             )
-        telegram_client.send_message(text)
+        telegram_client.send_cost_message(text)
         b["low_budget_alert_sent_period"] = b["period"]
 
     def remaining_summary(self):

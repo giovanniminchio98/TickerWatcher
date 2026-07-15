@@ -21,6 +21,7 @@ from src.budget import Budget
 from src.claude_budget import ClaudeBudget
 from src.config import load_all
 from src.context import Context
+from src.image_budget import ImageBudget
 from src.sources import coingecko
 from src.state import load_state, save_state
 from src.x_client import DRY_RUN, XClient
@@ -34,6 +35,7 @@ from src.triggers import (
     news_alerts,
     polls,
     price_alerts,
+    reply_manager,
     reply_suggestions,
     retweets,
     scheduled_daily,
@@ -60,13 +62,14 @@ ENABLED = {
     # its own comment, or skip) instead of retweeting every new post
     # unconditionally. Code kept intact -- flip back to True to run both.
     "retweets": False,
-    # disabled by default: ai_manager now owns the reply decision over the
-    # same config/reply_targets.json pool, with more judgment (only replies
-    # when it decides a candidate is genuinely worth it, not every time).
-    # Code kept intact -- flip back to True to run both side by side.
+    # disabled by default: reply_manager now owns the reply decision over
+    # the same config/reply_targets.json pool, with more judgment (only
+    # replies when it decides a candidate is genuinely worth it, not every
+    # time). Code kept intact -- flip back to True to run both side by side.
     "comment_engagement": False,
     "content_drafts": True,
     "ai_manager": True,
+    "reply_manager": True,
     "reply_suggestions": True,
     # disabled by default: ai_manager's own post decision now absorbs
     # filler's old role (a handful of filler.json's generic-engagement
@@ -106,9 +109,10 @@ def main():
     state = load_state()
     budget = Budget(state, config["budget"])
     claude_budget = ClaudeBudget(state, config["claude_budget"])
+    image_budget = ImageBudget(state, config["image_budget"])
     prices = _fetch_prices(config)
     x_client = XClient()
-    ctx = Context(config, state, budget, x_client, prices, claude_budget=claude_budget)
+    ctx = Context(config, state, budget, x_client, prices, claude_budget=claude_budget, image_budget=image_budget)
 
     anything_fired = False
     anything_fired |= bool(_safe_run("whale_alerts", whale_alerts.run, ctx))
@@ -119,6 +123,7 @@ def main():
     anything_fired |= bool(_safe_run("polls", polls.run, ctx))
     anything_fired |= bool(_safe_run("self_reply", self_reply.run, ctx))
     anything_fired |= bool(_safe_run("ai_manager", ai_manager.run, ctx))
+    anything_fired |= bool(_safe_run("reply_manager", reply_manager.run, ctx))
 
     # disabled by default (see ENABLED) -- kept callable if re-enabled
     _safe_run("filler", filler.run, ctx, anything_fired)
@@ -150,6 +155,7 @@ def main():
 
     logger.info("Budget: %s", budget.remaining_summary())
     logger.info("Budget: %s", claude_budget.remaining_summary())
+    logger.info("Budget: %s", image_budget.remaining_summary())
     if DRY_RUN:
         logger.info("DRY_RUN: not persisting state (dedup/budget bookkeeping stays untouched)")
     else:

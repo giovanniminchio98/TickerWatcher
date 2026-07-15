@@ -1,14 +1,12 @@
 {
-  "_comment": "Fully autonomous post+reply+repost decision-maker (src/triggers/ai_manager.py). One Claude call decides whether to post something original, which candidate replies (if any) to send, AND which candidates (if any) to repost (plain retweet or quote-tweet with its own comment) -- given a full data snapshot, see README's 'AI Manager' section. min_hours_between_calls plus max_calls_per_day bound it to roughly 5-10 calls/day even though the workflow itself runs hourly.",
+  "_comment": "Autonomous post+repost decision-maker (src/triggers/ai_manager.py), retargeted to a slower, fixed 4-6 posts/day cadence rather than a high-volume feed -- min_hours_between_calls plus max_posts_per_day bound it to roughly that range even though the workflow itself runs hourly. Replies now run separately/faster in config/reply_manager.json + src/triggers/reply_manager.py. fallback_link_url is used when a post has no image available (OPENAI_API_KEY unset, or generation failed) -- e.g. the public Telegram channel link; leave blank to just post without a link/image in that case rather than blocking the post entirely.",
   "model": "claude-sonnet-5",
-  "min_hours_between_calls": 2.5,
+  "min_hours_between_calls": 4.0,
   "max_calls_per_day": 8,
-  "max_posts_per_day": 5,
-  "max_replies_per_day": 15,
-  "max_replies_per_call": 3,
+  "max_posts_per_day": 6,
   "max_reposts_per_day": 15,
   "max_reposts_per_call": 5,
   "max_reply_candidates_per_account": 5,
   "prefer_plain_retweets": true,
-  "prefer_reply_only_accounts": true
+  "fallback_link_url": ""
 }

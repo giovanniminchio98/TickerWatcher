@@ -3,11 +3,12 @@ from datetime import datetime, timezone
 
 
 class Context:
-    def __init__(self, config, state, budget, x_client, prices, claude_budget=None):
+    def __init__(self, config, state, budget, x_client, prices, claude_budget=None, image_budget=None):
         self.config = config
         self.state = state
         self.budget = budget
         self.claude_budget = claude_budget
+        self.image_budget = image_budget
         self.x = x_client
         self.prices = prices  # {coingecko_id: {"usd": float, "usd_24h_change": float}}
         self.now = datetime.now(timezone.utc)

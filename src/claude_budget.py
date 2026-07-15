@@ -71,7 +71,7 @@ class ClaudeBudget:
         if b.get("low_budget_alert_sent_period") == b["period"]:
             return
         pct = b["usd_used"] / cap * 100
-        telegram_client.send_message(
+        telegram_client.send_cost_message(
             f"⚠️ TickerWatch Claude API budget alert: ${b['usd_used']:.2f}/${cap:.2f} used ({pct:.0f}%) this month."
         )
         b["low_budget_alert_sent_period"] = b["period"]
