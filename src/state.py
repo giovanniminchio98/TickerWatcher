@@ -31,6 +31,8 @@ DEFAULT_STATE = {
         "reposted_tweet_ids": [],
         "account_reposts_today": {},
         "resolved_accounts": {},
+        "post_queue": [],
+        "posts_since_last_extra": 0,
     },
     "reply_manager": {
         "last_call_time": None,

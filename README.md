@@ -193,21 +193,43 @@ guaranteed hourly posting volume again.
 
 ### AI Manager (opt-in via ANTHROPIC_API_KEY) — autonomous post + repost decisions
 
-`src/triggers/ai_manager.py` is the account's slow, deliberate content
-cadence: one Claude call, roughly **4-6 times a day** (not the high-volume
-feed this used to be), decides whether to publish an original post right
-now, and which (if any) of a handful of candidate posts from
-`config/reply_targets.json`'s bigger accounts are worth reposting — either
-a plain retweet (worth amplifying as-is) or a quote-tweet with Claude's own
-short take added. Replies moved out to their own, much faster trigger (see
-"Reply Manager" below) — this one is purely posts + reposts now.
+`src/triggers/ai_manager.py` is the account's main content engine, targeting
+roughly **10-14 posts/day**. The non-negotiable rule regardless of format or
+volume: **every post must be genuinely useful and explained in plain,
+easy-to-follow language — never a bare headline, never empty crypto-degen
+hype.** This account exists to bring real value to readers, not noise; that
+never changes no matter how the cadence or format evolves.
 
-**Every original post follows a fixed, recognizable shape**: a real
-market/news view Claude chose from the data below, a clear sentence on
-what it actually means or its likely consequence (not just the raw fact),
-and a few emoji so it reads as a consistent format rather than a wall of
-dry text. Nothing here is "always fire if the cap allows it" — Claude can
-and does decide no action at all is the right call, on either front.
+**Posts are generated in batches, not one Claude call each.** Each Claude
+call decides up to `posts_per_batch` (default 2) original posts at once —
+the first fires right away, any others are queued
+(`state["ai_manager"]["post_queue"]`) and drained one at a time on
+subsequent runs, relying on the hourly cron cadence itself to spread them
+out over the following hours. This is what makes a high visible posting
+cadence affordable: the Claude call cadence stays low (`min_hours_between_calls`
++ `max_calls_per_day`, roughly **6-7 calls/day**) regardless of how many
+posts/day that produces, so Claude cost doesn't scale with post volume the
+way it would with one call per post. Because later items in a batch post
+with a delay, only the first is written to lean on "right now" price/news
+framing — additional ones are meant to be more evergreen (a concept
+explainer, a historical comparison, a "what to watch" framing) so they
+still read as accurate a few hours later. A queued post that sits longer
+than `max_queue_age_hours` (default 12) is dropped rather than fired stale.
+It also decides which (if any) of a handful of candidate posts from
+`config/reply_targets.json`'s bigger accounts are worth reposting — either
+a plain retweet or a quote-tweet with Claude's own short take added.
+Replies moved out to their own, much faster trigger (see "Reply Manager"
+below) — this one is purely posts + reposts.
+
+**Format is flexible, substance isn't.** A post can be the fuller shape (a
+real market/news/concept view, a clear sentence on what it means or its
+consequence, a few emoji) or a terser, plain-text factual one — Claude can
+open with `JUST IN:`/`BREAKING:` and name specific tickers (`$BTC`,
+`$NVDA`) or big recognizable names when a post is genuinely fresh and
+time-sensitive, purely to aid clarity/engagement, never as decoration on a
+routine take. The plain-language explanation stays mandatory either way.
+Nothing here is "always fire if the cap allows it" — Claude can and does
+decide no action at all is the right call.
 
 Every fact it can act on is handed to it explicitly in one snapshot (current
 watchlist prices, matching news headlines, the candidate posts' actual text,
@@ -224,11 +246,16 @@ original post in that spirit if nothing price/news-driven is post-worthy,
 but only if it's genuinely good; posting nothing is the explicitly preferred
 outcome over posting mediocre filler.
 
-**Every post always carries an image or a link, never neither.** Claude
-also writes `image_prompt` — a vivid, specific description of an image
-that visually represents that exact post's key elements. Claude itself
-can't generate images (text/vision-in, text-out only), so a separate
-provider does the actual rendering:
+**Each post's `wants_extras` decides its own shape — most posts are
+deliberately plain text.** Claude sets `wants_extras` per post, nudged by
+`extras_every_n_posts` (default 4, i.e. roughly 1 in every 4 posts) and how
+many posts have gone out since the last one that had extras — but it's a
+loose guide, not a rule: a genuinely important/visual post gets extras
+regardless of the count, and a routine post can skip extras even when one's
+"due." When `wants_extras` is true, Claude also writes `image_prompt` — a
+vivid, specific description of an image that visually represents that
+post's key elements. Claude itself can't generate images (text/vision-in,
+text-out only), so a separate provider does the actual rendering:
 
 - **`src/sources/image_gen.py`** calls OpenAI's Images API (DALL-E 3),
   opt-in via `OPENAI_API_KEY` presence, using Claude's `image_prompt`.
@@ -240,19 +267,23 @@ provider does the actual rendering:
   article the post is actually based on** (Claude's `news_index`, when
   there is one) — only falling back to `config/ai_manager.json`'s generic
   `fallback_link_url` (e.g. your public Telegram channel) when the post
-  isn't anchored to one specific article. If `fallback_link_url` is also
-  blank, the post still goes out without either rather than being blocked
-  entirely — "post nothing" is a worse failure than "post without the extra."
+  isn't anchored to one specific article.
 - A third, independent budget (`ctx.image_budget`, `config/image_budget.json`,
   default $10/month cap) gates whether generation is even attempted —
-  exhausting it just means posts fall back to the link, never a hard stop.
+  exhausting it just means that post falls back to the link, never a hard
+  stop.
+- When `wants_extras` is false, the post goes out as genuine plain
+  text — no image attempt, no link attempt at all. This is also by far the
+  cheapest post shape (see cost math below), and deliberately the majority
+  case, so the profile reads as substance rather than decoration.
 
-Cadence is controlled by `config/ai_manager.json`
-(`min_hours_between_calls` + `max_calls_per_day`) so it settles into roughly
-4-6 real posts/day even though the workflow itself runs hourly, plus a
-daily cap on posts (`max_posts_per_day`, default 6) and reposts
-(`max_reposts_per_day`, default 15, with `max_reposts_per_call` capping how
-many a single call can do).
+`config/ai_manager.json` controls cadence: `min_hours_between_calls` +
+`max_calls_per_day` bound Claude calls to roughly 6-7/day, `posts_per_batch`
+controls how many posts each call can produce, `max_posts_per_day` (default
+14) caps real posts, and reposts are kept deliberately sparse
+(`max_reposts_per_day`, default 3, `max_reposts_per_call`, default 1 — one
+repost per call naturally spreads them across the day instead of bursting
+several at once) so the feed reads mostly as original content.
 
 A call that fails outright or comes back unparseable doesn't start the
 cooldown -- `last_call_time` only updates on a successfully parsed decision,
@@ -262,31 +293,36 @@ anything. `calls_today` still increments on every attempt regardless, so a
 persistently broken call can't retry more than `max_calls_per_day` times in
 one day.
 
-**Two independent hard budget caps**, each stopping this trigger cleanly
+**Three independent hard budget caps**, each stopping this trigger cleanly
 (never erroring) the instant it's reached:
 
 - `config/claude_budget.json`'s `monthly_usd_cap` (default $20) — gates
-  whether the Claude call itself is even attempted, tracked from each
-  response's *real* token usage (`src/claude_budget.py`), not an estimate.
+  whether a new batch-generating Claude call is even attempted (draining
+  the queue never needs this, since it doesn't call Claude), tracked from
+  each response's *real* token usage (`src/claude_budget.py`), not an
+  estimate.
 - `config/budget.json`'s `monthly_usd_cap` (default $30) — gates whether a
   decided post/repost actually gets sent to X, same shared pool every
   other trigger already uses.
+- `config/image_budget.json`'s `monthly_usd_cap` (default $10) — gates
+  whether image generation is attempted for a `wants_extras` post;
+  exhausting it just means that post falls back to the link.
 
-**These two caps are sized so their sum is the account-wide monthly
+**The first two caps are sized so their sum is the account-wide monthly
 ceiling.** $20 + $30 = $50: if the target total spend changes, split it the
 same way rather than just raising one cap — that's what makes "never above
 $X/month total" a structural guarantee instead of an estimate that could be
-wrong. Image generation (`config/image_budget.json`) is a genuinely separate
-provider/bill and sits *outside* that $50 structure — budget for it as a
-small add-on (realistically $5-10/month at 4-6 images/day), not folded into
-the $50.
+wrong. Image generation sits *outside* that $50 structure since it's a
+genuinely separate provider/bill — budget for it as a small add-on.
 
-Since nothing here is manually approved before it posts, every call sends
-one audit message to your **private Telegram bot chat** — the post decision
-and its reasoning (or "no action" and why), and every repost attempted along
-with its reasoning. This is the only review mechanism for an otherwise
-fully autonomous pipeline, so it's worth skimming periodically even if you
-never intervene.
+Since nothing here is manually approved before it posts, every
+batch-generating call sends one audit message to your **private Telegram
+bot chat** — every queued post + its reasoning (or "no posts queued" and
+why), and every repost attempted along with its reasoning. Each individual
+post firing (the first-in-batch or a later queue drain) also gets its own
+short bot-chat line, plus the existing per-post cost-chat notification.
+This is the only review mechanism for an otherwise fully autonomous
+pipeline, so it's worth skimming periodically even if you never intervene.
 
 Requires `ANTHROPIC_API_KEY` — without it, this trigger does nothing (same
 "no safe fallback" reasoning as every other Claude-backed trigger).
@@ -470,22 +506,32 @@ if you want more headroom before that point (with filler re-enabled):
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
 actions/month (~$1-2) on top of the total above.
 
-**AI Manager's posts specifically — image vs. link matters a lot.** Every
-AI Manager post carries either an image (base $0.015/post rate — media
-attachment doesn't trigger the $0.20 link surcharge, same assumption
-already relied on for news's trend-line images) or a link as a follow-up
-reply (does trigger the surcharge, ~$0.20/post total). At 4-6 posts/day:
+**AI Manager's posts specifically — the plain/extras mix matters a lot.**
+Most posts (`wants_extras: false`, roughly 3 in 4) are genuine plain text —
+no image attempt, no link attempt — at the base $0.015/post rate. The
+remaining `wants_extras: true` posts (~1 in 4, `extras_every_n_posts`) carry
+either an image (still ~$0.015 + ~$0.04-0.08 DALL-E cost — media attachment
+doesn't trigger the $0.20 link surcharge) or, until `OPENAI_API_KEY` is set,
+a link as a follow-up reply (does trigger the surcharge, ~$0.20/post total).
+At 12 posts/day (9 plain + 3 with extras):
 
-| Fallback used | Cost/post | Monthly (30d, 4-6 posts/day) |
+| Extras fallback | Cost/day | Monthly (30d) |
 |---|---|---|
-| Image (DALL-E, `OPENAI_API_KEY` set) | ~$0.015 | **~$1.80-2.70/month** |
-| Link (`fallback_link_url`, no image available) | ~$0.20 | **~$24-36/month** |
+| Image (DALL-E, `OPENAI_API_KEY` set) | 9×$0.015 + 3×$0.055 ≈ $0.30 | **~$9/month** |
+| Link (`fallback_link_url`, no image available) | 9×$0.015 + 3×$0.215 ≈ $0.78 | **~$23.40/month** |
 
-That's roughly a 13x cost difference — set `OPENAI_API_KEY` and give the
-image generator real headroom before leaning on the link fallback for very
-long, since sustained link-fallback use eats most or all of the $30 X cap
-on its own. Reposts (retweet/quote) add on top of this at the usual
-~$0.015/action rate (replies are manual-only for now, see "Reply Manager").
+That's roughly a 4x cost difference on the extras slots specifically — set
+`OPENAI_API_KEY` when you can, since sustained link-fallback use eats most
+of the $30 X cap on its own, leaving little headroom for whale/news/price
+alerts. Reposts (retweet/quote, capped at 3/day) add on top of this at the
+usual ~$0.015/action rate (replies are manual-only for now, see "Reply
+Manager").
+
+**Claude call cost stays flat regardless of post volume**, since batching
+means posts/day scales without scaling calls/day. At ~6-7 calls/day and
+Sonnet 5's full post-intro pricing ($3/$15 per 1M tokens), real observed
+cost is ~$0.06-0.07/call → **~$11-15/month**, comfortably inside the $20
+Claude cap with headroom to spare.
 
 ### Two-budget design: X API + Claude API summing to one account-wide ceiling, plus a separate image budget
 

@@ -1,43 +1,58 @@
 """Post type 11 (opt-in via ANTHROPIC_API_KEY presence): autonomous post +
-repost decision-maker, meant to run unattended for months on a slow, fixed
-cadence (4-6 posts/day) -- deliberately less frequent than main.py's hourly
-schedule, since the whole point of this redesign is a small number of
-substantial, recognizable posts rather than a high-volume feed. See
-src/sources/ai_manager_brain.py for the prompt/parsing and README's "AI
-Manager" section for the full design rationale.
+repost decision-maker, meant to run unattended for months, targeting
+~10-14 posts/day. See src/sources/ai_manager_brain.py for the
+prompt/parsing and README's "AI Manager" section for the full design
+rationale.
+
+Each Claude call produces a BATCH of up to posts_per_batch posts (see
+config/ai_manager.json) instead of just one -- the first is fired
+immediately, any others are queued in state["ai_manager"]["post_queue"]
+and drained one item per subsequent run, relying on main.py's hourly cron
+cadence to naturally spread them out over the following hours. This is
+what decouples the visible posting cadence (high) from the Claude call
+cadence (kept low, ~6-7/day, to control cost even on Sonnet 5 at full
+post-intro pricing) -- see ai_manager_brain.py's docstring for the cost
+reasoning. A queued post older than max_queue_age_hours is dropped rather
+than fired stale.
 
 Replies used to live in this same call but now run on their own, much
 faster cadence in reply_manager.py -- see that module's docstring for why.
 Reposting stays here: it only ever targets non-reply_only (bigger) accounts
 (reply_only accounts are reply_manager.py's territory exclusively), and
 absorbs retweets.py's old unconditional-retweet role, but only fires when
-Claude actually picks a candidate.
+Claude actually picks a candidate. Reposts are still decided fresh every
+Claude call (not queued) -- the repost candidate pool is only meaningful
+in the moment it's fetched.
 
-Every post always carries an image (via src.sources.image_gen, DALL-E,
-opt-in via OPENAI_API_KEY) or, if no image ends up available, a real link
-attached as a follow-up reply -- same "link lives in a reply, not the main
-post" reach-optimization pattern news_alerts.py already uses. The link is
-the real source URL of whichever news article the post is actually based
-on (Claude's news_index), when there is one -- otherwise
-config/ai_manager.json's fallback_link_url (e.g. the public Telegram
-channel). If neither an image nor any link is available, the post still
-goes out without either rather than being blocked entirely, since
-"post nothing at all" is a worse failure than "post without the extra".
+Each post's wants_extras field (Claude's own per-post call, nudged by how
+long it's been since the last extras post -- see config's
+extras_every_n_posts) decides whether it gets an image (via
+src.sources.image_gen, DALL-E, opt-in via OPENAI_API_KEY) or, failing
+that, a real link attached as a follow-up reply -- same "link lives in a
+reply, not the main post" reach-optimization pattern news_alerts.py
+already uses. When wants_extras is false, the post goes out as genuine
+plain text: no image attempt, no link attempt at all -- also by far the
+cheapest post shape, and deliberately the majority case (roughly 3 in 4
+posts) so the profile reads as substance, not decoration.
 
-Two independent hard budget caps gate this trigger, each stopping it cleanly
-rather than erroring when exhausted:
-  - ctx.claude_budget (config/claude_budget.json) -- gates whether the Claude
-    call itself is even attempted.
-  - ctx.budget (config/budget.json) -- gates whether a decided post/repost is
-    actually sent to X (same shared pool every other trigger uses).
-A third, independent budget (ctx.image_budget, config/image_budget.json)
-gates whether image generation is attempted at all -- exhausting it just
-means posts fall back to the link, never a hard stop.
+Three independent hard budget caps gate this trigger, each stopping it
+cleanly rather than erroring when exhausted:
+  - ctx.claude_budget (config/claude_budget.json) -- gates whether a new
+    batch-generating Claude call is even attempted (queue draining never
+    needs this, since it doesn't call Claude).
+  - ctx.budget (config/budget.json) -- gates whether a decided post/repost
+    is actually sent to X (same shared pool every other trigger uses).
+  - ctx.image_budget (config/image_budget.json) -- gates whether image
+    generation is attempted at all for a wants_extras post; exhausting it
+    just means that post falls back to the link, never a hard stop.
 
-Every call sends one Telegram bot-chat audit message (decision + reasoning
-for both the post and every repost, or "no action") -- with no manual
-approval step, this is the only way to spot-check what it's actually doing
-over time.
+Every batch-generating call sends one Telegram bot-chat audit message
+(all queued posts + reasoning, every repost + reasoning, or "no action")
+-- with no manual approval step, this is the only way to spot-check the
+underlying judgment over time. Each individual post firing (whether the
+first-in-batch or a later queue drain) also gets its own short bot-chat
+line, plus the existing per-post cost-chat notification from
+ctx.budget.record_spend().
 """
 import logging
 import random
@@ -177,16 +192,18 @@ def _attach_image_or_link(ctx, image_prompt, fallback_url):
     return None, None
 
 
-def _send_audit_message(decision, post_status, repost_results):
-    lines = ["🤖 AI Manager decision:"]
-    post = decision.get("post") or {}
-    if post.get("should_post"):
-        lines.append(f"\n📝 Post ({post_status}): {post.get('text')}\nReasoning: {post.get('reasoning', '')}")
+def _send_audit_message(queued_items, declined_posts, repost_results):
+    lines = ["🤖 AI Manager batch decision:"]
+    if queued_items:
+        lines.append(f"\n📝 {len(queued_items)} post(s) queued (spread out over the next few runs):")
+        for item in queued_items:
+            tag = "extras" if item["wants_extras"] else "text-only"
+            lines.append(f"\n- ({tag}) {item['text']}\nReasoning: {item['reasoning']}")
     else:
-        lines.append(f"\n📝 No post this call. Reasoning: {post.get('reasoning', '(none given)')}")
+        reasons = "; ".join(p.get("reasoning", "") for p in declined_posts) or "(none given)"
+        lines.append(f"\n📝 No posts queued this batch. Reasoning: {reasons}")
 
-    reposts = decision.get("reposts") or []
-    if reposts:
+    if repost_results:
         for rp in repost_results:
             label = "Quote-tweet" if rp["action"] == "quote" else "Retweet"
             extra = f": {rp['text']}" if rp.get("text") else ""
@@ -199,17 +216,80 @@ def _send_audit_message(decision, post_status, repost_results):
     telegram_client.send_message("\n".join(lines))
 
 
+def _drain_queue(ctx, cfg, state):
+    """Fires at most one queued post per run -- the hourly cron cadence
+    itself is what spreads a batch's posts across the day, no extra Claude
+    call needed. Returns True if something was actually posted."""
+    queue = state.get("post_queue", [])
+    if not queue:
+        return False
+
+    max_age = cfg.get("max_queue_age_hours", 12)
+    fresh = [
+        item for item in queue
+        if (ctx.now.timestamp() - item.get("queued_at", ctx.now.timestamp())) / 3600 <= max_age
+    ]
+    if len(fresh) != len(queue):
+        logger.info("ai_manager: dropped %d stale queued post(s)", len(queue) - len(fresh))
+    state["post_queue"] = fresh
+    if not fresh:
+        return False
+
+    if state["posts_today"] >= cfg["max_posts_per_day"]:
+        return False
+    if not ctx.budget.can_spend(has_link=False):
+        return False
+
+    item = state["post_queue"].pop(0)
+    text = truncate(item["text"], ai_manager_brain.MAX_POST_LEN)
+    media_id, link_url = (None, None)
+    if item.get("wants_extras"):
+        media_id, link_url = _attach_image_or_link(ctx, item.get("image_prompt"), item.get("link_url"))
+
+    tweet_id = ctx.x.post(text, media_id=media_id)
+    if not tweet_id:
+        # ctx.x.post() itself failed -- ops_alerts already fired for this;
+        # drop rather than retry indefinitely on a persistently broken post
+        telegram_client.send_message(f"⚠️ AI Manager: queued post failed to send, dropped: {text}")
+        return False
+
+    channel_link = ("Read more", link_url) if link_url else None
+    ctx.budget.record_spend(has_link=False, text=text, channel_link=channel_link)
+    if link_url and ctx.budget.can_spend(has_link=True):
+        reply_id = ctx.x.reply(truncate(link_url), tweet_id)
+        if reply_id:
+            # already mirrored to the channel above via channel_link, skip duplicate
+            ctx.budget.record_spend(has_link=True, text=link_url, mirror_to_channel=False)
+
+    has_extras = bool(media_id or link_url)
+    state["recent_post_texts"] = (state.get("recent_post_texts", []) + [text])[-10:]
+    state["posts_today"] += 1
+    state["posts_since_last_extra"] = 0 if has_extras else state.get("posts_since_last_extra", 0) + 1
+    telegram_client.send_message(
+        f"📝 Posted ({'extras' if has_extras else 'text-only'}): {text}\nReasoning: {item.get('reasoning', '')}"
+    )
+    return True
+
+
 def run(ctx):
     cfg = ctx.config["ai_manager"]
     state = ctx.state["ai_manager"]
     today_str = ctx.now.strftime("%Y-%m-%d")
     _roll_day(state, today_str)
+    state.setdefault("post_queue", [])
+    state.setdefault("posts_since_last_extra", 0)
 
-    if not _ready_for_call(ctx, cfg, state):
-        return False
+    fired = _drain_queue(ctx, cfg, state)
+
+    # only generate a new batch (and decide reposts) once the queue is empty
+    # and it's actually time for a new Claude call -- this is what keeps
+    # Claude spend near today's cadence even though visible posting cadence
+    # is much higher via the queue
+    if state["post_queue"] or not _ready_for_call(ctx, cfg, state):
+        return fired
     if not ctx.claude_budget.can_spend():
         logger.info("ai_manager: Claude budget exhausted this month, skipping call")
-        return False
+        return fired
 
     snapshot = {
         "prices": _price_snapshot_lines(ctx),
@@ -219,6 +299,9 @@ def run(ctx):
         "filler_examples": _filler_examples(ctx),
         "max_reposts_per_call": cfg["max_reposts_per_call"],
         "prefer_plain_retweets": cfg.get("prefer_plain_retweets", False),
+        "posts_per_batch": cfg.get("posts_per_batch", 1),
+        "extras_every_n_posts": cfg.get("extras_every_n_posts", 4),
+        "posts_since_last_extra": state.get("posts_since_last_extra", 0),
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
@@ -233,38 +316,27 @@ def run(ctx):
         # full cooldown for a call that never actually happened. calls_today
         # still increments either way, so a persistently broken call can't
         # retry more than max_calls_per_day times in one day.
-        return False
+        return fired
 
     # only a successfully parsed decision starts the real cooldown
     state["last_call_time"] = ctx.now.timestamp()
 
-    fired = False
-    post_status = "skipped -- daily post cap reached"
-    post = decision.get("post") or {}
-    if post.get("should_post") and post.get("text") and state["posts_today"] < cfg["max_posts_per_day"]:
-        if not ctx.budget.can_spend(has_link=False):
-            post_status = "not sent -- X budget cap reached"
-        else:
-            text = truncate(post["text"], ai_manager_brain.MAX_POST_LEN)
-            fallback_url = _preferred_link(ctx, snapshot, post)
-            media_id, link_url = _attach_image_or_link(ctx, post.get("image_prompt"), fallback_url)
-            tweet_id = ctx.x.post(text, media_id=media_id)
-            if tweet_id:
-                channel_link = ("Read more", link_url) if link_url else None
-                ctx.budget.record_spend(has_link=False, text=text, channel_link=channel_link)
-                if link_url and ctx.budget.can_spend(has_link=True):
-                    reply_id = ctx.x.reply(truncate(link_url), tweet_id)
-                    if reply_id:
-                        # already mirrored to the channel above via channel_link, skip duplicate
-                        ctx.budget.record_spend(has_link=True, text=link_url, mirror_to_channel=False)
-                state["recent_post_texts"] = (state.get("recent_post_texts", []) + [text])[-10:]
-                state["posts_today"] += 1
-                post_status = "posted"
-                fired = True
-            else:
-                # ctx.x.post() itself failed (X API error) -- distinct from a
-                # budget/cap block, and ops_alerts already fired for this
-                post_status = "failed -- X API call error, see ops_alerts"
+    queued_items = []
+    declined_posts = []
+    for post in (decision.get("posts") or [])[: cfg.get("posts_per_batch", 1)]:
+        if not post.get("should_post") or not post.get("text"):
+            declined_posts.append(post)
+            continue
+        link_url = _preferred_link(ctx, snapshot, post)
+        queued_items.append({
+            "text": post["text"],
+            "image_prompt": post.get("image_prompt"),
+            "link_url": link_url,
+            "wants_extras": bool(post.get("wants_extras")),
+            "reasoning": post.get("reasoning", ""),
+            "queued_at": ctx.now.timestamp(),
+        })
+    state["post_queue"].extend(queued_items)
 
     repost_results = []
     reposted_ids = state.setdefault("reposted_tweet_ids", [])
@@ -309,5 +381,11 @@ def run(ctx):
             fired = True
 
     state["reposted_tweet_ids"] = reposted_ids[-500:]
-    _send_audit_message(decision, post_status, repost_results)
+    _send_audit_message(queued_items, declined_posts, repost_results)
+
+    # fire the first queued item right away rather than waiting for the next
+    # hourly tick, so a fresh batch doesn't just sit until then
+    if state["post_queue"]:
+        fired = _drain_queue(ctx, cfg, state) or fired
+
     return fired
