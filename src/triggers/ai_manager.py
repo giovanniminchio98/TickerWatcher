@@ -108,6 +108,12 @@ def _ready_for_call(ctx, cfg, state):
 
 
 def _price_snapshot_lines(ctx):
+    """Crypto comes from ctx.prices (already fetched once per run by
+    main.py). Stocks use watchlist.stocks_broad (~50 tickers, for content
+    variety) via ONE batched Twelve Data call -- never loop get_quote() per
+    symbol here, that's what would blow the free tier's 800 calls/day cap
+    at this list size. Falls back to the smaller 'stocks' list if
+    stocks_broad isn't configured."""
     lines = []
     for asset in ctx.config["watchlist"]["crypto"]:
         info = ctx.prices.get(asset["coingecko_id"])
@@ -116,12 +122,15 @@ def _price_snapshot_lines(ctx):
         lines.append(
             f"{asset['symbol']}: ${fmt_price(info['usd'])} ({fmt_pct(info.get('usd_24h_change'))} 24h)"
         )
-    for asset in ctx.config["watchlist"].get("stocks", []):
-        try:
-            q = twelvedata.get_quote(asset["symbol"])
-        except Exception:
-            logger.exception("Twelve Data quote failed for %s", asset["symbol"])
-            continue
+
+    stocks = ctx.config["watchlist"].get("stocks_broad") or ctx.config["watchlist"].get("stocks", [])
+    try:
+        quotes = twelvedata.get_quotes_batch([asset["symbol"] for asset in stocks])
+    except Exception:
+        logger.exception("Twelve Data batch quote failed for ai_manager")
+        quotes = {}
+    for asset in stocks:
+        q = quotes.get(asset["symbol"])
         if q:
             lines.append(f"{asset['symbol']}: ${fmt_price(q['price'])} ({fmt_pct(q['percent_change'])})")
     return lines
