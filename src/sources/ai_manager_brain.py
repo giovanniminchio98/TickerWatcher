@@ -137,9 +137,11 @@ def decide(snapshot, model):
             model=model,
             # Generous headroom: confirmed live that this model spends some
             # of max_tokens on an unrequested reasoning/thinking block before
-            # the actual answer -- 1200 let thinking consume the whole
-            # budget, leaving no text block at all (parse failure downstream).
-            max_tokens=3000,
+            # the actual answer -- 1200 let thinking consume the whole budget
+            # (no text block at all), and 3000 still wasn't enough once the
+            # prompt grew (filler examples, reply-only tags, bigger candidate
+            # pool) and the JSON output got truncated mid-string instead.
+            max_tokens=5000,
             messages=[{"role": "user", "content": prompt}],
         )
     except Exception as e:
