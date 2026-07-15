@@ -65,7 +65,7 @@ import json
 import logging
 import os
 
-from src import ops_alerts
+from src import ops_alerts, telegram_client
 from src.sources.claude_utils import extract_text
 
 logger = logging.getLogger("tickerwatch.ai_manager_brain")
@@ -210,8 +210,15 @@ def decide(snapshot, model):
         return None, None
 
     usage = resp.usage
+    raw_text = extract_text(resp)
+
+    # TEMP DEBUG (2026-07): sends Claude's raw answer to the bot chat on
+    # every call so it's easy to confirm "genuinely decided nothing" vs
+    # "something's actually wrong" during the first few days of the new
+    # batching cadence -- remove this send once that's confirmed.
+    telegram_client.send_message(f"🔍 [DEBUG] AI Manager raw Claude response:\n{raw_text[:3500]}")
+
     try:
-        raw_text = extract_text(resp)
         decision = json.loads(raw_text)
     except Exception as e:
         logger.warning("ai_manager: could not parse Claude response: %r", e)
