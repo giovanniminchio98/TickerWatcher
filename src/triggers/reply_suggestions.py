@@ -1,14 +1,14 @@
 """Telegram-only (bot chat) digest of the biggest recent candidate posts to
-manually reply to -- covers exactly the accounts reply_manager.py's AI
-replies can't (bigger, non-reply_only accounts in config/reply_targets.json
-whose tweet-level reply restrictions 403 our API replies regardless of
-content, see README's reply-audience note). reply_manager.py already
-handles the smaller reply_only accounts automatically, so this digest would
-be redundant for those -- it only ever surfaces the bigger accounts, ranked
-by real engagement (likes + retweets) so the posts most worth jumping into
-surface first. Never posts to X, never costs anything, never counts toward
-anything_fired -- same "Telegram-only side channel" pattern as
-content_drafts.py.
+manually reply to -- covers every account in config/reply_targets.json
+(big and small reply_only ones alike). Confirmed live: X's "you must be
+mentioned or otherwise engaged by the author" reply restriction isn't a
+per-account setting -- it hit the smaller reply_only accounts just as hard
+as the bigger ones, so reply_manager.py (automated AI replies) is disabled
+entirely and this manual digest is now the only reply path, for every
+account, not just the bigger ones. Ranked by real engagement (likes +
+retweets) so the posts most worth jumping into surface first. Never posts
+to X, never costs anything, never counts toward anything_fired -- same
+"Telegram-only side channel" pattern as content_drafts.py.
 
 Candidates older than max_age_hours (config, default 6) are dropped before
 ranking -- replying to a post from many hours ago reads as stale and the
@@ -35,7 +35,7 @@ def _candidates(ctx, state, max_age_hours):
 
     candidates = []
     for target in ctx.config["reply_targets"]["targets"]:
-        if not target.get("enabled") or target.get("reply_only"):
+        if not target.get("enabled"):
             continue
         handle = target["handle"]
         acct_state = state.setdefault("resolved_accounts", {}).setdefault(handle, {})
