@@ -1,5 +1,5 @@
 {
-  "_comment": "Opt-in list of accounts AI Manager considers replying under (see src/triggers/ai_manager.py) -- the one deliberate exception to the 'never auto-reply under other accounts' rule. 'user_id' is optional: leave it blank and it auto-resolves from 'handle' on first use (one read call, then cached), or paste the numeric ID yourself to skip that lookup. An entry with enabled=false does nothing at all. 'times_per_day' is a hard per-account cap -- the global thresholds in config/ai_manager.json (max_replies_per_day) is the real ceiling across all accounts combined.",
+  "_comment": "Opt-in list of accounts AI Manager considers replying under (see src/triggers/ai_manager.py) -- the one deliberate exception to the 'never auto-reply under other accounts' rule. 'user_id' is optional: leave it blank and it auto-resolves from 'handle' on first use (one read call, then cached), or paste the numeric ID yourself to skip that lookup. An entry with enabled=false does nothing at all. 'times_per_day' is a hard per-account cap -- the global thresholds in config/ai_manager.json (max_replies_per_day) is the real ceiling across all accounts combined. 'reply_only' (default false): the big accounts below commonly restrict who can reply to their posts (X's tweet-level conversation-control setting), which is why replies/quote-tweets to them 403 -- smaller/mid accounts marked reply_only=true are unlikely to have that restriction, so AI Manager only ever considers replying to them, never reposting (reposting the big accounts already works fine via plain retweet).",
   "targets": [
     { "handle": "AshCrypto", "user_id": "", "enabled": true, "times_per_day": 2 },
     { "handle": "CoinGecko", "user_id": "", "enabled": true, "times_per_day": 2 },
@@ -9,6 +9,10 @@
     { "handle": "coinbase", "user_id": "", "enabled": true, "times_per_day": 2 },
     { "handle": "TedPillows", "user_id": "", "enabled": true, "times_per_day": 2 },
     { "handle": "CoinMarketCap", "user_id": "", "enabled": true, "times_per_day": 2 },
-    { "handle": "ManicDYOR", "user_id": "", "enabled": true, "times_per_day": 2 }
+    { "handle": "ManicDYOR", "user_id": "", "enabled": true, "times_per_day": 2 },
+    { "handle": "iamcryptowolfy", "user_id": "", "enabled": true, "times_per_day": 2, "reply_only": true },
+    { "handle": "cryptotony__", "user_id": "", "enabled": true, "times_per_day": 2, "reply_only": true },
+    { "handle": "nexocooker", "user_id": "", "enabled": true, "times_per_day": 2, "reply_only": true },
+    { "handle": "gordongekko", "user_id": "", "enabled": true, "times_per_day": 2, "reply_only": true }
   ]
 }

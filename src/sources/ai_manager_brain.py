@@ -54,7 +54,9 @@ def _build_prompt(snapshot):
         f'{i}. [{a["source"]}] {a["title"]} -- {a["summary"]}' for i, a in enumerate(snapshot["news"])
     ) or "(no matching news)"
     reply_lines = "\n".join(
-        f'{i}. @{c["handle"]}: """{c["text"]}"""' for i, c in enumerate(snapshot["reply_candidates"])
+        f'{i}. @{c["handle"]}{" [reply-only, do not repost]" if c.get("reply_only") else ""}: '
+        f'"""{c["text"]}"""'
+        for i, c in enumerate(snapshot["reply_candidates"])
     ) or "(no candidates available right now)"
     own_recent = "\n".join(f"- {t}" for t in snapshot["own_recent_posts"]) or "(no post history yet)"
     filler_examples = "\n".join(f"- {t}" for t in snapshot.get("filler_examples", [])) or "(none)"
@@ -85,7 +87,8 @@ def _build_prompt(snapshot):
         "- Reposts: a candidate is either a plain retweet (genuinely worth amplifying as-is, no "
         "comment needed) or a quote-tweet (add a short, sharp take that gives it your own "
         f"perspective -- same rules as a reply: no generic compliments, under {MAX_QUOTE_LEN} "
-        f"characters if quoting), at most {snapshot['max_reposts_per_call']} reposts total."
+        f"characters if quoting), at most {snapshot['max_reposts_per_call']} reposts total. Never "
+        "repost a candidate marked [reply-only] -- those accounts are for replies only."
         + (
             " Right now, prefer plain retweets over quote-tweets when a candidate is a close call "
             "between the two -- quote-tweets are currently unreliable on this account (an X-side "

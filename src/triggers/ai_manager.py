@@ -124,7 +124,11 @@ def _reply_candidates(ctx, cfg, state):
     """Reuses config/reply_targets.json (same file/auto-resolve pattern as
     comment_engagement.py) as the shared pool of accounts to consider both
     replying to and reposting -- a tweet already acted on (either way) is
-    excluded so it never comes up as a candidate again."""
+    excluded so it never comes up as a candidate again. Candidates from a
+    target marked reply_only (smaller accounts added specifically because
+    the bigger ones' tweet-level reply restrictions 403 our replies/quotes)
+    are tagged so the repost path below never considers them -- reply-only
+    is enforced both in the prompt and as a hard code-level filter."""
     candidates = []
     acted_ids = set(state.get("replied_tweet_ids", [])) | set(state.get("reposted_tweet_ids", []))
     reply_caps = state.setdefault("account_replies_today", {})
@@ -149,10 +153,13 @@ def _reply_candidates(ctx, cfg, state):
         tweets = ctx.x.get_recent_tweets_with_text(
             user_id, max_results=cfg["max_reply_candidates_per_account"]
         )
+        reply_only = target.get("reply_only", False)
         for tweet in tweets:
             if tweet["id"] in acted_ids:
                 continue
-            candidates.append({"handle": handle, "tweet_id": tweet["id"], "text": tweet["text"]})
+            candidates.append({
+                "handle": handle, "tweet_id": tweet["id"], "text": tweet["text"], "reply_only": reply_only,
+            })
     return candidates
 
 
@@ -277,6 +284,10 @@ def run(ctx):
         if action not in ("retweet", "quote"):
             continue
         candidate = snapshot["reply_candidates"][idx]
+        if candidate.get("reply_only"):
+            # hard safety net -- the prompt already tells Claude not to
+            # repost these, but never trust that alone
+            continue
         handle = candidate["handle"]
         cap = next(
             (t.get("times_per_day", 1) for t in ctx.config["reply_targets"]["targets"] if t["handle"] == handle),
