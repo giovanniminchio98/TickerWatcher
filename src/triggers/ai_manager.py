@@ -112,11 +112,11 @@ def _ready_for_call(ctx, cfg, state):
 
 def _price_snapshot_lines(ctx):
     """Crypto comes from ctx.prices (already fetched once per run by
-    main.py). Stocks use watchlist.stocks_broad (~50 tickers, for content
-    variety) via ONE batched Twelve Data call -- never loop get_quote() per
-    symbol here, that's what would blow the free tier's 800 calls/day cap
-    at this list size. Falls back to the smaller 'stocks' list if
-    stocks_broad isn't configured."""
+    main.py). Stocks use watchlist.stocks_broad (30 tickers, for content
+    variety) via twelvedata.get_quotes_batch -- chunked/paced internally,
+    never raises, so no try/except needed here; a symbol just won't have
+    a line if its chunk didn't come through. Falls back to the smaller
+    'stocks' list if stocks_broad isn't configured."""
     lines = []
     for asset in ctx.config["watchlist"]["crypto"]:
         info = ctx.prices.get(asset["coingecko_id"])
@@ -127,16 +127,40 @@ def _price_snapshot_lines(ctx):
         )
 
     stocks = ctx.config["watchlist"].get("stocks_broad") or ctx.config["watchlist"].get("stocks", [])
-    try:
-        quotes = twelvedata.get_quotes_batch([asset["symbol"] for asset in stocks])
-    except Exception:
-        logger.exception("Twelve Data batch quote failed for ai_manager")
-        quotes = {}
+    quotes = twelvedata.get_quotes_batch([asset["symbol"] for asset in stocks])
     for asset in stocks:
         q = quotes.get(asset["symbol"])
         if q:
             lines.append(f"{asset['symbol']}: ${fmt_price(q['price'])} ({fmt_pct(q['percent_change'])})")
     return lines
+
+
+def _earnings_snapshot(ctx):
+    """Today's earnings calendar (Twelve Data, free-tier endpoint), scoped
+    to watchlist.stocks_broad -- gives Claude a real, timely "X reports
+    earnings today" angle independent of price moves. Same
+    try/except-and-default-to-empty pattern as every other external call
+    in this module."""
+    try:
+        entries = twelvedata.get_earnings_calendar()
+    except Exception:
+        logger.exception("Twelve Data earnings_calendar fetch failed for ai_manager")
+        return []
+    tracked = {asset["symbol"] for asset in ctx.config["watchlist"].get("stocks_broad", [])}
+    return [e for e in entries if e.get("symbol") in tracked]
+
+
+def _press_releases_snapshot(ctx, max_results=10):
+    """Recent official press releases (Twelve Data, free-tier endpoint)
+    for watchlist.stocks_broad -- a primary-source angle distinct from the
+    RSS/journalism news already used elsewhere. Same
+    try/except-and-default-to-empty pattern as everything else here."""
+    symbols = [asset["symbol"] for asset in ctx.config["watchlist"].get("stocks_broad", [])]
+    try:
+        return twelvedata.get_press_releases(symbols, max_results=max_results)
+    except Exception:
+        logger.exception("Twelve Data press_releases fetch failed for ai_manager")
+        return []
 
 
 def _news_snapshot(ctx, state, limit=6):
@@ -330,6 +354,8 @@ def run(ctx):
     snapshot = {
         "prices": _price_snapshot_lines(ctx),
         "news": _news_snapshot(ctx, state),
+        "earnings": _earnings_snapshot(ctx),
+        "press_releases": _press_releases_snapshot(ctx),
         "repost_candidates": _repost_candidates(ctx, cfg, state),
         "own_recent_posts": state.get("recent_post_texts", []),
         "filler_examples": _filler_examples(ctx),
