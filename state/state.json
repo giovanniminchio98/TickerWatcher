@@ -3,24 +3,29 @@
     "account_replies_today": {},
     "account_reposts_today": {
       "AshCrypto": 2,
-      "CoinMarketCap": 1
+      "CoinMarketCap": 2,
+      "WatcherGuru": 2
     },
-    "calls_today": 4,
+    "calls_today": 5,
     "date": "2026-07-15",
-    "last_call_time": null,
-    "posts_today": 2,
+    "last_call_time": 1784124295.447629,
+    "posts_today": 3,
     "recent_post_texts": [
       "CPI cooled to a 3-month low and rate hike odds went from 43% to basically nothing in a day. BTC didn't just react, it ripped straight to $65K. This move is as much a liquidity story as a Bitcoin story.",
-      "ETH just notched its best daily close in 42 days and is up nearly 5% today, closing in on $1,900. Meanwhile BTC is holding near $65K post-CPI. Risk appetite is clearly back across the board."
+      "ETH just notched its best daily close in 42 days and is up nearly 5% today, closing in on $1,900. Meanwhile BTC is holding near $65K post-CPI. Risk appetite is clearly back across the board.",
+      "Saylor says Strategy stays 'very secure' unless BTC craters to $8K-$10K, over 85% below today's $65K. Shows just how much margin of safety is baked into the leverage model even after all the debt-fueled buying. \ud83d\udcc9\ud83d\udcaa\u20bf"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
     "reposted_tweet_ids": [
       "2077157602149212621",
       "2077226331960656108",
-      "2077338680440590686"
+      "2077338680440590686",
+      "2077370160806309903",
+      "2077373110903517205",
+      "2077388007309541626"
     ],
-    "reposts_today": 3,
+    "reposts_today": 6,
     "resolved_accounts": {
       "AshCrypto": {
         "resolved_user_id": "3185716686"
@@ -66,18 +71,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-15",
-      "posts_used": 19,
-      "usd_used": 0.655
+      "posts_used": 24,
+      "usd_used": 0.915
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 90,
-    "usd_used": 5.05
+    "posts_used": 95,
+    "usd_used": 5.31
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.2231
+    "usd_used": 0.2639
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -338,7 +343,10 @@
       "2077375219908452364",
       "2077379568126538026",
       "2077376620722102667",
-      "2077389447122108818"
+      "2077389447122108818",
+      "2077376262687862911",
+      "2077362002884775994",
+      "2077384627304427611"
     ]
   },
   "retweets": {
@@ -360,7 +368,7 @@
   },
   "whale": {
     "last_btc_block_height": 958160,
-    "last_eth_block": 25538517,
+    "last_eth_block": 25538535,
     "posted_count_today": 6,
     "posted_date": "2026-07-15",
     "seen_btc_txids": [
