@@ -271,6 +271,22 @@ Requires `ANTHROPIC_API_KEY` — like comment-engagement's replies, there's no
 safe mechanical fallback for "curated insight" text, so this trigger simply
 does nothing without it.
 
+### Reply suggestions (Telegram-only)
+
+`src/triggers/reply_suggestions.py` is a stopgap for manual replying while
+X API replies stay blocked by the anti-spam/reputation gate (see AI Manager's
+notes above): every run it checks the same `config/reply_targets.json`
+account pool AI Manager already considers, ranks candidates by real
+engagement (likes + retweets), and sends the top few (`max_per_run`, default
+3) to your **private Telegram bot chat only** as a direct `x.com/.../status/...`
+link plus a text snippet — tap the link, X opens straight to that post, write
+your own reply from there.
+
+A tweet is only ever suggested once (tracked in state) and is skipped if AI
+Manager already replied to or reposted it. Free, mechanical, no
+`ANTHROPIC_API_KEY` needed, never touches X — doesn't affect `filler`'s
+"anything fired this run" check any more than `content_drafts` does.
+
 ## Run frequency and cron schedule
 
 The workflow has **no in-repo `schedule:` trigger** — GitHub's own scheduler

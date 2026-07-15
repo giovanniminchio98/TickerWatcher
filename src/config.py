@@ -21,6 +21,7 @@ def load_all():
         "budget": _load("budget.json"),
         "claude_budget": _load("claude_budget.json"),
         "ai_manager": _load("ai_manager.json"),
+        "reply_suggestions": _load("reply_suggestions.json"),
         "filler": _load("filler.json"),
         "media": _load("media.json"),
     }

@@ -36,6 +36,7 @@ DEFAULT_STATE = {
         "resolved_accounts": {},
     },
     "claude_budget": {"period": None, "usd_used": 0.0, "low_budget_alert_sent_period": None},
+    "reply_suggestions": {"shown_tweet_ids": [], "resolved_accounts": {}},
     "content_drafts": {
         "last_drafted_time": {},
         "drafted_urls": [],

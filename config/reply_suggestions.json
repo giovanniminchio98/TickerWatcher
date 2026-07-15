@@ -1,0 +1,5 @@
+{
+  "_comment": "Telegram-only (bot chat) digest of the biggest recent posts from config/reply_targets.json's accounts, for manual replying while X API replies are blocked by the anti-spam/reputation gate -- see README. Never touches X, never costs anything.",
+  "enabled": true,
+  "max_per_run": 3
+}
