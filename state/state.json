@@ -84,13 +84,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-16",
-      "posts_used": 7,
-      "usd_used": 0.475
+      "posts_used": 8,
+      "usd_used": 0.49
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 116,
-    "usd_used": 6.18
+    "posts_used": 117,
+    "usd_used": 6.195
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -111,7 +111,9 @@
       "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes",
       "https://www.coindesk.com/business/2026/07/14/circle-signs-mou-with-japan-s-largest-card-network-to-explore-stablecoin-payments",
       "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report",
-      "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push"
+      "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
+      "https://www.coindesk.com/business/2026/07/15/cantor-and-securitize-collaborate-on-blockchain-based-ipos",
+      "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -120,7 +122,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-16"
   },
   "filler": {
@@ -222,7 +224,7 @@
     ]
   },
   "flashback": {
-    "last_posted_date": "2026-07-15"
+    "last_posted_date": "2026-07-16"
   },
   "image_budget": {
     "low_budget_alert_sent_period": null,
@@ -411,7 +413,10 @@
       "2077496346559263209",
       "2077539487958138904",
       "2077524437906149452",
-      "2077454636525531549"
+      "2077454636525531549",
+      "2077542615868719167",
+      "2077538970599088333",
+      "2077540022165684486"
     ]
   },
   "retweets": {
