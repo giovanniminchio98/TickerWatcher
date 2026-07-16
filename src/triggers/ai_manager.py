@@ -215,12 +215,15 @@ def _enforce_opening_tag(text):
     requires this, but a rule stated in a prompt is a request, not a
     guarantee, and a post silently missing its tag breaks the profile's
     visual consistency. If none of the tags is present at the very start,
-    prepend a neutral default rather than let it go out untagged. Only
-    applies to the main post -- second_part is deliberately tag-free."""
+    prepend a default rather than let it go out untagged -- JUST IN over a
+    more "neutral" label like CONTEXT, since this is a rare fallback for an
+    otherwise real, timely post (not an evergreen piece that just forgot
+    its tag), and it reads as more engaging regardless. Only applies to the
+    main post -- second_part is deliberately tag-free."""
     stripped = text.lstrip()
     if any(stripped.startswith(f"{tag}:") for tag in ai_manager_brain.TAGS):
         return text
-    return f"📊 CONTEXT: {text}"
+    return f"🚨 JUST IN: {text}"
 
 
 def _send_run_summary(state, reason, posted_this_run):
