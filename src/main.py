@@ -62,10 +62,10 @@ ENABLED = {
     "historical_flashback": True,
     "polls": True,
     "self_reply": True,
-    # disabled by default: ai_manager now owns the repost decision over the
-    # same monitored-accounts pool, with judgment (retweet, quote-tweet with
-    # its own comment, or skip) instead of retweeting every new post
-    # unconditionally. Code kept intact -- flip back to True to run both.
+    # disabled by default: reposting (retweet/quote-tweet) is a manual,
+    # human-only decision now -- ai_manager no longer touches it either.
+    # Code kept intact -- flip back to True to resume unconditional
+    # retweeting of every new monitored-account post.
     "retweets": False,
     # disabled by default: comment-engagement's role was absorbed by
     # reply_manager, which is itself now also disabled (see below) -- kept
@@ -80,9 +80,8 @@ ENABLED = {
     # theory they'd be more permissive -- confirmed live it's not a
     # per-account setting, it's a blanket API limitation no target account
     # choice gets around. Automated replies are pointless until/unless that
-    # changes, so this is off; reposting (retweet/quote) of the bigger
-    # accounts still works fine and is unaffected, see ai_manager.py.
-    # Code kept intact -- flip back to True if the restriction ever eases.
+    # changes. Code kept intact -- flip back to True if the restriction
+    # ever eases.
     "reply_manager": False,
     # disabled by default: the bot-chat digest message was more noise than
     # signal once manual replying stopped being the primary reply path --
