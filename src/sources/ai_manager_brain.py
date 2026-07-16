@@ -75,7 +75,7 @@ import json
 import logging
 import os
 
-from src import ops_alerts, telegram_client
+from src import ops_alerts
 from src.sources.claude_utils import extract_text
 
 logger = logging.getLogger("tickerwatch.ai_manager_brain")
@@ -162,7 +162,7 @@ def _build_prompt(snapshot):
         "consequence, not just the raw fact, (c) a few emoji (not just one, not decorative "
         "overload -- and never \U0001F517 specifically, since Telegram already prefixes its own link "
         f"line with that same emoji whenever a post has one, and doubling it up looks odd). No "
-        f"hashtags, no @mentions, under {MAX_POST_LEN} characters total, should read "
+        f"@mentions, under {MAX_POST_LEN} characters total, should read "
         "like a real person's take, not a bot alert. When a post covers a genuinely fresh, "
         "time-sensitive, factual development, it's fine to open with 'JUST IN:' or 'BREAKING:' "
         "verbatim -- but only when it's true and warranted, never as decoration on a routine take. "
@@ -175,6 +175,18 @@ def _build_prompt(snapshot):
         "instead). Same rule applies separately to a second_part, since it's its own tweet. Big "
         "recognizable names (not tickers) have no such limit. The plain-language explanation is "
         "still mandatory regardless of these additions.\n"
+        "- Flag the post's topic/source/keyword with 2 to 4 short tags, either real hashtags "
+        "(#Crypto, #AI, #Fed, #Earnings, #Stablecoins, etc.) or a distinctive word written in "
+        "UPPERCASE inline (e.g. a post that opens with JUST IN or BREAKING already counts one "
+        "tag toward the 2-4 just from that). Mix the two styles or pick whichever reads more "
+        "naturally for a given tag -- trailing hashtags work well for broad category labels, "
+        "inline uppercase works well for a specific term worth emphasizing within a sentence. Tags "
+        "should genuinely describe what the post is about (its asset class, its source type, its "
+        "central keyword) -- never generic filler tags (no #crypto on a post that isn't about "
+        "crypto, no #news as a tag by itself). 2-4 total across the whole post is the target -- "
+        "don't stuff more, and never let tags substitute for the actual explanation, they're a "
+        "signal layered on top of real content. Same guidance applies to second_part if it has one, "
+        "using its own separate 2-4 tags rather than repeating the main post's.\n"
         "- Primarily react to real prices/news above. This call has a real cost regardless of the "
         "outcome, so make a genuine effort to find at least one post worth publishing -- with live "
         "prices, matching news, and the GENERIC ENGAGEMENT EXAMPLES below (style reference only, "
@@ -275,12 +287,6 @@ def decide(snapshot, model):
 
     usage = resp.usage
     raw_text = extract_text(resp)
-
-    # TEMP DEBUG (2026-07): sends Claude's raw answer to the bot chat on
-    # every call so it's easy to confirm "genuinely decided nothing" vs
-    # "something's actually wrong" during the first few days of the new
-    # batching cadence -- remove this send once that's confirmed.
-    telegram_client.send_message(f"🔍 [DEBUG] AI Manager raw Claude response:\n{raw_text[:3500]}")
 
     try:
         decision = json.loads(raw_text)

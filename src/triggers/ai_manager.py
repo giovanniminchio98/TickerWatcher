@@ -330,7 +330,7 @@ def _drain_queue(ctx, cfg, state):
         0 if has_second_part else state.get("posts_since_last_second_part", 0) + 1
     )
     telegram_client.send_message(
-        f"📝 Posted ({'two-part' if has_second_part else 'single'}): {text}\nReasoning: {item.get('reasoning', '')}"
+        f"✅ X post created ({'two-part' if has_second_part else 'single'})"
     )
     return True
 

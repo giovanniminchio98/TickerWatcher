@@ -84,7 +84,10 @@ ENABLED = {
     # accounts still works fine and is unaffected, see ai_manager.py.
     # Code kept intact -- flip back to True if the restriction ever eases.
     "reply_manager": False,
-    "reply_suggestions": True,
+    # disabled by default: the bot-chat digest message was more noise than
+    # signal once manual replying stopped being the primary reply path --
+    # code kept intact, flip back to True to resume the digest.
+    "reply_suggestions": False,
     # disabled by default: ai_manager's own post decision now absorbs
     # filler's old role (a handful of filler.json's generic-engagement
     # examples are handed to Claude as style reference), but only as an
@@ -165,10 +168,7 @@ def main():
         # confirms the pipeline is alive and checked everything even when
         # nothing was worth posting/replying/reposting -- distinguishes a
         # genuinely quiet run from a silently broken one
-        telegram_client.send_message(
-            "✅ TickerWatch check complete — no post/reply/repost this run "
-            "(nothing warranted it). Everything's running fine."
-        )
+        telegram_client.send_message("❌ - No posting needed")
 
     logger.info("Budget: %s", budget.remaining_summary())
     logger.info("Budget: %s", claude_budget.remaining_summary())
