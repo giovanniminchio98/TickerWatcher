@@ -13,26 +13,18 @@
       {
         "link_url": null,
         "queued_at": 1784174505.541774,
-        "reasoning": "Fresh, evergreen policy story not covered in recent posts. Explains what the classification actually means for readers unfamiliar with the term, and it's the kind of institutional-adoption angle that stays relevant hours later.",
-        "second_part": null,
-        "text": "South Korea just moved to classify crypto as long-term national wealth under a new National Asset Basic Act, covering roughly $940B in state assets. That's a government treating bitcoin and crypto like gold or land reserves, not a speculative side bet. \ud83c\uddf0\ud83c\uddf7\ud83d\udcb0"
-      },
-      {
-        "link_url": null,
-        "queued_at": 1784174505.541774,
         "reasoning": "New, uncovered data point about crowded leverage in bitcoin derivatives markets, framed as an evergreen risk explainer with a mechanism-level second part on how liquidation cascades actually work, matching the 1-in-4 second_part cadence.",
         "second_part": "A liquidation cascade works like this: leveraged longs get force-closed as price dips, their forced selling pushes price down further, triggering the next batch of liquidations. That's how a small move can snowball into a fast, sharp drop. \u26a0\ufe0f",
         "text": "Glassnode says top traders on Hyperliquid (a crypto derivatives exchange) are running very aggressive leveraged $BTC longs, above levels seen at the last run to $83K. Crowded leverage cuts both ways: fuels rallies, but also feeds liquidation cascades. \ud83c\udfa2\u26a0\ufe0f"
       }
     ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 1,
-    "posts_today": 2,
+    "posts_since_last_second_part": 2,
+    "posts_today": 3,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade"
     ],
     "recent_post_texts": [
-      "DeFi protocols run on 'oracles' -- price feeds that pipe exchange data into smart contracts. If that feed gets spoofed or manipulated, attackers can drain a protocol fast, like the $18M hit on Ostium. Your collateral is only as safe as the data feeding it. \ud83d\udd10\ud83d\udcc9",
       "Binance's next move: becoming a stablecoin-powered 'super app.' Stablecoins already move enormous volume every month as the plumbing for trading, payments, and remittances. Whoever controls that flow controls a huge slice of crypto's daily economy. \ud83d\udcb5\ud83c\udf10",
       "JUST IN: Cantor Fitzgerald (Wall Street dealer) and Securitize (a tokenization platform) are teaming up on blockchain-based IPOs, companies going public via crypto rails. \ud83c\udfe6\u26d3\ufe0f BTC holds near $65K while this kind of institutional plumbing keeps expanding. \ud83d\udcc8",
       "DTCC (the clearinghouse behind nearly every US stock trade) just moved tokenized securities from pilot to live trading. Sounds technical, but it changes something basic: how fast trades actually settle. \ud83c\udfe6\u26a1 Here's the mechanism:",
@@ -41,7 +33,8 @@
       "DTCC, Cantor/Securitize, and Binance each made moves this week to put core finance functions onchain: settlement, IPOs, and stablecoin flow. Different companies, same signal: this is infrastructure, not hype. \ud83c\udfe6\u26d3\ufe0f Why it matters:",
       "BTC sitting flat near $64.8K while $ETH is the one actually moving today, up 1.8% and back above $1,920. Big tech is mixed too: MSFT, GOOGL, META all up roughly 3%, but AMD down 3.5%. Risk appetite looks selective right now, not universal. \ud83d\udcca\ud83d\udcb9",
       "Strategy ($MSTR) doesn't just buy bitcoin, it turns BTC into what it calls 'Digital Credit': issuing preferred stock like STRF and STRC, backed by its BTC holdings, to raise cash without selling coins. Saylor's stated goal: get STRC back to its original issue\u2026",
-      "JUST IN: $PYPL is up over 17% today, easily the market's biggest mover. Big Tech is broadly strong too (MSFT, GOOGL, AMZN, AAPL all up 3-4%), while crypto is calmer: ETH back above $1,900, BTC flat near $64.5K. Equities leading risk appetite today. \ud83d\udcc8\ud83d\udcb5"
+      "JUST IN: $PYPL is up over 17% today, easily the market's biggest mover. Big Tech is broadly strong too (MSFT, GOOGL, AMZN, AAPL all up 3-4%), while crypto is calmer: ETH back above $1,900, BTC flat near $64.5K. Equities leading risk appetite today. \ud83d\udcc8\ud83d\udcb5",
+      "South Korea just moved to classify crypto as long-term national wealth under a new National Asset Basic Act, covering roughly $940B in state assets. That's a government treating bitcoin and crypto like gold or land reserves, not a speculative side bet. \ud83c\uddf0\ud83c\uddf7\ud83d\udcb0"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -100,13 +93,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-16",
-      "posts_used": 10,
-      "usd_used": 0.52
+      "posts_used": 11,
+      "usd_used": 0.535
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 119,
-    "usd_used": 6.225
+    "posts_used": 120,
+    "usd_used": 6.24
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -444,7 +437,10 @@
       "2077580592342782231",
       "2077595161966575880",
       "2077565834357018828",
-      "2077578257713582554"
+      "2077578257713582554",
+      "2077614594462458262",
+      "2077612294649864614",
+      "2077607882229428533"
     ]
   },
   "retweets": {
