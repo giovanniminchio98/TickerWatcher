@@ -1,19 +1,16 @@
 """Post type 2: high-relevance "JUST IN" news alerts, RSS-sourced (see
 sources/news_rss.py for why CryptoPanic/NewsAPI aren't viable free options).
 
-The main post carries no clickable link -- X's algorithm has suppressed
-reach on linked posts hard since March 2026 (near-zero reach for non-Premium
-accounts), so the source URL goes in a cheap follow-up reply instead, same
-pattern as whale alerts. Unlike whale alerts' tx reference, this link still
-costs $0.20 wherever it lives, so this isn't a cost optimization -- it's a
-reach one. To make sure a post is never left fully uncited if the reply
-happens to fail, the main post still names the outlet (no URL) as a fallback
-citation. Still bounded by keywords.max_articles_per_day, the main cost lever
-now that whale alerts dropped their link entirely.
+No link, ever, on X -- same account-wide rule as ai_manager.py: X's algorithm
+has suppressed reach on linked posts hard since March 2026 (near-zero reach
+for non-Premium accounts), and a link reply still cost real budget besides.
+The main post names the outlet (no URL) as its citation instead. Still
+bounded by keywords.max_articles_per_day, the main cost lever now that whale
+alerts dropped their link entirely too.
 
-The Telegram channel copy always gets the real article URL, regardless of
-whether the paid X reply above ends up firing -- Telegram is free, so there's
-no budget reason to ever hold that link back there.
+The Telegram channel copy always gets the real article URL -- Telegram is
+free, so there's no reason to ever hold that link back there, same
+"Telegram can be more generous than X" pattern used everywhere else.
 
 Also attaches a small themed red/green/gray trend-line graphic (see
 src/media.py's get_trend_media_id) based on the same Claude call's sentiment
@@ -76,13 +73,6 @@ def run(ctx):
         state["posted_urls"].append(article["url"])
         state["posted_count_today"] += 1
         fired = True
-
-        if ctx.budget.can_spend(has_link=True):
-            reply_text = truncate(f"Source: {article['url']}")
-            reply_id = ctx.x.reply(reply_text, tweet_id)
-            if reply_id:
-                # already mirrored to the channel above via channel_link, skip duplicate
-                ctx.budget.record_spend(has_link=True, text=reply_text, mirror_to_channel=False)
 
     state["posted_urls"] = state["posted_urls"][-500:]
     return fired
