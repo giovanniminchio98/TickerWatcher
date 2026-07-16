@@ -9,24 +9,15 @@
     "calls_today": 3,
     "date": "2026-07-16",
     "last_call_time": 1784190003.891748,
-    "post_queue": [
-      {
-        "link_url": "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
-        "queued_at": 1784190003.891748,
-        "reasoning": "Fresh, concrete, factual event (specific $18M exploit) not covered in own recent posts. Warrants a second_part since oracle attacks are a genuine recurring mechanism worth explaining, and it's been a while since a second_part was used.",
-        "second_part": "This is a pattern, not a one-off: oracle attacks have hit several DeFi platforms recently. The fix isn't more code review, it's using price feeds that pull from many independent sources so no single manipulated number can move the whole system. #DeFi #Security",
-        "text": "DeFi (decentralized finance, crypto lending/trading without a middleman) just took another hit: Ostium, a derivatives platform, lost $18M to an oracle exploit. Oracles feed price data on-chain -- manipulate the feed, and you can drain the protocol without touching a single password. \u26a0\ufe0f\ud83d\udd13"
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 0,
-    "posts_today": 4,
+    "posts_today": 5,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi"
     ],
     "recent_post_texts": [
-      "JUST IN: Cantor Fitzgerald (Wall Street dealer) and Securitize (a tokenization platform) are teaming up on blockchain-based IPOs, companies going public via crypto rails. \ud83c\udfe6\u26d3\ufe0f BTC holds near $65K while this kind of institutional plumbing keeps expanding. \ud83d\udcc8",
       "DTCC (the clearinghouse behind nearly every US stock trade) just moved tokenized securities from pilot to live trading. Sounds technical, but it changes something basic: how fast trades actually settle. \ud83c\udfe6\u26a1 Here's the mechanism:",
       "BTC is basically flat today at $64,831 after ripping to $65K on yesterday's cooling inflation data \u2014 looks like the market's digesting the move, not reversing it. ETH is the real standout, up 2.24% to $1,922, its best levels in weeks. SOL and XRP are quieter.\u2026",
       "ETH is the standout again today, up 2% to $1,923 while BTC sits flat near $64,857 and SOL, XRP barely move. Looks like fresh capital is rotating specifically into ETH after yesterday's CPI-driven rally, not spreading evenly across the market. \ud83d\udcc8\ud83d\udca7",
@@ -35,7 +26,8 @@
       "Strategy ($MSTR) doesn't just buy bitcoin, it turns BTC into what it calls 'Digital Credit': issuing preferred stock like STRF and STRC, backed by its BTC holdings, to raise cash without selling coins. Saylor's stated goal: get STRC back to its original issue\u2026",
       "JUST IN: $PYPL is up over 17% today, easily the market's biggest mover. Big Tech is broadly strong too (MSFT, GOOGL, AMZN, AAPL all up 3-4%), while crypto is calmer: ETH back above $1,900, BTC flat near $64.5K. Equities leading risk appetite today. \ud83d\udcc8\ud83d\udcb5",
       "South Korea just moved to classify crypto as long-term national wealth under a new National Asset Basic Act, covering roughly $940B in state assets. That's a government treating bitcoin and crypto like gold or land reserves, not a speculative side bet. \ud83c\uddf0\ud83c\uddf7\ud83d\udcb0",
-      "Glassnode says top traders on Hyperliquid (a crypto derivatives exchange) are running very aggressive leveraged $BTC longs, above levels seen at the last run to $83K. Crowded leverage cuts both ways: fuels rallies, but also feeds liquidation cascades. \ud83c\udfa2\u26a0\ufe0f"
+      "Glassnode says top traders on Hyperliquid (a crypto derivatives exchange) are running very aggressive leveraged $BTC longs, above levels seen at the last run to $83K. Crowded leverage cuts both ways: fuels rallies, but also feeds liquidation cascades. \ud83c\udfa2\u26a0\ufe0f",
+      "DeFi (decentralized finance, crypto lending/trading without a middleman) just took another hit: Ostium, a derivatives platform, lost $18M to an oracle exploit. Oracles feed price data on-chain -- manipulate the feed, and you can drain the protocol without tou\u2026"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -94,13 +86,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-16",
-      "posts_used": 13,
-      "usd_used": 0.565
+      "posts_used": 15,
+      "usd_used": 0.595
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 122,
-    "usd_used": 6.27
+    "posts_used": 124,
+    "usd_used": 6.3
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
