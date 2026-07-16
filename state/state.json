@@ -6,15 +6,24 @@
       "CoinMarketCap": 0,
       "WatcherGuru": 1
     },
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-16",
-    "last_call_time": 1784174505.541774,
-    "post_queue": [],
+    "last_call_time": 1784190003.891748,
+    "post_queue": [
+      {
+        "link_url": "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
+        "queued_at": 1784190003.891748,
+        "reasoning": "Fresh, concrete, factual event (specific $18M exploit) not covered in own recent posts. Warrants a second_part since oracle attacks are a genuine recurring mechanism worth explaining, and it's been a while since a second_part was used.",
+        "second_part": "This is a pattern, not a one-off: oracle attacks have hit several DeFi platforms recently. The fix isn't more code review, it's using price feeds that pull from many independent sources so no single manipulated number can move the whole system. #DeFi #Security",
+        "text": "DeFi (decentralized finance, crypto lending/trading without a middleman) just took another hit: Ostium, a derivatives platform, lost $18M to an oracle exploit. Oracles feed price data on-chain -- manipulate the feed, and you can drain the protocol without touching a single password. \u26a0\ufe0f\ud83d\udd13"
+      }
+    ],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 0,
     "posts_today": 4,
     "recent_news_urls": [
-      "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade"
+      "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
+      "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi"
     ],
     "recent_post_texts": [
       "JUST IN: Cantor Fitzgerald (Wall Street dealer) and Securitize (a tokenization platform) are teaming up on blockchain-based IPOs, companies going public via crypto rails. \ud83c\udfe6\u26d3\ufe0f BTC holds near $65K while this kind of institutional plumbing keeps expanding. \ud83d\udcc8",
@@ -96,7 +105,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.0835
+    "usd_used": 1.1092
   },
   "comment_engagement": {
     "WatcherGuru": {
