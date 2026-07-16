@@ -1,8 +1,8 @@
-"""Post type 11 (opt-in via ANTHROPIC_API_KEY presence): autonomous post +
-repost decision-maker, meant to run unattended for months, targeting
-~10-14 posts/day. See src/sources/ai_manager_brain.py for the
-prompt/parsing and README's "AI Manager" section for the full design
-rationale.
+"""Post type 11 (opt-in via ANTHROPIC_API_KEY presence): autonomous
+original-post decision-maker, meant to run unattended for months,
+targeting close to one post per hourly run. See
+src/sources/ai_manager_brain.py for the prompt/parsing and README's "AI
+Manager" section for the full design rationale.
 
 Each Claude call produces a BATCH of up to posts_per_batch posts (see
 config/ai_manager.json) instead of just one -- the first is fired
@@ -10,19 +10,16 @@ immediately, any others are queued in state["ai_manager"]["post_queue"]
 and drained one item per subsequent run, relying on main.py's hourly cron
 cadence to naturally spread them out over the following hours. This is
 what decouples the visible posting cadence (high) from the Claude call
-cadence (kept low, ~6-7/day, to control cost even on Sonnet 5 at full
+cadence (kept low, every ~3.5-4h, to control cost even on Sonnet 5 at full
 post-intro pricing) -- see ai_manager_brain.py's docstring for the cost
 reasoning. A queued post older than max_queue_age_hours is dropped rather
 than fired stale.
 
 Replies used to live in this same call but now run on their own, much
 faster cadence in reply_manager.py -- see that module's docstring for why.
-Reposting stays here: it only ever targets non-reply_only (bigger) accounts
-(reply_only accounts are reply_manager.py's territory exclusively), and
-absorbs retweets.py's old unconditional-retweet role, but only fires when
-Claude actually picks a candidate. Reposts are still decided fresh every
-Claude call (not queued) -- the repost candidate pool is only meaningful
-in the moment it's fetched.
+Reposting (retweet/quote-tweet) used to live here too -- removed entirely
+by explicit choice: reposts are now a manual, human decision only, so this
+trigger never touches X's retweet/quote endpoints.
 
 No images, no links on X, by deliberate choice (see ai_manager_brain.py's
 docstring) -- instead, each post's second_part field (Claude's own
@@ -44,17 +41,18 @@ cleanly rather than erroring when exhausted:
   - ctx.claude_budget (config/claude_budget.json) -- gates whether a new
     batch-generating Claude call is even attempted (queue draining never
     needs this, since it doesn't call Claude).
-  - ctx.budget (config/budget.json) -- gates whether a decided post/repost/
+  - ctx.budget (config/budget.json) -- gates whether a decided post/
     second_part is actually sent to X (same shared pool every other
     trigger uses).
 
 Every batch-generating call sends one Telegram bot-chat audit message
-(all queued posts + reasoning, every repost + reasoning, or "no action")
--- with no manual approval step, this is the only way to spot-check the
-underlying judgment over time. Each individual post firing (whether the
-first-in-batch or a later queue drain) also gets its own short bot-chat
-line, plus the existing per-post cost-chat notification from
-ctx.budget.record_spend().
+(all queued posts + reasoning, or "no action") -- with no manual approval
+step, this is the only way to spot-check the underlying judgment over
+time. Each individual post firing (whether the first-in-batch or a later
+queue drain) also gets its own short bot-chat line, plus the existing
+per-post cost-chat notification from ctx.budget.record_spend(), plus one
+per-run status line (see _send_run_summary) summarizing whether a new
+call happened this run and how many posts are still queued.
 """
 import logging
 import random
@@ -93,9 +91,6 @@ def _roll_day(state, today_str):
         state["date"] = today_str
         state["calls_today"] = 0
         state["posts_today"] = 0
-        state["reposts_today"] = 0
-        for acct in state.get("account_reposts_today", {}):
-            state["account_reposts_today"][acct] = 0
 
 
 def _ready_for_call(ctx, cfg, state):
@@ -184,41 +179,6 @@ def _news_snapshot(ctx, state, limit=6):
         return []
 
 
-def _repost_candidates(ctx, cfg, state):
-    """Reuses config/reply_targets.json but excludes reply_only accounts up
-    front -- those are reply_manager.py's territory exclusively, and were
-    already hard-blocked from reposting anyway. A tweet already reposted is
-    excluded so it never comes up as a candidate again."""
-    candidates = []
-    acted_ids = set(state.get("reposted_tweet_ids", []))
-    repost_caps = state.setdefault("account_reposts_today", {})
-
-    for target in ctx.config["reply_targets"]["targets"]:
-        if not target.get("enabled") or target.get("reply_only"):
-            continue
-        handle = target["handle"]
-        cap = max(0, target.get("times_per_day", 1))
-        if repost_caps.get(handle, 0) >= cap:
-            continue
-
-        acct_state = state.setdefault("resolved_accounts", {}).setdefault(handle, {})
-        user_id = target.get("user_id") or acct_state.get("resolved_user_id")
-        if not user_id:
-            user_id = ctx.x.get_user_id(handle)
-            if not user_id:
-                continue
-            acct_state["resolved_user_id"] = user_id
-
-        tweets = ctx.x.get_recent_tweets_with_text(
-            user_id, max_results=cfg["max_reply_candidates_per_account"]
-        )
-        for tweet in tweets:
-            if tweet["id"] in acted_ids:
-                continue
-            candidates.append({"handle": handle, "tweet_id": tweet["id"], "text": tweet["text"]})
-    return candidates
-
-
 def _preferred_link(snapshot, post):
     """The real source URL of the news article this post is actually based
     on (post['news_index']), if there is one -- Telegram-only (see module
@@ -263,7 +223,7 @@ def _send_run_summary(state, reason, posted_this_run):
     telegram_client.send_message(f"🤖 AI Manager: {reason} · {post_label} · queue: {queue_len} left")
 
 
-def _send_audit_message(queued_items, declined_posts, repost_results):
+def _send_audit_message(queued_items, declined_posts):
     lines = ["🤖 AI Manager batch decision:"]
     if queued_items:
         lines.append(f"\n📝 {len(queued_items)} post(s) queued (spread out over the next few runs):")
@@ -273,16 +233,6 @@ def _send_audit_message(queued_items, declined_posts, repost_results):
     else:
         reasons = "; ".join(p.get("reasoning", "") for p in declined_posts) or "(none given)"
         lines.append(f"\n📝 No posts queued this batch. Reasoning: {reasons}")
-
-    if repost_results:
-        for rp in repost_results:
-            label = "Quote-tweet" if rp["action"] == "quote" else "Retweet"
-            extra = f": {rp['text']}" if rp.get("text") else ""
-            lines.append(
-                f"\n🔁 {label} of @{rp['handle']} ({rp['status']}){extra}\nReasoning: {rp['reasoning']}"
-            )
-    else:
-        lines.append("\n🔁 No reposts this call.")
 
     telegram_client.send_message("\n".join(lines))
 
@@ -359,8 +309,8 @@ def run(ctx):
 
     fired = _drain_queue(ctx, cfg, state)
 
-    # only generate a new batch (and decide reposts) once the queue is empty
-    # and it's actually time for a new Claude call -- this is what keeps
+    # only generate a new batch once the queue is empty and it's actually
+    # time for a new Claude call -- this is what keeps
     # Claude spend near today's cadence even though visible posting cadence
     # is much higher via the queue
     if state["post_queue"]:
@@ -379,11 +329,8 @@ def run(ctx):
         "news": _news_snapshot(ctx, state),
         "earnings": _earnings_snapshot(ctx),
         "press_releases": _press_releases_snapshot(ctx),
-        "repost_candidates": _repost_candidates(ctx, cfg, state),
         "own_recent_posts": state.get("recent_post_texts", []),
         "filler_examples": _filler_examples(ctx),
-        "max_reposts_per_call": cfg["max_reposts_per_call"],
-        "prefer_plain_retweets": cfg.get("prefer_plain_retweets", False),
         "posts_per_batch": cfg.get("posts_per_batch", 1),
         "second_part_every_n_posts": cfg.get("second_part_every_n_posts", 4),
         "posts_since_last_second_part": state.get("posts_since_last_second_part", 0),
@@ -434,50 +381,7 @@ def run(ctx):
     state["recent_news_urls"] = recent_news_urls[-RECENT_NEWS_URLS_CAP:]
     state["post_queue"].extend(queued_items)
 
-    repost_results = []
-    reposted_ids = state.setdefault("reposted_tweet_ids", [])
-    repost_caps = state.setdefault("account_reposts_today", {})
-    for rp in (decision.get("reposts") or [])[: cfg["max_reposts_per_call"]]:
-        idx = rp.get("candidate_index")
-        if idx is None or idx < 0 or idx >= len(snapshot["repost_candidates"]):
-            continue
-        action = rp.get("action")
-        if action not in ("retweet", "quote"):
-            continue
-        candidate = snapshot["repost_candidates"][idx]
-        handle = candidate["handle"]
-        cap = next(
-            (t.get("times_per_day", 1) for t in ctx.config["reply_targets"]["targets"] if t["handle"] == handle),
-            1,
-        )
-        if state["reposts_today"] >= cfg["max_reposts_per_day"] or repost_caps.get(handle, 0) >= cap:
-            continue
-        if not ctx.budget.can_spend(has_link=False):
-            break
-
-        if action == "quote":
-            text = truncate(rp.get("text") or "", ai_manager_brain.MAX_QUOTE_LEN)
-            result_id = ctx.x.post(text, quote_tweet_id=candidate["tweet_id"])
-        else:
-            text = None
-            result_id = ctx.x.retweet(candidate["tweet_id"]) and candidate["tweet_id"]
-
-        status = "sent" if result_id else "failed"
-        repost_results.append({
-            "handle": handle, "action": action, "text": text,
-            "reasoning": rp.get("reasoning", ""), "status": status,
-        })
-        if result_id:
-            # a retweet/quote-tweet isn't original content -- never mirror to the public channel
-            spend_desc = f"{action} of @{handle}'s post {candidate['tweet_id']}"
-            ctx.budget.record_spend(has_link=False, text=spend_desc, mirror_to_channel=False)
-            reposted_ids.append(candidate["tweet_id"])
-            repost_caps[handle] = repost_caps.get(handle, 0) + 1
-            state["reposts_today"] += 1
-            fired = True
-
-    state["reposted_tweet_ids"] = reposted_ids[-500:]
-    _send_audit_message(queued_items, declined_posts, repost_results)
+    _send_audit_message(queued_items, declined_posts)
 
     # fire the first queued item right away rather than waiting for the next
     # hourly tick, so a fresh batch doesn't just sit until then
