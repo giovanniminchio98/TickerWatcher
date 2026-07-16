@@ -80,7 +80,7 @@ from src.sources.claude_utils import extract_text
 
 logger = logging.getLogger("tickerwatch.ai_manager_brain")
 
-MAX_POST_LEN = 220
+MAX_POST_LEN = 260
 
 # Fixed vocabulary for the required opening tag -- one of these, verbatim
 # (emoji included), starts every post. A closed list (rather than letting
@@ -171,10 +171,15 @@ def _build_prompt(snapshot):
         "emoji throughout the post (several, not just one or two -- sparse emoji makes a post feel "
         "flat and easy to scroll past; the only exception is never using \U0001F517, since Telegram "
         "already prefixes its own link line with that same emoji whenever a post has one, and "
-        f"doubling it up looks odd). No @mentions, under {MAX_POST_LEN} characters total (this "
-        "account's posts have been running long enough to get cut off mid-sentence by the hard "
-        "length limit -- staying comfortably under this number matters as much as everything else "
-        "here), should read like a real person's take, not a bot alert. When a post has one "
+        f"doubling it up looks odd). No @mentions, under {MAX_POST_LEN} characters total -- write "
+        "to comfortably finish every sentence within that budget rather than running long and "
+        "counting on truncation to save you; the hard cutoff now prefers ending at the last "
+        "complete sentence over chopping mid-word if it does fire, but that's a safety net, not "
+        "a license to write past the limit. Should read like a real person's take, not a bot "
+        "alert. When a post covers several movers at once (e.g. a broad market recap), name only "
+        "the 3-4 most standout ones, not an exhaustive list of everything that moved -- naming "
+        "every single mover both eats the character budget and makes the post harder to skim; "
+        "picking the biggest/most relevant few is more useful to a reader anyway. When a post has one "
         "genuinely central tracked asset, use its ticker as a $cashtag ($BTC, $NVDA, etc.) INSTEAD "
         "of spelling out the company/asset name -- this is the required default now, not just a "
         "nice-to-have, and exactly once, never more: if a post genuinely involves several tickers, "
