@@ -113,7 +113,9 @@
       "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report",
       "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
       "https://www.coindesk.com/business/2026/07/15/cantor-and-securitize-collaborate-on-blockchain-based-ipos",
-      "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi"
+      "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
+      "https://www.coindesk.com/markets/2026/07/15/strategy-feels-very-secure-until-bitcoin-reaches-usd8-000-usd10-000-says-ceo",
+      "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -122,7 +124,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 4,
+    "posted_count_today": 6,
     "posted_date": "2026-07-16"
   },
   "filler": {
@@ -416,7 +418,10 @@
       "2077454636525531549",
       "2077542615868719167",
       "2077538970599088333",
-      "2077540022165684486"
+      "2077540022165684486",
+      "2077545499209396730",
+      "2077528311371067712",
+      "2077550279247945811"
     ]
   },
   "retweets": {
