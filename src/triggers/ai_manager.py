@@ -209,6 +209,20 @@ def _enforce_single_cashtag(text):
     return "".join(parts)
 
 
+def _enforce_opening_tag(text):
+    """Every main post must open with one of ai_manager_brain.TAGS -- same
+    defense-in-depth pattern as _enforce_single_cashtag: the prompt already
+    requires this, but a rule stated in a prompt is a request, not a
+    guarantee, and a post silently missing its tag breaks the profile's
+    visual consistency. If none of the tags is present at the very start,
+    prepend a neutral default rather than let it go out untagged. Only
+    applies to the main post -- second_part is deliberately tag-free."""
+    stripped = text.lstrip()
+    if any(stripped.startswith(f"{tag}:") for tag in ai_manager_brain.TAGS):
+        return text
+    return f"📊 CONTEXT: {text}"
+
+
 def _send_run_summary(state, reason, posted_this_run):
     """One short bot-chat-only line every run (never the public channel),
     regardless of what happened -- separate from _send_audit_message (which
@@ -262,7 +276,7 @@ def _drain_queue(ctx, cfg, state):
         return False
 
     item = state["post_queue"].pop(0)
-    text = _enforce_single_cashtag(truncate(item["text"], ai_manager_brain.MAX_POST_LEN))
+    text = _enforce_single_cashtag(truncate(_enforce_opening_tag(item["text"]), ai_manager_brain.MAX_POST_LEN))
     second_part = item.get("second_part")
 
     tweet_id = ctx.x.post(text)
