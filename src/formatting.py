@@ -38,9 +38,22 @@ def fmt_usd_compact(value):
 
 def truncate(text, max_len=MAX_TWEET_LEN):
     """Hard truncate as a last-resort safety net; callers should compose
-    posts to naturally fit under the limit."""
+    posts to naturally fit under the limit. Prefers cutting at the last
+    complete sentence within the limit (no ellipsis needed, reads as a
+    genuine ending) over a flat mid-word/mid-thought chop -- a post should
+    never read as truncated, even when this safety net has to fire. Only
+    falls back to the flat cut+ellipsis when no sentence boundary is found
+    within a reasonable portion of the limit (an ellipsis mid-idea is still
+    better than throwing away most of the post just to end cleanly)."""
     if len(text) <= max_len:
         return text
+    window = text[:max_len]
+    best_end = max(window.rfind(". "), window.rfind("! "), window.rfind("? "))
+    for punct in (".", "!", "?"):
+        if window.endswith(punct):
+            best_end = max(best_end, len(window) - 1)
+    if best_end >= max_len * 0.5:
+        return text[: best_end + 1].rstrip()
     return text[: max_len - 1].rstrip() + "…"
 
 
