@@ -7,20 +7,36 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 5,
+    "calls_today": 6,
     "date": "2026-07-16",
-    "last_call_time": 1784221264.788359,
-    "post_queue": [],
+    "last_call_time": 1784235656.891962,
+    "post_queue": [
+      {
+        "link_url": "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion",
+        "queued_at": 1784235656.891962,
+        "reasoning": "New, specific news item (Citadel investment in Crypto.com) not covered in recent posts. Explains who Citadel Securities is for readers unfamiliar. Uses CRYPTO tag since it's a notable but not breaking-urgent development, general crypto investment story.",
+        "second_part": null,
+        "text": "\ud83d\udcb0 Citadel Securities, one of the biggest market makers on Wall Street, just put $400M into Crypto.com, valuing the exchange at $20B. Traditional finance heavyweights keep buying into crypto infrastructure even while prices are red today. Conviction beyond the daily chart. \ud83c\udfe6\ud83d\udd17"
+      },
+      {
+        "link_url": "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
+        "queued_at": 1784235656.891962,
+        "reasoning": "Two related pieces (DTCC and Cantor/Securitize) both about tokenized securities infrastructure, combined into one post to avoid using two separate slots for the same theme. Second_part adds genuine mechanism explanation of what tokenization means.",
+        "second_part": "Tokenization means representing ownership of a real asset (a stock, a bond) as a digital token on a blockchain instead of a paper or database entry. The pitch: faster settlement, fewer intermediaries, 24/7 trading potential. Still early, but the infrastructure being built is real, not hype. \ud83e\udde9\ud83d\udca1",
+        "text": "\ud83d\udcca DTCC -- the clearinghouse that settles nearly every US stock trade -- just moved tokenized securities from pilot testing into live, real trading. Meanwhile Cantor and Securitize are separately working on blockchain-based IPOs. Wall Street's plumbing is quietly going on-chain. \ud83c\udfd7\ufe0f\u2699\ufe0f"
+      }
+    ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 0,
-    "posts_today": 9,
+    "posts_since_last_second_part": 1,
+    "posts_today": 10,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
-      "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
+      "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition",
+      "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion",
+      "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push"
     ],
     "recent_post_texts": [
-      "BTC sitting flat near $64.8K while $ETH is the one actually moving today, up 1.8% and back above $1,920. Big tech is mixed too: MSFT, GOOGL, META all up roughly 3%, but AMD down 3.5%. Risk appetite looks selective right now, not universal. \ud83d\udcca\ud83d\udcb9",
       "Strategy ($MSTR) doesn't just buy bitcoin, it turns BTC into what it calls 'Digital Credit': issuing preferred stock like STRF and STRC, backed by its BTC holdings, to raise cash without selling coins. Saylor's stated goal: get STRC back to its original issue\u2026",
       "JUST IN: $PYPL is up over 17% today, easily the market's biggest mover. Big Tech is broadly strong too (MSFT, GOOGL, AMZN, AAPL all up 3-4%), while crypto is calmer: ETH back above $1,900, BTC flat near $64.5K. Equities leading risk appetite today. \ud83d\udcc8\ud83d\udcb5",
       "South Korea just moved to classify crypto as long-term national wealth under a new National Asset Basic Act, covering roughly $940B in state assets. That's a government treating bitcoin and crypto like gold or land reserves, not a speculative side bet. \ud83c\uddf0\ud83c\uddf7\ud83d\udcb0",
@@ -29,7 +45,8 @@
       "JUST IN: PYPL just surged over 17% while most of crypto and megacap tech is only up modestly. That's a massive single-day move for a company this size -- usually means a real earnings or business update, not just market drift. Worth watching what's driving it\u2026",
       "Crypto is red across the board today: BTC down 2%, ETH down 3.4%, SOL down 3.2%. Meanwhile Bitwise data shows crypto-linked stocks (COIN, MSTR, miners) actually returned 23% in H1 2026, beating nearly every asset class even as crypto prices themselves fell 36\u2026",
       "Miners and HOOD getting hit hard today: MARA -6.4%, RIOT -7.8%, HOOD -6.2%, even as BTC itself is down a modest 0.9%. When crypto-adjacent stocks fall much harder than the coin they're tied to, it usually means leverage/sentiment unwinding faster than the und\u2026",
-      "Visa just launched a platform (VSP) letting banks and fintechs offer stablecoin services -- reaching over 200 million merchants worldwide. This isn't Visa issuing its own coin; it's Visa becoming the plumbing that lets any bank plug into stablecoins without b\u2026"
+      "Visa just launched a platform (VSP) letting banks and fintechs offer stablecoin services -- reaching over 200 million merchants worldwide. This isn't Visa issuing its own coin; it's Visa becoming the plumbing that lets any bank plug into stablecoins without b\u2026",
+      "\ud83d\udea8 JUST IN: broad red day across risk assets. BTC -1.3% near $64K, ETH -2.7%, but the real damage is in crypto-adjacent stocks: HOOD -8.2%, MARA -7%, RIOT -6.4%, COIN -4%, MSTR -3.5%. Tech also weak (AMD -5.3%, ORCL -6.2\u2026"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -90,18 +107,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-16",
-      "posts_used": 23,
-      "usd_used": 0.715
+      "posts_used": 24,
+      "usd_used": 0.73
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 132,
-    "usd_used": 6.42
+    "posts_used": 133,
+    "usd_used": 6.435
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.1841
+    "usd_used": 1.2125
   },
   "comment_engagement": {
     "WatcherGuru": {
