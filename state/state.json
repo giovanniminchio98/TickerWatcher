@@ -6,7 +6,7 @@
       "CoinMarketCap": 0,
       "WatcherGuru": 1
     },
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-16",
     "last_call_time": 1784174505.541774,
     "post_queue": [],
@@ -96,7 +96,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 0.9388
+    "usd_used": 1.0835
   },
   "comment_engagement": {
     "WatcherGuru": {
