@@ -267,17 +267,23 @@ def decide(snapshot, model):
         client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
         resp = client.messages.create(
             model=model,
-            # Generous headroom: confirmed live that this model spends some
-            # of max_tokens on an unrequested reasoning/thinking block before
-            # the actual answer -- 1200 let thinking consume the whole budget
-            # (no text block at all), 3000 wasn't enough once the prompt grew
-            # (filler examples, bigger candidate pool), 6000 still hit a very
-            # early truncation (cut off at char 37) once the prompt grew
-            # further still (second_part rules, no-link rules, the DTCC
-            # clarity example, stock data). Raised again -- this has been the
-            # reliable fix each time it recurs, and cost only scales with
-            # actual tokens used, not this ceiling.
-            max_tokens=8000,
+            # thinking explicitly disabled: confirmed live, repeatedly, that
+            # this model spends an unrequested reasoning/thinking block on
+            # this call even though nothing here asks for one -- 1200 tokens
+            # let it consume the whole budget with no text block at all,
+            # 3000/6000/8000 each got raised in turn as the prompt grew and
+            # each still eventually hit the same failure again (most recently
+            # an entirely empty response -- 200 OK, zero text -- right after
+            # the prompt grew again for the hashtag/tag rule). This is a
+            # single-shot structured-JSON decision, not a task that benefits
+            # from chain-of-thought, so thinking is turned off outright
+            # rather than chasing the ceiling upward indefinitely -- the
+            # entire max_tokens budget now goes to the actual answer. Kept
+            # at a generous 10000 (up from 8000) on top of that as headroom,
+            # since a bigger batch/prompt still costs proportionally more
+            # real output tokens even with thinking off.
+            thinking={"type": "disabled"},
+            max_tokens=10000,
             messages=[{"role": "user", "content": prompt}],
         )
     except Exception as e:
