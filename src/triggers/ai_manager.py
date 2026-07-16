@@ -249,6 +249,20 @@ def _enforce_single_cashtag(text):
     return "".join(parts)
 
 
+def _send_run_summary(state, reason, posted_this_run):
+    """One short bot-chat-only line every run (never the public channel),
+    regardless of what happened -- separate from _send_audit_message (which
+    only fires when a new batch is actually generated) and from
+    _drain_queue's own per-post line. Lets you tell at a glance whether this
+    run made a new Claude call or not (and why not), whether it posted
+    anything, and how many items are already queued for the next run(s) to
+    drain automatically -- so a quiet run reads as "expected, nothing due"
+    rather than leaving you to guess."""
+    queue_len = len(state.get("post_queue", []))
+    post_label = "posted" if posted_this_run else "no post"
+    telegram_client.send_message(f"🤖 AI Manager: {reason} · {post_label} · queue: {queue_len} left")
+
+
 def _send_audit_message(queued_items, declined_posts, repost_results):
     lines = ["🤖 AI Manager batch decision:"]
     if queued_items:
@@ -349,10 +363,15 @@ def run(ctx):
     # and it's actually time for a new Claude call -- this is what keeps
     # Claude spend near today's cadence even though visible posting cadence
     # is much higher via the queue
-    if state["post_queue"] or not _ready_for_call(ctx, cfg, state):
+    if state["post_queue"]:
+        _send_run_summary(state, "queue still draining, no new call", fired)
+        return fired
+    if not _ready_for_call(ctx, cfg, state):
+        _send_run_summary(state, "no new call (cooldown/daily cap)", fired)
         return fired
     if not ctx.claude_budget.can_spend():
         logger.info("ai_manager: Claude budget exhausted this month, skipping call")
+        _send_run_summary(state, "no new call (Claude budget capped)", fired)
         return fired
 
     snapshot = {
@@ -382,6 +401,7 @@ def run(ctx):
         # full cooldown for a call that never actually happened. calls_today
         # still increments either way, so a persistently broken call can't
         # retry more than max_calls_per_day times in one day.
+        _send_run_summary(state, "new call failed/unparsed, will retry next run", fired)
         return fired
 
     # only a successfully parsed decision starts the real cooldown
@@ -464,4 +484,5 @@ def run(ctx):
     if state["post_queue"]:
         fired = _drain_queue(ctx, cfg, state) or fired
 
+    _send_run_summary(state, f"new batch ({len(queued_items)} queued)", fired)
     return fired
