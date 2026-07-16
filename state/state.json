@@ -2,30 +2,21 @@
   "ai_manager": {
     "account_replies_today": {},
     "account_reposts_today": {
-      "AshCrypto": 2,
-      "CoinMarketCap": 2,
-      "WatcherGuru": 2
+      "AshCrypto": 0,
+      "CoinMarketCap": 0,
+      "WatcherGuru": 0
     },
-    "calls_today": 4,
-    "date": "2026-07-15",
+    "calls_today": 0,
+    "date": "2026-07-16",
     "last_call_time": 1784158650.312826,
-    "post_queue": [
-      {
-        "link_url": null,
-        "queued_at": 1784158650.312826,
-        "reasoning": "Evergreen explainer building on Saylor's public commentary (reflected in own recent post about the $8-10K floor) but going deeper into the actual mechanism of STRF/STRC, a genuinely under-explained concept for general readers, warranting the second_part.",
-        "second_part": "STRF and STRC are preferred shares: fixed dividend, ranked above common stock but below debt if things go bad. Trading below par signals doubt; pushing it back to par is Saylor showing confidence in that credit layer, separate from bitcoin's own price swings.",
-        "text": "Strategy ($MSTR) doesn't just buy bitcoin, it turns BTC into what it calls 'Digital Credit': issuing preferred stock like STRF and STRC, backed by its BTC holdings, to raise cash without selling coins. Saylor's stated goal: get STRC back to its original issue price, or 'par.' \ud83c\udfe6\u20bf"
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 1,
-    "posts_today": 12,
+    "posts_since_last_second_part": 0,
+    "posts_today": 1,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade"
     ],
     "recent_post_texts": [
-      "Saylor says Strategy stays 'very secure' unless BTC craters to $8K-$10K, over 85% below today's $65K. Shows just how much margin of safety is baked into the leverage model even after all the debt-fueled buying. \ud83d\udcc9\ud83d\udcaa\u20bf",
       "JUST IN: DTCC just pushed tokenized securities into live trading, not a pilot. \ud83c\udfe6\u26a1 That's Wall Street's core settlement plumbing actually running on blockchain rails now. BTC steady near $65K while this kind of institutional infrastructure quietly builds under\u2026",
       "DeFi protocols run on 'oracles' -- price feeds that pipe exchange data into smart contracts. If that feed gets spoofed or manipulated, attackers can drain a protocol fast, like the $18M hit on Ostium. Your collateral is only as safe as the data feeding it. \ud83d\udd10\ud83d\udcc9",
       "Binance's next move: becoming a stablecoin-powered 'super app.' Stablecoins already move enormous volume every month as the plumbing for trading, payments, and remittances. Whoever controls that flow controls a huge slice of crypto's daily economy. \ud83d\udcb5\ud83c\udf10",
@@ -34,7 +25,8 @@
       "BTC is basically flat today at $64,831 after ripping to $65K on yesterday's cooling inflation data \u2014 looks like the market's digesting the move, not reversing it. ETH is the real standout, up 2.24% to $1,922, its best levels in weeks. SOL and XRP are quieter.\u2026",
       "ETH is the standout again today, up 2% to $1,923 while BTC sits flat near $64,857 and SOL, XRP barely move. Looks like fresh capital is rotating specifically into ETH after yesterday's CPI-driven rally, not spreading evenly across the market. \ud83d\udcc8\ud83d\udca7",
       "DTCC, Cantor/Securitize, and Binance each made moves this week to put core finance functions onchain: settlement, IPOs, and stablecoin flow. Different companies, same signal: this is infrastructure, not hype. \ud83c\udfe6\u26d3\ufe0f Why it matters:",
-      "BTC sitting flat near $64.8K while $ETH is the one actually moving today, up 1.8% and back above $1,920. Big tech is mixed too: MSFT, GOOGL, META all up roughly 3%, but AMD down 3.5%. Risk appetite looks selective right now, not universal. \ud83d\udcca\ud83d\udcb9"
+      "BTC sitting flat near $64.8K while $ETH is the one actually moving today, up 1.8% and back above $1,920. Big tech is mixed too: MSFT, GOOGL, META all up roughly 3%, but AMD down 3.5%. Risk appetite looks selective right now, not universal. \ud83d\udcca\ud83d\udcb9",
+      "Strategy ($MSTR) doesn't just buy bitcoin, it turns BTC into what it calls 'Digital Credit': issuing preferred stock like STRF and STRC, backed by its BTC holdings, to raise cash without selling coins. Saylor's stated goal: get STRC back to its original issue\u2026"
     ],
     "replied_tweet_ids": [],
     "replies_today": 0,
@@ -46,7 +38,7 @@
       "2077373110903517205",
       "2077388007309541626"
     ],
-    "reposts_today": 6,
+    "reposts_today": 0,
     "resolved_accounts": {
       "AshCrypto": {
         "resolved_user_id": "3185716686"
@@ -91,14 +83,14 @@
   },
   "budget": {
     "daily": {
-      "date": "2026-07-15",
-      "posts_used": 38,
-      "usd_used": 1.31
+      "date": "2026-07-16",
+      "posts_used": 7,
+      "usd_used": 0.475
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 109,
-    "usd_used": 5.705
+    "posts_used": 116,
+    "usd_used": 6.18
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -118,16 +110,18 @@
       "https://www.coindesk.com/business/2026/07/14/binance-bets-on-becoming-a-crypto-super-app-as-stablecoins-reshape-growth",
       "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes",
       "https://www.coindesk.com/business/2026/07/14/circle-signs-mou-with-japan-s-largest-card-network-to-explore-stablecoin-payments",
-      "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report"
+      "https://www.coindesk.com/markets/2026/07/14/bitcoin-slips-as-traders-lift-july-fed-rate-hike-bets-ahead-of-inflation-report",
+      "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push"
     ],
     "last_drafted_time": {
+      "AAPL": 1784160090.229353,
       "BTC": 1784084477.987536,
       "ETH": 1784084477.987536,
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 8,
-    "posted_date": "2026-07-15"
+    "posted_count_today": 2,
+    "posted_date": "2026-07-16"
   },
   "filler": {
     "posted_count_today": 2,
@@ -237,7 +231,7 @@
   },
   "news": {
     "posted_count_today": 2,
-    "posted_date": "2026-07-15",
+    "posted_date": "2026-07-16",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -258,7 +252,9 @@
       "https://www.coindesk.com/markets/2026/07/14/u-s-june-cpi-fell-0-4-likely-cooling-move-toward-fed-rate-hikes",
       "https://www.coindesk.com/business/2026/07/14/circle-signs-mou-with-japan-s-largest-card-network-to-explore-stablecoin-payments",
       "https://www.coindesk.com/business/2026/07/14/binance-bets-on-becoming-a-crypto-super-app-as-stablecoins-reshape-growth",
-      "https://cointelegraph.com/news/velocity-raises-38m-to-build-stablecoin-treasury-infrastructure-for-enterprises?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/velocity-raises-38m-to-build-stablecoin-treasury-infrastructure-for-enterprises?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
+      "https://www.coindesk.com/business/2026/07/15/cantor-and-securitize-collaborate-on-blockchain-based-ipos"
     ]
   },
   "polls": {
@@ -412,7 +408,10 @@
       "2077474469413597431",
       "2077496875863716310",
       "2077454000215949817",
-      "2077496346559263209"
+      "2077496346559263209",
+      "2077539487958138904",
+      "2077524437906149452",
+      "2077454636525531549"
     ]
   },
   "retweets": {
@@ -423,8 +422,8 @@
     "last_run_date": null
   },
   "scheduled_daily": {
-    "last_posted_date": "2026-07-15",
-    "rotate_index": 3
+    "last_posted_date": "2026-07-16",
+    "rotate_index": 4
   },
   "self_reply": {
     "pending": []
