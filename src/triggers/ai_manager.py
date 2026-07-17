@@ -240,6 +240,31 @@ def _is_likely_duplicate(text, prior_texts, min_shared=2):
     return False
 
 
+# Confirmed live, verbatim: a batch's reasoning field read "...the recent
+# posts list explicitly includes this exact story already... This is a
+# duplicate and should NOT be posted" -- and should_post was still true for
+# that same item. Claude's own reasoning correctly diagnosed the problem
+# and then contradicted itself in the very next field. When the reasoning
+# text says this plainly, trust it over the boolean.
+_NEGATIVE_REASONING_PHRASES = (
+    "should not be posted",
+    "should not post",
+    "shouldn't be posted",
+    "should not have been posted",
+    "is a duplicate",
+    "this is a duplicate",
+    "already posted",
+    "already covered",
+    "was already covered",
+    "not be posted",
+)
+
+
+def _reasoning_contradicts_post(reasoning):
+    lowered = (reasoning or "").lower()
+    return any(phrase in lowered for phrase in _NEGATIVE_REASONING_PHRASES)
+
+
 def _enforce_opening_tag(text):
     """Every main post must open with one of ai_manager_brain.TAGS -- same
     defense-in-depth pattern as _enforce_single_cashtag: the prompt already
@@ -414,8 +439,17 @@ def run(ctx):
         if not post.get("should_post") or not post.get("text"):
             declined_posts.append(post)
             continue
-        # deterministic override: even if Claude set should_post true, don't
-        # trust it blindly on repetition -- see _is_likely_duplicate
+        # deterministic overrides: even if Claude set should_post true,
+        # don't trust it blindly -- catches both a Claude reasoning field
+        # that plainly contradicts its own should_post (confirmed live) and
+        # a likely-duplicate topic by shared distinctive figures
+        if _reasoning_contradicts_post(post.get("reasoning")):
+            logger.warning(
+                "ai_manager: declining post whose own reasoning contradicts should_post=true: %s",
+                post.get("reasoning", "")[:120],
+            )
+            declined_posts.append(post)
+            continue
         prior_texts = already_posted_texts + [item["text"] for item in queued_items]
         if _is_likely_duplicate(post["text"], prior_texts):
             logger.warning(
