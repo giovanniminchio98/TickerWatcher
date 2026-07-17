@@ -7,13 +7,13 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-17",
-    "last_call_time": 1784264462.304867,
+    "last_call_time": 1784278865.811339,
     "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 3,
-    "posts_today": 6,
+    "posts_since_last_second_part": 4,
+    "posts_today": 7,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
@@ -92,18 +92,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 12,
-      "usd_used": 0.18
+      "posts_used": 13,
+      "usd_used": 0.195
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 148,
-    "usd_used": 6.66
+    "posts_used": 149,
+    "usd_used": 6.675
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.2641
+    "usd_used": 1.287
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -501,6 +501,11 @@
       "posted_at": 1784271665.04544,
       "text": "\ud83d\udcb0 CRYPTO: A DeFi (decentralized finance) protocol called Ostium just lost $18 million to an oracle exploit -- the latest in a wave of similar attacks.\n\nOracles are the price feeds smart contracts rely on to know an asset's real value.",
       "url": "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi"
+    },
+    {
+      "posted_at": 1784278865.811339,
+      "text": "\ud83d\udea8 JUST IN: Citadel Securities just invested $400 million into Crypto.com, valuing the exchange at $20 billion.\n\nCitadel Securities is one of the largest market-making firms in traditional finance -- old-school Wall Street putting real money into a crypto exch\u2026",
+      "url": "https://cointelegraph.com/news/citadel-securities-invests-400m-in-cryptocom-at-20b-valuation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ],
   "telegram": {
