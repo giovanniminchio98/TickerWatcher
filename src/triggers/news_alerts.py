@@ -12,6 +12,12 @@ The Telegram channel copy always gets the real article URL -- Telegram is
 free, so there's no reason to ever hold that link back there, same
 "Telegram can be more generous than X" pattern used everywhere else.
 
+Dedup checks src/story_history.py (a shared, cross-trigger, time-windowed
+memory) in addition to this trigger's own posted_urls -- confirmed live
+that without this, the same real-world story got covered here and by
+ai_manager.py within hours of each other, since neither trigger knew what
+the other had already posted.
+
 Also attaches a small themed red/green/gray trend-line graphic (see
 src/media.py's get_trend_media_id) based on the same Claude call's sentiment
 read, matching the "chart snippet + terse JUST IN line" style other crypto
@@ -19,6 +25,7 @@ news accounts use. Only available on the Claude paraphrase path -- the
 mechanical fallback has no sentiment signal, so no image gets attached then."""
 import logging
 
+from src import story_history
 from src.formatting import truncate
 from src.media import get_trend_media_id
 from src.sources import news_rss, paraphrase
@@ -40,11 +47,12 @@ def run(ctx):
     if remaining_today <= 0:
         return False
 
+    already_posted = set(state["posted_urls"]) | story_history.recent_urls(ctx.state, ctx.now.timestamp())
     try:
         articles = news_rss.fetch_matching_articles(
             kw_cfg["rss_feeds"],
             kw_cfg["keywords"],
-            set(state["posted_urls"]),
+            already_posted,
             min(kw_cfg.get("max_articles_per_run", 3), remaining_today),
         )
     except Exception:
@@ -71,6 +79,7 @@ def run(ctx):
 
         ctx.budget.record_spend(has_link=False, text=text, channel_link=("Source", article["url"]))
         state["posted_urls"].append(article["url"])
+        story_history.add_entry(ctx.state, text=text, url=article["url"], now_ts=ctx.now.timestamp())
         state["posted_count_today"] += 1
         fired = True
 

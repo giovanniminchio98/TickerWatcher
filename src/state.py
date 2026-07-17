@@ -26,11 +26,10 @@ DEFAULT_STATE = {
         "date": None,
         "calls_today": 0,
         "posts_today": 0,
-        "recent_post_texts": [],
         "post_queue": [],
         "posts_since_last_second_part": 0,
-        "recent_news_urls": [],
     },
+    "story_history": [],
     "reply_manager": {
         "last_call_time": None,
         "date": None,
