@@ -7,18 +7,10 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 7,
+    "calls_today": 0,
     "date": "2026-07-17",
-    "last_call_time": 1784310523.493846,
-    "post_queue": [
-      {
-        "link_url": null,
-        "queued_at": 1784310523.493846,
-        "reasoning": "This is a genuinely distinct angle from the earlier NFLX post and from recently posted content -- it highlights that today bitcoin is outperforming tech stocks, which is the opposite pattern from the previously posted 'crypto stocks down more than BTC' post. It's a real, current divergence worth noting, using BTC as the single cashtag.",
-        "second_part": null,
-        "text": "\ud83d\udcca CONTEXT: Big tech is broadly red today -- GOOGL -2.9%, META -2.5%, TSLA -2.3%, NVDA -1% -- while crypto is actually holding up better, with $BTC only down 0.1%.\n\nThat's a flip from the usual pattern where crypto sells off harder than tech on risk-off days. Worth watching whether bitcoin keeps decoupling or catches down to equities later."
-      }
-    ],
+    "last_call_time": null,
+    "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 4,
     "posts_today": 9,
