@@ -7,13 +7,28 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-17",
-    "last_call_time": 1784250061.446905,
-    "post_queue": [],
+    "last_call_time": 1784264462.304867,
+    "post_queue": [
+      {
+        "link_url": null,
+        "queued_at": 1784264462.304867,
+        "reasoning": "Evergreen market-structure observation using live prices not yet covered by the recent HOOD/MARA/RIOT post (different names, payment-vs-growth rotation angle), stays relevant for hours.",
+        "second_part": null,
+        "text": "\ud83d\udcca CONTEXT: Almost every major tech and crypto name is red today -- $AMD -5%, GOOGL -4%, AVGO -5%, ORCL -6% -- while payment names like Visa and Mastercard are actually up.\n\nWhen growth and chip stocks sell off together but payment networks hold up, it usually signals investors rotating out of high-risk/high-growth bets into steadier cash-flow businesses, not a broad panic."
+      },
+      {
+        "link_url": "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
+        "queued_at": 1784264462.304867,
+        "reasoning": "Distinct, fresh DeFi security story with a concrete number, explains oracle exploits in plain language for general readers.",
+        "second_part": null,
+        "text": "\ud83d\udcb0 CRYPTO: A DeFi (decentralized finance) protocol called Ostium just lost $18 million to an oracle exploit -- the latest in a wave of similar attacks.\n\nOracles are the price feeds smart contracts rely on to know an asset's real value. When attackers manipulate that feed, they can trick a protocol into paying out way more than it should -- this keeps happening because many DeFi platforms still lean on fragile, exploitable price data. \ud83d\udd13\u26a0\ufe0f\ud83e\udde9"
+      }
+    ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 0,
-    "posts_today": 3,
+    "posts_since_last_second_part": 1,
+    "posts_today": 4,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
@@ -92,18 +107,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 9,
-      "usd_used": 0.135
+      "posts_used": 10,
+      "usd_used": 0.15
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 145,
-    "usd_used": 6.615
+    "posts_used": 146,
+    "usd_used": 6.63
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.2386
+    "usd_used": 1.2641
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -486,6 +501,11 @@
       "posted_at": 1784257261.420361,
       "text": "\ud83d\udcf0 NEWS: DTCC just moved tokenized securities into live trading -- not a pilot, the real thing. \ud83c\udfe6\u26a1\n\nDTCC is the institution that settles nearly every US stock trade behind the scenes.",
       "url": "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push"
+    },
+    {
+      "posted_at": 1784264462.304867,
+      "text": "\ud83d\udea8 JUST IN: Visa is backing a new stablecoin platform called Open USD, stepping right into Circle's turf.\n\nCircle's USDC has been a dominant dollar-pegged stablecoin (a crypto token designed to hold $1 value).",
+      "url": "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
     }
   ],
   "telegram": {
