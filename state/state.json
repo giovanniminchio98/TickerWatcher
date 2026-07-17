@@ -7,13 +7,13 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 6,
-    "date": "2026-07-16",
+    "calls_today": 0,
+    "date": "2026-07-17",
     "last_call_time": 1784235656.891962,
     "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 0,
-    "posts_today": 12,
+    "posts_today": 0,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
@@ -91,14 +91,14 @@
   },
   "budget": {
     "daily": {
-      "date": "2026-07-16",
-      "posts_used": 27,
-      "usd_used": 0.775
+      "date": "2026-07-17",
+      "posts_used": 4,
+      "usd_used": 0.06
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 136,
-    "usd_used": 6.48
+    "posts_used": 140,
+    "usd_used": 6.54
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -124,7 +124,9 @@
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
       "https://www.coindesk.com/markets/2026/07/15/strategy-feels-very-secure-until-bitcoin-reaches-usd8-000-usd10-000-says-ceo",
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
-      "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion",
+      "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -133,8 +135,8 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 8,
-    "posted_date": "2026-07-16"
+    "posted_count_today": 2,
+    "posted_date": "2026-07-17"
   },
   "filler": {
     "posted_count_today": 2,
@@ -244,7 +246,7 @@
   },
   "news": {
     "posted_count_today": 2,
-    "posted_date": "2026-07-16",
+    "posted_date": "2026-07-17",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -267,11 +269,13 @@
       "https://www.coindesk.com/business/2026/07/14/binance-bets-on-becoming-a-crypto-super-app-as-stablecoins-reshape-growth",
       "https://cointelegraph.com/news/velocity-raises-38m-to-build-stablecoin-treasury-infrastructure-for-enterprises?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
-      "https://www.coindesk.com/business/2026/07/15/cantor-and-securitize-collaborate-on-blockchain-based-ipos"
+      "https://www.coindesk.com/business/2026/07/15/cantor-and-securitize-collaborate-on-blockchain-based-ipos",
+      "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion",
+      "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
     ]
   },
   "polls": {
-    "last_posted_date": null
+    "last_posted_date": "2026-07-17"
   },
   "price": {
     "last_alert_price": {
@@ -456,8 +460,8 @@
     "last_run_date": null
   },
   "scheduled_daily": {
-    "last_posted_date": "2026-07-16",
-    "rotate_index": 4
+    "last_posted_date": "2026-07-17",
+    "rotate_index": 5
   },
   "self_reply": {
     "pending": []
