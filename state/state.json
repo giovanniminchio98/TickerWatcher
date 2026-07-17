@@ -7,12 +7,12 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 0,
+    "calls_today": 1,
     "date": "2026-07-17",
-    "last_call_time": null,
+    "last_call_time": 1784311535.393782,
     "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 4,
+    "posts_since_last_second_part": 5,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -89,23 +89,23 @@
       }
     },
     "window_id": "2026-07-17-day",
-    "window_posts": 9
+    "window_posts": 10
   },
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 20,
-      "usd_used": 0.3
+      "posts_used": 21,
+      "usd_used": 0.315
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 156,
-    "usd_used": 6.78
+    "posts_used": 157,
+    "usd_used": 6.795
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.4053
+    "usd_used": 1.4367
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -538,6 +538,11 @@
       "posted_at": 1784311264.780033,
       "text": "\ud83d\udcb0 CRYPTO: SBI Holdings, one of Japan's biggest financial groups, just got regulatory approval to acquire Singapore crypto exchange Coinhako.\n\nMAS (Singapore's central bank and financial regulator) had to sign off.",
       "url": "https://cointelegraph.com/news/sbi-receives-mas-approval-to-acquire-singaporean-coinhako?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784311535.393782,
+      "text": "\ud83d\udcf0 NEWS: A Dutch court just declared crypto platform Knaken bankrupt after finding it couldn't repay users -- funds were missing.\n\nThe Rotterdam court said bankruptcy was the only way to ensure an orderly, fair settlement process for customers owed money.",
+      "url": "https://cointelegraph.com/news/dutch-court-knaken-crypto-platform-bankruptcy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ],
   "telegram": {
