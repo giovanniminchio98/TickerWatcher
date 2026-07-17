@@ -7,9 +7,9 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 4,
+    "calls_today": 5,
     "date": "2026-07-17",
-    "last_call_time": 1784282033.488193,
+    "last_call_time": 1784296862.996888,
     "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 0,
@@ -103,7 +103,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.3151
+    "usd_used": 1.3445
   },
   "comment_engagement": {
     "WatcherGuru": {
