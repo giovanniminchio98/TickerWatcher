@@ -7,13 +7,28 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 0,
+    "calls_today": 1,
     "date": "2026-07-17",
-    "last_call_time": 1784235656.891962,
-    "post_queue": [],
+    "last_call_time": 1784250061.446905,
+    "post_queue": [
+      {
+        "link_url": null,
+        "queued_at": 1784250061.446905,
+        "reasoning": "Evergreen mechanism explainer about why crypto equities amplify crypto price moves, grounded in today's real numbers, avoids repeating any single-company story.",
+        "second_part": null,
+        "text": "\ud83d\udcca CONTEXT: Almost every crypto-adjacent stock is down way more than bitcoin itself today -- $HOOD -8%, MARA -7%, RIOT -6%, COIN -4%, while BTC is only -1%. \ud83d\udd3b\n\nThis is a common pattern: miners and exchanges are leveraged bets on crypto activity, so they swing harder than the coins themselves in both directions. Worth remembering before assuming the stock move means something new about crypto's actual price action."
+      },
+      {
+        "link_url": "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
+        "queued_at": 1784250061.446905,
+        "reasoning": "Distinct, genuinely newsworthy infrastructure story separate from the Citadel/Crypto.com post; second_part ties in two other related-but-distinct news items (Cantor/Securitize, Galaxy) without repeating the first post's topic, giving useful extra context on the broader tokenization trend.",
+        "second_part": "Meanwhile Cantor and Securitize are working on blockchain-based IPOs, and Galaxy just launched institutional stablecoin yield vaults. \ud83e\udde9 Together these are signs that tokenization is quietly moving from buzzword to actual back-office infrastructure across multiple firms at once.",
+        "text": "\ud83d\udcf0 NEWS: DTCC just moved tokenized securities into live trading -- not a pilot, the real thing. \ud83c\udfe6\u26a1\n\nDTCC is the institution that settles nearly every US stock trade behind the scenes. Having it run tokenized securities live means Wall Street's actual settlement backbone is now operating on blockchain rails, which could speed up settlement times and cut costs across the whole system."
+      }
+    ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 0,
-    "posts_today": 0,
+    "posts_since_last_second_part": 1,
+    "posts_today": 1,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
@@ -92,18 +107,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 4,
-      "usd_used": 0.06
+      "posts_used": 6,
+      "usd_used": 0.09
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 140,
-    "usd_used": 6.54
+    "posts_used": 142,
+    "usd_used": 6.57
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.2125
+    "usd_used": 1.2386
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -126,7 +141,9 @@
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion",
-      "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
+      "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition",
+      "https://www.coindesk.com/tech/2026/07/16/galaxy-targets-institutional-stablecoin-yield-with-new-defi-vaults",
+      "https://cointelegraph.com/news/citadel-securities-invests-400m-in-cryptocom-at-20b-valuation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -135,7 +152,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-17"
   },
   "filler": {
@@ -237,7 +254,7 @@
     ]
   },
   "flashback": {
-    "last_posted_date": "2026-07-16"
+    "last_posted_date": "2026-07-17"
   },
   "image_budget": {
     "low_budget_alert_sent_period": null,
@@ -466,6 +483,13 @@
   "self_reply": {
     "pending": []
   },
+  "story_history": [
+    {
+      "posted_at": 1784250061.446905,
+      "text": "\ud83d\udea8 JUST IN: Citadel Securities just put $400 million into Crypto.com, valuing the exchange at $20 billion. \ud83d\udcb0\n\nCitadel Securities is one of the biggest market-making firms in traditional finance -- this is old-school Wall Street market plumbing buying a serious\u2026",
+      "url": "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion"
+    }
+  ],
   "telegram": {
     "last_report_date": "2026-07-16"
   },
