@@ -1,10 +1,15 @@
 {
-  "_comment": "Autonomous original-post decision-maker (src/triggers/ai_manager.py) -- no reposts, those are manual-only now. Deliberately a lighter, quality-over-volume profile: max_posts_per_day lowered to 9 (was 24) after observing that a near-hourly cadence read as a wall of posts rather than a curated, worth-following source -- the same instinct that already kept reposts sparse. Still a ceiling, not a target: Claude can (and should) post fewer on a quiet day. Each Claude call still produces a BATCH of up to posts_per_batch posts -- the first fires immediately, the rest queue and drain one per subsequent hourly run -- but the daily cap now binds much sooner in the day, which is intentional: it pushes real selectivity rather than filling every available hourly slot. CONTEXT-tagged posts (routine market-recap/evergreen filler) are explicitly deprioritized in the prompt in favor of genuinely newsy JUST IN/BREAKING/NEWS/CRYPTO/AI content -- the account's real purpose is informing people of what's actually happening, not padding a post count. No images and no links, by deliberate choice -- second_part_every_n_posts nudges Claude's own per-post second_part decision (a genuine continuation posted as a reply, roughly 1 in second_part_every_n posts) instead; the account's own profile is meant to be enough to inform a reader with no outbound clicks needed.",
+  "_comment": "Autonomous original-post decision-maker (src/triggers/ai_manager.py) -- no reposts, those are manual-only now. Deliberately a lighter, quality-over-volume profile, now split into a day/night posting window (Europe/Brussels time) instead of one flat daily cap: 06:00-23:00 is the day window (day_max_posts hard cap, with a small day_tag_exception_reserve on top reserved for genuinely urgent JUST IN/BREAKING posts only), 23:00-06:00 is the night window (night_max_posts -- a couple of high-value 'magnet' posts to keep the feed alive overnight, not a real posting cadence). Within the day window, posts are paced to spread across the whole window rather than front-loading the cap by mid-morning (see ai_manager.py's _paced_cap_for) -- confirmed live that without pacing, a burst of Claude calls early in the day could exhaust the day cap by ~10am and leave the rest of the day silent. Each Claude call still produces a BATCH of up to posts_per_batch posts -- the first fires immediately, the rest queue and drain one per subsequent hourly run, and the pacing gate applies at drain time too so an over-queued batch still spreads out naturally rather than draining back-to-back. CONTEXT-tagged posts (routine market-recap/evergreen filler) are explicitly deprioritized in the prompt in favor of genuinely newsy JUST IN/BREAKING/NEWS/CRYPTO/AI content. No images and no links, by deliberate choice -- second_part_every_n_posts nudges Claude's own per-post second_part decision instead.",
   "model": "claude-sonnet-5",
   "min_hours_between_calls": 3.5,
   "max_calls_per_day": 7,
   "posts_per_batch": 4,
-  "max_posts_per_day": 9,
+  "day_start_hour": 6,
+  "day_end_hour": 23,
+  "day_max_posts": 10,
+  "day_tag_exception_reserve": 2,
+  "day_pacing_grace_hours": 2,
+  "night_max_posts": 3,
   "second_part_every_n_posts": 4,
   "max_queue_age_hours": 12
 }

@@ -15,6 +15,17 @@ post-intro pricing) -- see ai_manager_brain.py's docstring for the cost
 reasoning. A queued post older than max_queue_age_hours is dropped rather
 than fired stale.
 
+Posting is capped by a day/night window (Europe/Brussels time, see
+_current_window): a larger day_max_posts cap during day_start_hour-
+day_end_hour, a small night_max_posts cap overnight (a couple of high-value
+"magnet" posts, not a real cadence), and a small day_tag_exception_reserve
+on top of the day cap reserved for genuinely urgent JUST IN/BREAKING posts
+only. Within the day window, posts are also paced to spread evenly across
+the whole window rather than exhausting the cap by mid-morning and leaving
+the rest of the day silent (_paced_cap_for) -- this gate applies both when
+queuing a fresh batch and when draining the queue, so an over-queued batch
+still spreads out naturally one item per hourly run.
+
 Replies used to live in this same call but now run on their own, much
 faster cadence in reply_manager.py -- see that module's docstring for why.
 Reposting (retweet/quote-tweet) used to live here too -- removed entirely
@@ -55,14 +66,24 @@ per-run status line (see _send_run_summary) summarizing whether a new
 call happened this run and how many posts are still queued.
 """
 import logging
+import math
 import random
 import re
+from datetime import timedelta
+from zoneinfo import ZoneInfo
 
 from src import story_history, telegram_client
 from src.formatting import fmt_pct, fmt_price, truncate
 from src.sources import ai_manager_brain, news_rss, twelvedata
 
 CASHTAG_RE = re.compile(r"\$[A-Za-z]{1,6}\b")
+
+BRUSSELS_TZ = ZoneInfo("Europe/Brussels")
+
+# Only these two TAGS count as "urgent" for the day-window tag exception --
+# CONTEXT/CRYPTO/AI/NEWS are routine content, not real-news bulletins worth
+# breaking pacing/cap for.
+_URGENT_TAGS = ("🚨 JUST IN", "🚨 BREAKING")
 
 # A dollar figure with a scale word, or a percentage -- distinctive enough
 # that two unrelated real stories sharing 2+ of them verbatim is rare.
@@ -89,10 +110,90 @@ def _filler_examples(ctx, n=5):
 
 
 def _roll_day(state, today_str):
+    """Rolls over the Claude-call cadence counter only -- calendar-day/UTC
+    based, since max_calls_per_day is about controlling Claude spend, not
+    posting cadence. The posting cap itself is windowed (day/night, Brussels
+    time) and rolled separately by _roll_window, since the night window
+    spans across a UTC midnight."""
     if state.get("date") != today_str:
         state["date"] = today_str
         state["calls_today"] = 0
-        state["posts_today"] = 0
+
+
+def _current_window(ctx, cfg):
+    """Identifies the day or night posting window 'now' falls into, in
+    Europe/Brussels time (same zoneinfo pattern as budget_report.py).
+    Returns (window_id, kind, start, end): window_id is a stable string
+    identifying this specific window instance (e.g. "2026-07-17-day") so a
+    transition into a new window -- including the night window, which spans
+    across midnight -- can be detected and counters reset accordingly."""
+    now = ctx.now.astimezone(BRUSSELS_TZ)
+    day_start_hour = cfg.get("day_start_hour", 6)
+    day_end_hour = cfg.get("day_end_hour", 23)
+
+    if day_start_hour <= now.hour < day_end_hour:
+        kind = "day"
+        start = now.replace(hour=day_start_hour, minute=0, second=0, microsecond=0)
+        end = now.replace(hour=day_end_hour, minute=0, second=0, microsecond=0)
+        window_date = now.date()
+    elif now.hour >= day_end_hour:
+        kind = "night"
+        start = now.replace(hour=day_end_hour, minute=0, second=0, microsecond=0)
+        end = (now + timedelta(days=1)).replace(hour=day_start_hour, minute=0, second=0, microsecond=0)
+        window_date = now.date()
+    else:
+        kind = "night"
+        start = (now - timedelta(days=1)).replace(hour=day_end_hour, minute=0, second=0, microsecond=0)
+        end = now.replace(hour=day_start_hour, minute=0, second=0, microsecond=0)
+        window_date = now.date() - timedelta(days=1)
+
+    window_id = f"{window_date.isoformat()}-{kind}"
+    return window_id, kind, start, end
+
+
+def _roll_window(state, window_id):
+    if state.get("window_id") != window_id:
+        state["window_id"] = window_id
+        state["window_posts"] = 0
+
+
+def _is_urgent(text):
+    stripped = text.lstrip()
+    return any(stripped.startswith(f"{tag}:") for tag in _URGENT_TAGS)
+
+
+def _window_hard_cap(kind, cfg, urgent):
+    """The real ceiling for this window -- not pacing-adjusted. Night is a
+    small flat cap (a couple of 'magnet' posts, no pacing needed at that
+    volume). Day is day_max_posts, plus a small reserve unlocked only for
+    JUST IN/BREAKING posts -- genuinely urgent news shouldn't wait on a cap
+    built for routine content."""
+    if kind == "night":
+        return cfg.get("night_max_posts", 3)
+    base = cfg.get("day_max_posts", 10)
+    if urgent:
+        return base + cfg.get("day_tag_exception_reserve", 2)
+    return base
+
+
+def _paced_cap_for(kind, cfg, start, end, now, urgent):
+    """How many posts are allowed so far into the window, given even-spread
+    pacing -- day window only, and only for non-urgent posts. Confirmed live
+    that without this, a burst of Claude calls could exhaust the whole day's
+    cap by mid-morning, leaving the rest of the day silent. A small grace
+    period (day_pacing_grace_hours) is added to elapsed time so the very
+    start of the window isn't stuck at an allowance of 0 -- without it,
+    nothing could post right at day_start_hour until real time had passed."""
+    hard_cap = _window_hard_cap(kind, cfg, urgent)
+    if kind == "night" or urgent:
+        return hard_cap
+    total_hours = (end - start).total_seconds() / 3600
+    if total_hours <= 0:
+        return hard_cap
+    elapsed_hours = max(0.0, (now - start).total_seconds() / 3600)
+    grace_hours = cfg.get("day_pacing_grace_hours", 2)
+    fraction = min(1.0, (elapsed_hours + grace_hours) / total_hours)
+    return min(hard_cap, math.ceil(fraction * hard_cap))
 
 
 def _ready_for_call(ctx, cfg, state):
@@ -310,10 +411,15 @@ def _send_audit_message(queued_items, declined_posts):
     telegram_client.send_message("\n".join(lines))
 
 
-def _drain_queue(ctx, cfg, state):
+def _drain_queue(ctx, cfg, state, window_kind, window_start, window_end):
     """Fires at most one queued post per run -- the hourly cron cadence
     itself is what spreads a batch's posts across the day, no extra Claude
-    call needed. Returns True if something was actually posted."""
+    call needed. Gated on the day/night window's paced allowance (see
+    _paced_cap_for) rather than a flat daily count, so an over-queued batch
+    still spreads out naturally: items just wait in the queue, one drain
+    attempt per run, until the window's allowance has caught up to them (or
+    a genuinely urgent JUST IN/BREAKING item skips pacing entirely). Returns
+    True if something was actually posted."""
     queue = state.get("post_queue", [])
     if not queue:
         return False
@@ -329,7 +435,9 @@ def _drain_queue(ctx, cfg, state):
     if not fresh:
         return False
 
-    if state["posts_today"] >= cfg["max_posts_per_day"]:
+    urgent = _is_urgent(fresh[0]["text"])
+    allowed = _paced_cap_for(window_kind, cfg, window_start, window_end, ctx.now, urgent)
+    if state["window_posts"] >= allowed:
         return False
     if not ctx.budget.can_spend(has_link=False):
         return False
@@ -362,7 +470,7 @@ def _drain_queue(ctx, cfg, state):
 
     has_second_part = bool(second_part)
     story_history.add_entry(ctx.state, text=text, url=link_url, now_ts=ctx.now.timestamp())
-    state["posts_today"] += 1
+    state["window_posts"] += 1
     state["posts_since_last_second_part"] = (
         0 if has_second_part else state.get("posts_since_last_second_part", 0) + 1
     )
@@ -379,8 +487,13 @@ def run(ctx):
     _roll_day(state, today_str)
     state.setdefault("post_queue", [])
     state.setdefault("posts_since_last_second_part", 0)
+    state.setdefault("window_id", None)
+    state.setdefault("window_posts", 0)
 
-    fired = _drain_queue(ctx, cfg, state)
+    window_id, window_kind, window_start, window_end = _current_window(ctx, cfg)
+    _roll_window(state, window_id)
+
+    fired = _drain_queue(ctx, cfg, state, window_kind, window_start, window_end)
 
     # only generate a new batch once the queue is empty and it's actually
     # time for a new Claude call -- this is what keeps
@@ -427,15 +540,20 @@ def run(ctx):
     # only a successfully parsed decision starts the real cooldown
     state["last_call_time"] = ctx.now.timestamp()
 
-    # trim to what the daily cap can actually still take -- no point queuing
-    # (and having Claude write) a post that will just sit until it expires
-    remaining_today = max(0, cfg["max_posts_per_day"] - state["posts_today"] - len(state["post_queue"]))
-    take = min(cfg.get("posts_per_batch", 1), remaining_today)
+    # cap what gets queued against the window's HARD cap (not the paced
+    # sub-allowance) -- pacing is enforced at drain time instead (see
+    # _drain_queue), so an over-queued batch still spreads out one item per
+    # hourly run rather than draining back-to-back. already_committed
+    # counts what's already posted this window plus what's already sitting
+    # in the queue (destined for this window unless it rolls over first).
+    already_committed = state["window_posts"] + len(state["post_queue"])
+    hard_cap_normal = _window_hard_cap(window_kind, cfg, urgent=False)
+    hard_cap_urgent = _window_hard_cap(window_kind, cfg, urgent=True)
 
     queued_items = []
     declined_posts = []
     already_posted_texts = snapshot["own_recent_posts"]
-    for post in (decision.get("posts") or [])[:take]:
+    for post in (decision.get("posts") or [])[: cfg.get("posts_per_batch", 1)]:
         if not post.get("should_post") or not post.get("text"):
             declined_posts.append(post)
             continue
@@ -458,6 +576,12 @@ def run(ctx):
             )
             declined_posts.append(post)
             continue
+        urgent = _is_urgent(post["text"])
+        cap = hard_cap_urgent if urgent else hard_cap_normal
+        if already_committed + len(queued_items) >= cap:
+            logger.info("ai_manager: declining post, window hard cap reached (urgent=%s)", urgent)
+            declined_posts.append(post)
+            continue
         link_url = _preferred_link(snapshot, post)
         queued_items.append({
             "text": post["text"],
@@ -471,9 +595,10 @@ def run(ctx):
     _send_audit_message(queued_items, declined_posts)
 
     # fire the first queued item right away rather than waiting for the next
-    # hourly tick, so a fresh batch doesn't just sit until then
+    # hourly tick, so a fresh batch doesn't just sit until then -- still
+    # subject to the same paced allowance check inside _drain_queue
     if state["post_queue"]:
-        fired = _drain_queue(ctx, cfg, state) or fired
+        fired = _drain_queue(ctx, cfg, state, window_kind, window_start, window_end) or fired
 
     _send_run_summary(state, f"new batch ({len(queued_items)} queued)", fired)
     return fired
