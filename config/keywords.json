@@ -27,6 +27,7 @@
     "earnings"
   ],
   "_comment_google_news": "Google News RSS search feeds (news.google.com/rss/search?q=...) -- no API key, no account, publicly documented URL format, used the same way as any other RSS feed below. Added for AI and broader markets/finance coverage the outlet-specific feeds above don't reach on their own -- hence the added AI/finance keywords above, so articles from these topic searches can actually pass the keyword filter. Same 'broken feed logged and skipped, never a hard failure' handling as every other feed (see news_rss.py).",
+  "_comment_ai_feeds": "Before adding TechCrunch/The Verge/VentureBeat, AI coverage relied only on the generic 'Google News: AI' keyword search -- these three add dedicated AI-outlet feeds (product launches, funding, research) on top of that. Same fail-safe handling: a dead/wrong feed URL is caught per-feed (news_rss.py), logged, and skipped -- never a hard failure for the whole run.",
   "rss_feeds": [
     { "name": "CoinDesk", "url": "https://www.coindesk.com/arc/outboundfeeds/rss/", "whitelisted": true },
     { "name": "CoinTelegraph", "url": "https://cointelegraph.com/rss", "whitelisted": true },
@@ -37,7 +38,10 @@
     { "name": "MarketWatch Top Stories", "url": "https://feeds.marketwatch.com/marketwatch/topstories/", "whitelisted": true },
     { "name": "Google News: AI", "url": "https://news.google.com/rss/search?q=artificial%20intelligence%20when:1d&hl=en-US&gl=US&ceid=US:en", "whitelisted": true },
     { "name": "Google News: Crypto", "url": "https://news.google.com/rss/search?q=cryptocurrency%20when:1d&hl=en-US&gl=US&ceid=US:en", "whitelisted": true },
-    { "name": "Google News: Markets", "url": "https://news.google.com/rss/search?q=stock%20market%20when:1d&hl=en-US&gl=US&ceid=US:en", "whitelisted": true }
+    { "name": "Google News: Markets", "url": "https://news.google.com/rss/search?q=stock%20market%20when:1d&hl=en-US&gl=US&ceid=US:en", "whitelisted": true },
+    { "name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/", "whitelisted": true },
+    { "name": "The Verge AI", "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", "whitelisted": true },
+    { "name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/", "whitelisted": true }
   ],
   "max_articles_per_run": 3,
   "max_articles_per_day": 2
