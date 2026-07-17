@@ -7,12 +7,20 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-17",
-    "last_call_time": 1784311535.393782,
-    "post_queue": [],
+    "last_call_time": 1784325663.784304,
+    "post_queue": [
+      {
+        "link_url": "https://cointelegraph.com/news/crypto-biz-when-dollars-disappear-stablecoins-step-in?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "queued_at": 1784325663.784304,
+        "reasoning": "Genuinely interesting real-world stablecoin adoption story with a clear mechanism, distinct from anything recently posted. Second_part adds real comparative context (pattern across countries) rather than restating.",
+        "second_part": "This isn't new -- it's the same pattern seen in Argentina, Venezuela and Turkey: when local currency or dollar access breaks down, stablecoins fill the gap because they're easier to move than cash and hold value better than a collapsing peso or boliviano.",
+        "text": "\ud83d\udcb0 CRYPTO: Bolivia is moving to officially recognize USDT (a dollar-pegged crypto token) as the country runs short on actual US dollars.\n\nWhen a country can't get enough physical dollars for trade, a dollar-value stablecoin becomes a workaround people actually use day to day."
+      }
+    ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 5,
+    "posts_since_last_second_part": 6,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -89,23 +97,23 @@
       }
     },
     "window_id": "2026-07-17-night",
-    "window_posts": 0
+    "window_posts": 1
   },
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 21,
-      "usd_used": 0.315
+      "posts_used": 22,
+      "usd_used": 0.33
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 157,
-    "usd_used": 6.795
+    "posts_used": 158,
+    "usd_used": 6.81
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.4367
+    "usd_used": 1.4677
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -543,6 +551,11 @@
       "posted_at": 1784311535.393782,
       "text": "\ud83d\udcf0 NEWS: A Dutch court just declared crypto platform Knaken bankrupt after finding it couldn't repay users -- funds were missing.\n\nThe Rotterdam court said bankruptcy was the only way to ensure an orderly, fair settlement process for customers owed money.",
       "url": "https://cointelegraph.com/news/dutch-court-knaken-crypto-platform-bankruptcy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784325663.784304,
+      "text": "\ud83d\udea8 JUST IN: FTX is sending out $900 million to creditors in its fifth payment round since the exchange collapsed.\n\nFTX went bankrupt in Nov 2022, freezing user funds.",
+      "url": "https://cointelegraph.com/news/ftx-distribute-millions-creditors-fifth-payment-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ],
   "telegram": {
