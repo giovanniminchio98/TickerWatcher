@@ -12,13 +12,6 @@
     "last_call_time": 1784310523.493846,
     "post_queue": [
       {
-        "link_url": "https://cointelegraph.com/news/sbi-receives-mas-approval-to-acquire-singaporean-coinhako?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "queued_at": 1784310523.493846,
-        "reasoning": "This is a concrete, real event (regulatory approval for an acquisition) not previously covered, and fits the account's pattern of covering TradFi-crypto convergence stories. Explained MAS and the significance in plain language.",
-        "second_part": null,
-        "text": "\ud83d\udcb0 CRYPTO: SBI Holdings, one of Japan's biggest financial groups, just got regulatory approval to acquire Singapore crypto exchange Coinhako.\n\nMAS (Singapore's central bank and financial regulator) had to sign off. This is another traditional bank pushing into stablecoins and tokenized assets through a real acquisition, not just a pilot program."
-      },
-      {
         "link_url": null,
         "queued_at": 1784310523.493846,
         "reasoning": "This is a genuinely distinct angle from the earlier NFLX post and from recently posted content -- it highlights that today bitcoin is outperforming tech stocks, which is the opposite pattern from the previously posted 'crypto stocks down more than BTC' post. It's a real, current divergence worth noting, using BTC as the single cashtag.",
@@ -27,7 +20,7 @@
       }
     ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 3,
+    "posts_since_last_second_part": 4,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -104,18 +97,18 @@
       }
     },
     "window_id": "2026-07-17-day",
-    "window_posts": 8
+    "window_posts": 9
   },
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 19,
-      "usd_used": 0.285
+      "posts_used": 20,
+      "usd_used": 0.3
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 155,
-    "usd_used": 6.765
+    "posts_used": 156,
+    "usd_used": 6.78
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -548,6 +541,11 @@
       "posted_at": 1784310523.493846,
       "text": "\ud83d\udcca CONTEXT: NFLX just tanked -7.4% today while the rest of the market only slipped modestly -- SPY -0.7%, QQQ -0.84%.\n\nA single-stock move that much bigger than the index usually means something company-specific (like guidance or subscriber numbers), not a mar\u2026",
       "url": null
+    },
+    {
+      "posted_at": 1784311264.780033,
+      "text": "\ud83d\udcb0 CRYPTO: SBI Holdings, one of Japan's biggest financial groups, just got regulatory approval to acquire Singapore crypto exchange Coinhako.\n\nMAS (Singapore's central bank and financial regulator) had to sign off.",
+      "url": "https://cointelegraph.com/news/sbi-receives-mas-approval-to-acquire-singaporean-coinhako?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ],
   "telegram": {
