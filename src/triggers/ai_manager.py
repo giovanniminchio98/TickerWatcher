@@ -58,18 +58,13 @@ import logging
 import random
 import re
 
-from src import telegram_client
+from src import story_history, telegram_client
 from src.formatting import fmt_pct, fmt_price, truncate
 from src.sources import ai_manager_brain, news_rss, twelvedata
 
 CASHTAG_RE = re.compile(r"\$[A-Za-z]{1,6}\b")
 
 logger = logging.getLogger("tickerwatch.triggers.ai_manager")
-
-# how many posts' worth of news URLs to remember and exclude from future
-# snapshots -- comfortably covers "not again within the next several
-# posts" without permanently blocking a story that's still relevant later
-RECENT_NEWS_URLS_CAP = 12
 
 
 def _filler_examples(ctx, n=5):
@@ -162,16 +157,17 @@ def _press_releases_snapshot(ctx, max_results=10):
         return []
 
 
-def _news_snapshot(ctx, state, limit=6):
-    """Excludes articles referenced by a post within roughly the last
-    RECENT_NEWS_URLS_CAP posts (state["recent_news_urls"]) -- without this,
-    the same real story could resurface call after call, since RSS feeds
-    keep serving the same entries until they age out on the source's end.
-    Not a permanent block: the list is a rolling window, so a story is fair
-    game again once it's rolled off (a different day/week revisit is fine,
-    even good)."""
+def _news_snapshot(ctx, limit=6):
+    """Excludes articles already covered (by ANY trigger, not just this
+    one -- see src/story_history.py) within the shared rolling window.
+    Confirmed live that without cross-trigger sharing, the same real story
+    could resurface within hours via news_alerts.py even after ai_manager
+    already covered it, or vice versa, since each trigger only ever
+    checked its own separate dedup list. Not a permanent block: the window
+    rolls, so a story is fair game again once it's aged out (a different
+    day/week revisit is fine, even good)."""
     kw_cfg = ctx.config["keywords"]
-    already_used = set(state.get("recent_news_urls", []))
+    already_used = story_history.recent_urls(ctx.state, ctx.now.timestamp())
     try:
         return news_rss.fetch_matching_articles(kw_cfg["rss_feeds"], kw_cfg["keywords"], already_used, limit)
     except Exception:
@@ -305,7 +301,7 @@ def _drain_queue(ctx, cfg, state):
             ctx.budget.record_spend(has_link=False, text=second_part, mirror_to_channel=False)
 
     has_second_part = bool(second_part)
-    state["recent_post_texts"] = (state.get("recent_post_texts", []) + [text])[-10:]
+    story_history.add_entry(ctx.state, text=text, url=link_url, now_ts=ctx.now.timestamp())
     state["posts_today"] += 1
     state["posts_since_last_second_part"] = (
         0 if has_second_part else state.get("posts_since_last_second_part", 0) + 1
@@ -343,10 +339,10 @@ def run(ctx):
 
     snapshot = {
         "prices": _price_snapshot_lines(ctx),
-        "news": _news_snapshot(ctx, state),
+        "news": _news_snapshot(ctx),
         "earnings": _earnings_snapshot(ctx),
         "press_releases": _press_releases_snapshot(ctx),
-        "own_recent_posts": state.get("recent_post_texts", []),
+        "own_recent_posts": story_history.recent_texts(ctx.state, ctx.now.timestamp()),
         "filler_examples": _filler_examples(ctx),
         "posts_per_batch": cfg.get("posts_per_batch", 1),
         "second_part_every_n_posts": cfg.get("second_part_every_n_posts", 4),
@@ -378,7 +374,6 @@ def run(ctx):
 
     queued_items = []
     declined_posts = []
-    recent_news_urls = state.setdefault("recent_news_urls", [])
     for post in (decision.get("posts") or [])[:take]:
         if not post.get("should_post") or not post.get("text"):
             declined_posts.append(post)
@@ -391,11 +386,6 @@ def run(ctx):
             "reasoning": post.get("reasoning", ""),
             "queued_at": ctx.now.timestamp(),
         })
-        if link_url:
-            # tracked at queue time (not fire time) so the very next call in
-            # this same run cycle can't re-surface the same article either
-            recent_news_urls.append(link_url)
-    state["recent_news_urls"] = recent_news_urls[-RECENT_NEWS_URLS_CAP:]
     state["post_queue"].extend(queued_items)
 
     _send_audit_message(queued_items, declined_posts)

@@ -20,7 +20,7 @@ sent to X.
 import logging
 import random
 
-from src import telegram_client
+from src import story_history, telegram_client
 from src.formatting import truncate
 from src.sources import reply_manager_brain
 
@@ -107,7 +107,7 @@ def run(ctx):
 
     snapshot = {
         "candidates": candidates,
-        "own_recent_posts": ctx.state.get("ai_manager", {}).get("recent_post_texts", []),
+        "own_recent_posts": story_history.recent_texts(ctx.state, ctx.now.timestamp()),
         "max_replies_per_call": cfg["max_replies_per_call"],
     }
 
