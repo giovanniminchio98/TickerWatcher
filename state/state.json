@@ -10,18 +10,10 @@
     "calls_today": 4,
     "date": "2026-07-17",
     "last_call_time": 1784282033.488193,
-    "post_queue": [
-      {
-        "link_url": null,
-        "queued_at": 1784282033.488193,
-        "reasoning": "This builds on but doesn't repeat the earlier CONTEXT post (which named AMD/GOOGL/AVGO/ORCL vs Visa/Mastercard) -- here the angle is different tickers (PYPL, SQ, MA specifically) and the actual mechanism/insight of sector rotation, given a second_part for depth. Distinguishing it: prior posts named the divergence, this one explains the rotation mechanism as the core value-add. To avoid exact repetition risk, kept it evergreen/CONTEXT-style reasoning but tagged as CRYPTO since it's markets-wide -- reconsidering, better to skip if too similar.",
-        "second_part": "When chipmakers and growth names sell off but payment networks climb, it often means money is rotating out of high-risk/high-growth bets and into steadier cash-flow businesses -- a defensive shift, not a full risk-off panic since stocks aren't crashing broadly.",
-        "text": "\ud83d\udcb0 CRYPTO: Payment stocks are having a very different day than everything else -- Mastercard +3%, Visa +2.8%, PayPal +2.2%, Block +2.3%, all green while big tech and crypto miners are deep red.\n\nThis is a split worth watching for:"
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 5,
-    "posts_today": 8,
+    "posts_since_last_second_part": 0,
+    "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
@@ -100,13 +92,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 14,
-      "usd_used": 0.21
+      "posts_used": 16,
+      "usd_used": 0.24
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 150,
-    "usd_used": 6.69
+    "posts_used": 152,
+    "usd_used": 6.72
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -519,6 +511,11 @@
       "posted_at": 1784282033.488193,
       "text": "\ud83d\udea8 JUST IN: Injective just filed with the SEC to become a registered transfer agent -- the entity that legally maintains ownership records for securities.",
       "url": "https://cointelegraph.com/news/injective-files-sec-transfer-agent-registration-bring-securities-ownership-records-onchain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784282463.262242,
+      "text": "\ud83d\udcb0 CRYPTO: Payment stocks are having a very different day than everything else -- Mastercard +3%, Visa +2.8%, PayPal +2.2%, Block +2.3%, all green while big tech and crypto miners are deep red.\n\nThis is a split worth watching for:",
+      "url": null
     }
   ],
   "telegram": {
