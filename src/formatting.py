@@ -62,9 +62,16 @@ def truncate(text, max_len=MAX_TWEET_LEN):
     posts to naturally fit under the limit. Prefers cutting at the last
     complete sentence within the limit (no ellipsis needed, reads as a
     genuine ending) over a flat mid-word/mid-thought chop -- a post should
-    never read as truncated, even when this safety net has to fire. Only
-    falls back to the flat cut+ellipsis (when over budget) when no sentence
-    boundary is found within a reasonable portion of the limit.
+    never read as truncated, even when this safety net has to fire.
+
+    When no usable sentence boundary exists, falls back to keeping just the
+    first paragraph -- the punchy headline before the blank-line separator
+    in our tag+headline+blank-line+explanation post shape -- rather than an
+    ugly ellipsis cut into the middle of the explanation. The headline alone
+    reads as a complete, deliberate post; a random mid-sentence chop into
+    the "why it matters" half never does. Only falls all the way back to a
+    flat cut+ellipsis (when over budget) if even the headline paragraph
+    itself is too long or there's no paragraph break to fall back to at all.
 
     Also fires when text is already UNDER max_len but ends with a dangling
     "…"/"..." -- confirmed live, twice, that Claude sometimes self-truncates
@@ -85,6 +92,12 @@ def truncate(text, max_len=MAX_TWEET_LEN):
     min_keep = max_len * 0.5 if over_budget else 0
     if best_end >= min_keep:
         return text[: best_end + 1].rstrip()
+
+    first_para = text.split("\n\n", 1)[0].rstrip()
+    first_para_dangling = first_para.endswith("…") or first_para.endswith("...")
+    if first_para != text.rstrip() and len(first_para) <= max_len and not first_para_dangling:
+        return first_para
+
     if over_budget:
         return text[: max_len - 1].rstrip() + "…"
     return text
