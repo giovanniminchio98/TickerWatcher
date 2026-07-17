@@ -445,7 +445,16 @@ def _drain_queue(ctx, cfg, state, window_kind, window_start, window_end):
         return False
 
     item = state["post_queue"].pop(0)
-    text = _enforce_single_cashtag(truncate(_enforce_opening_tag(item["text"]), ai_manager_brain.MAX_POST_LEN))
+    # tagged_text is Claude's intended text (tag-enforced, but otherwise
+    # exactly what it wrote) -- text is the X-ready version, truncated to
+    # MAX_POST_LEN as a last-resort safety net when Claude ran over budget.
+    # Confirmed live that truncate()'s flat-cut fallback can read as an ugly
+    # mid-thought cutoff when a post runs well over budget with no sentence
+    # boundary in the salvageable range -- that's an X-only constraint (280
+    # hard tweet limit), not something Telegram needs at all, so the channel
+    # copy always uses the untruncated tagged_text instead of text.
+    tagged_text = _enforce_opening_tag(item["text"])
+    text = _enforce_single_cashtag(truncate(tagged_text, ai_manager_brain.MAX_POST_LEN))
     second_part = item.get("second_part")
 
     tweet_id = ctx.x.post(text)
@@ -459,7 +468,7 @@ def _drain_queue(ctx, cfg, state, window_kind, window_start, window_end):
     # too when there is one, right in the same message, plus the real news
     # link when the post is based on one specific article (item["link_url"])
     # -- X gets none of this, it only ever posts plain link-free text.
-    channel_text = f"{text}\n\n{second_part}" if second_part else text
+    channel_text = f"{tagged_text}\n\n{second_part}" if second_part else tagged_text
     link_url = item.get("link_url")
     channel_link = ("Read more", link_url) if link_url else None
     ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text, channel_link=channel_link)
