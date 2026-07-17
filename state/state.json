@@ -12,13 +12,6 @@
     "last_call_time": 1784264462.304867,
     "post_queue": [
       {
-        "link_url": null,
-        "queued_at": 1784264462.304867,
-        "reasoning": "Evergreen market-structure observation using live prices not yet covered by the recent HOOD/MARA/RIOT post (different names, payment-vs-growth rotation angle), stays relevant for hours.",
-        "second_part": null,
-        "text": "\ud83d\udcca CONTEXT: Almost every major tech and crypto name is red today -- $AMD -5%, GOOGL -4%, AVGO -5%, ORCL -6% -- while payment names like Visa and Mastercard are actually up.\n\nWhen growth and chip stocks sell off together but payment networks hold up, it usually signals investors rotating out of high-risk/high-growth bets into steadier cash-flow businesses, not a broad panic."
-      },
-      {
         "link_url": "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
         "queued_at": 1784264462.304867,
         "reasoning": "Distinct, fresh DeFi security story with a concrete number, explains oracle exploits in plain language for general readers.",
@@ -27,8 +20,8 @@
       }
     ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 1,
-    "posts_today": 4,
+    "posts_since_last_second_part": 2,
+    "posts_today": 5,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
@@ -107,13 +100,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 10,
-      "usd_used": 0.15
+      "posts_used": 11,
+      "usd_used": 0.165
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 146,
-    "usd_used": 6.63
+    "posts_used": 147,
+    "usd_used": 6.645
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -506,6 +499,11 @@
       "posted_at": 1784264462.304867,
       "text": "\ud83d\udea8 JUST IN: Visa is backing a new stablecoin platform called Open USD, stepping right into Circle's turf.\n\nCircle's USDC has been a dominant dollar-pegged stablecoin (a crypto token designed to hold $1 value).",
       "url": "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
+    },
+    {
+      "posted_at": 1784268060.700012,
+      "text": "\ud83d\udcca CONTEXT: Almost every major tech and crypto name is red today -- $AMD -5%, GOOGL -4%, AVGO -5%, ORCL -6% -- while payment names like Visa and Mastercard are actually up.\n\nWhen growth and chip stocks sell off together but payment networks hold up, it usually\u2026",
+      "url": null
     }
   ],
   "telegram": {
