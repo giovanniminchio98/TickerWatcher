@@ -163,13 +163,15 @@ def _is_urgent(text):
 
 
 def _window_hard_cap(kind, cfg, urgent):
-    """The real ceiling for this window -- not pacing-adjusted. Night is a
-    small flat cap (a couple of 'magnet' posts, no pacing needed at that
-    volume). Day is day_max_posts, plus a small reserve unlocked only for
-    JUST IN/BREAKING posts -- genuinely urgent news shouldn't wait on a cap
-    built for routine content."""
+    """The real ceiling for this window -- not pacing-adjusted. Both windows
+    get a small reserve on top of their base cap, unlocked only for JUST IN/
+    BREAKING posts -- genuinely urgent, extremely-relevant news should never
+    be held back by a cap built for routine content, day or night."""
     if kind == "night":
-        return cfg.get("night_max_posts", 3)
+        base = cfg.get("night_max_posts", 3)
+        if urgent:
+            return base + cfg.get("night_tag_exception_reserve", 2)
+        return base
     base = cfg.get("day_max_posts", 10)
     if urgent:
         return base + cfg.get("day_tag_exception_reserve", 2)
