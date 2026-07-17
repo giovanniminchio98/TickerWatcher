@@ -10,18 +10,10 @@
     "calls_today": 1,
     "date": "2026-07-17",
     "last_call_time": 1784250061.446905,
-    "post_queue": [
-      {
-        "link_url": "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push",
-        "queued_at": 1784250061.446905,
-        "reasoning": "Distinct, genuinely newsworthy infrastructure story separate from the Citadel/Crypto.com post; second_part ties in two other related-but-distinct news items (Cantor/Securitize, Galaxy) without repeating the first post's topic, giving useful extra context on the broader tokenization trend.",
-        "second_part": "Meanwhile Cantor and Securitize are working on blockchain-based IPOs, and Galaxy just launched institutional stablecoin yield vaults. \ud83e\udde9 Together these are signs that tokenization is quietly moving from buzzword to actual back-office infrastructure across multiple firms at once.",
-        "text": "\ud83d\udcf0 NEWS: DTCC just moved tokenized securities into live trading -- not a pilot, the real thing. \ud83c\udfe6\u26a1\n\nDTCC is the institution that settles nearly every US stock trade behind the scenes. Having it run tokenized securities live means Wall Street's actual settlement backbone is now operating on blockchain rails, which could speed up settlement times and cut costs across the whole system."
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 2,
-    "posts_today": 2,
+    "posts_since_last_second_part": 0,
+    "posts_today": 3,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
       "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi",
@@ -100,13 +92,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-17",
-      "posts_used": 7,
-      "usd_used": 0.105
+      "posts_used": 9,
+      "usd_used": 0.135
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 143,
-    "usd_used": 6.585
+    "posts_used": 145,
+    "usd_used": 6.615
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -137,7 +129,9 @@
       "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition",
       "https://www.coindesk.com/tech/2026/07/16/galaxy-targets-institutional-stablecoin-yield-with-new-defi-vaults",
       "https://cointelegraph.com/news/citadel-securities-invests-400m-in-cryptocom-at-20b-valuation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/trump-teleprompter-operator-made-100k-betting-kalshi-markets-tied-to-speeches-abc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/trump-teleprompter-operator-made-100k-betting-kalshi-markets-tied-to-speeches-abc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/injective-files-sec-transfer-agent-registration-bring-securities-ownership-records-onchain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/bitpay-licensing-mica-stablecoin-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -146,7 +140,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 6,
+    "posted_count_today": 8,
     "posted_date": "2026-07-17"
   },
   "filler": {
@@ -487,6 +481,11 @@
       "posted_at": 1784253665.591857,
       "text": "\ud83d\udcca CONTEXT: Almost every crypto-adjacent stock is down way more than bitcoin itself today -- $HOOD -8%, MARA -7%, RIOT -6%, COIN -4%, while BTC is only -1%.",
       "url": null
+    },
+    {
+      "posted_at": 1784257261.420361,
+      "text": "\ud83d\udcf0 NEWS: DTCC just moved tokenized securities into live trading -- not a pilot, the real thing. \ud83c\udfe6\u26a1\n\nDTCC is the institution that settles nearly every US stock trade behind the scenes.",
+      "url": "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push"
     }
   ],
   "telegram": {
