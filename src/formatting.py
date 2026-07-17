@@ -1,4 +1,12 @@
+import re
+
 MAX_TWEET_LEN = 280
+
+# A sentence-ending punctuation mark followed by whitespace (space OR a
+# newline) or end-of-string -- matches both a plain ". " and our own
+# tag+headline+blank-line+explanation post shape's ".\n\n" separator,
+# which a plain ". " search would miss entirely.
+_SENTENCE_END_RE = re.compile(r"[.!?](?=\s|$)")
 
 
 def fmt_price(value):
@@ -36,25 +44,50 @@ def fmt_usd_compact(value):
     return f"${value:,.0f}"
 
 
+def _last_sentence_end(window):
+    """Index of the last complete-sentence-ending punctuation within window,
+    or -1 if none found. Ignores a trailing ellipsis itself (that's the
+    thing we're trying to cut back past, not a sentence end)."""
+    core = window.rstrip()
+    if core.endswith("…"):
+        core = core[:-1]
+    elif core.endswith("..."):
+        core = core[:-3]
+    matches = list(_SENTENCE_END_RE.finditer(core))
+    return matches[-1].start() if matches else -1
+
+
 def truncate(text, max_len=MAX_TWEET_LEN):
     """Hard truncate as a last-resort safety net; callers should compose
     posts to naturally fit under the limit. Prefers cutting at the last
     complete sentence within the limit (no ellipsis needed, reads as a
     genuine ending) over a flat mid-word/mid-thought chop -- a post should
     never read as truncated, even when this safety net has to fire. Only
-    falls back to the flat cut+ellipsis when no sentence boundary is found
-    within a reasonable portion of the limit (an ellipsis mid-idea is still
-    better than throwing away most of the post just to end cleanly)."""
-    if len(text) <= max_len:
+    falls back to the flat cut+ellipsis (when over budget) when no sentence
+    boundary is found within a reasonable portion of the limit.
+
+    Also fires when text is already UNDER max_len but ends with a dangling
+    "…"/"..." -- confirmed live, twice, that Claude sometimes self-truncates
+    mid-sentence while composing to stay under budget, producing a complete
+    (sub-limit) string that still reads as cut off. That case never reached
+    the length check below at all, so it silently passed through unfixed
+    until now: any dangling ellipsis gets trimmed back to the last real
+    sentence, however short, since there's no length pressure forcing a
+    trade-off in that case."""
+    over_budget = len(text) > max_len
+    self_truncated = text.rstrip().endswith("…") or text.rstrip().endswith("...")
+    if not over_budget and not self_truncated:
         return text
-    window = text[:max_len]
-    best_end = max(window.rfind(". "), window.rfind("! "), window.rfind("? "))
-    for punct in (".", "!", "?"):
-        if window.endswith(punct):
-            best_end = max(best_end, len(window) - 1)
-    if best_end >= max_len * 0.5:
+
+    window = text[:max_len] if over_budget else text
+    best_end = _last_sentence_end(window)
+
+    min_keep = max_len * 0.5 if over_budget else 0
+    if best_end >= min_keep:
         return text[: best_end + 1].rstrip()
-    return text[: max_len - 1].rstrip() + "…"
+    if over_budget:
+        return text[: max_len - 1].rstrip() + "…"
+    return text
 
 
 def thread_parts(text, max_len=MAX_TWEET_LEN):

@@ -64,6 +64,13 @@ from src.sources import ai_manager_brain, news_rss, twelvedata
 
 CASHTAG_RE = re.compile(r"\$[A-Za-z]{1,6}\b")
 
+# A dollar figure with a scale word, or a percentage -- distinctive enough
+# that two unrelated real stories sharing 2+ of them verbatim is rare.
+_SALIENT_NUMBER_RE = re.compile(
+    r"\$\s?\d[\d,.]*\s?(?:million|billion|trillion|M|B|K)\b|\d+(?:\.\d+)?%",
+    re.IGNORECASE,
+)
+
 logger = logging.getLogger("tickerwatch.triggers.ai_manager")
 
 
@@ -203,6 +210,34 @@ def _enforce_single_cashtag(text):
         last_end = m.end()
     parts.append(text[last_end:])
     return "".join(parts)
+
+
+def _salient_numbers(text):
+    return {m.group().lower().replace(" ", "") for m in _SALIENT_NUMBER_RE.finditer(text)}
+
+
+def _is_likely_duplicate(text, prior_texts, min_shared=2):
+    """Deterministic backstop against the same real-world story getting
+    posted twice -- confirmed live that Claude can independently regenerate
+    a post covering a topic already sitting right there in its own
+    RECENTLY POSTED context, despite the explicit prompt rule against it
+    ("should_post: false since this was already covered" is a request to
+    Claude, not a guarantee -- same reasoning as every other code-level
+    backstop in this module: cashtag, opening tag). Flags a likely
+    duplicate when a candidate shares min_shared+ distinctive figures (a
+    dollar amount with a scale word, or a percentage) verbatim with any
+    already-posted text -- two unrelated real stories coincidentally
+    sharing two exact figures is rare enough that this stays low on false
+    positives while catching the actual observed failure (the same
+    "$400 million... $20 billion" Citadel/Crypto.com story posted twice
+    within one Claude batch's own recent-post window)."""
+    candidate_nums = _salient_numbers(text)
+    if len(candidate_nums) < min_shared:
+        return False
+    for prior in prior_texts:
+        if len(candidate_nums & _salient_numbers(prior)) >= min_shared:
+            return True
+    return False
 
 
 def _enforce_opening_tag(text):
@@ -374,8 +409,19 @@ def run(ctx):
 
     queued_items = []
     declined_posts = []
+    already_posted_texts = snapshot["own_recent_posts"]
     for post in (decision.get("posts") or [])[:take]:
         if not post.get("should_post") or not post.get("text"):
+            declined_posts.append(post)
+            continue
+        # deterministic override: even if Claude set should_post true, don't
+        # trust it blindly on repetition -- see _is_likely_duplicate
+        prior_texts = already_posted_texts + [item["text"] for item in queued_items]
+        if _is_likely_duplicate(post["text"], prior_texts):
+            logger.warning(
+                "ai_manager: declining likely-duplicate post (shared salient figures with a recent post): %s",
+                post["text"][:80],
+            )
             declined_posts.append(post)
             continue
         link_url = _preferred_link(snapshot, post)
