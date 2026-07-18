@@ -15,6 +15,7 @@ DEFAULT_STATE = {
     },
     "news": {"posted_urls": [], "posted_date": None, "posted_count_today": 0},
     "price": {"last_alert_price": {}, "last_alert_time": {}},
+    "oracle_alerts": {"last_alert_time": {}, "last_alert_label": {}},
     "scheduled_daily": {"last_posted_date": None, "rotate_index": 0},
     "flashback": {"last_posted_date": None},
     "polls": {"last_posted_date": None},
