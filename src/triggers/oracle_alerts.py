@@ -26,12 +26,13 @@ min_minutes_between_any_alert (default 60, i.e. at most one oracle alert
 per hour across every coin combined) -- keeps it from bursting multiple
 alerts in the same run/hour even if several coins cross the bar at once.
 
-Always opens with the 💰 CRYPTO tag (matching the account's fixed tag
-vocabulary; never the urgent JUST IN/BREAKING tags -- a quant signal read
-is never "breaking news"), logged to story_history like every other
-trigger's posts (so ai_manager's own dedup/Claude judgment is aware of
-it), and carries a short disclaimer in the actual post text rather than
-only in code comments."""
+Always opens with its own 💰 CRYPTO 🔮 tag on its own line (the 🔮
+distinguishes it from a routine ai_manager crypto post at a glance --
+never the urgent JUST IN/BREAKING tags, a quant signal read is never
+"breaking news"), logged to story_history like every other trigger's
+posts (so ai_manager's own dedup/Claude judgment is aware of it), and
+carries a short disclaimer in the actual post text rather than only in
+code comments."""
 import logging
 
 from src import story_history
@@ -41,7 +42,9 @@ from src.sources import ai_manager_brain
 logger = logging.getLogger("tickerwatch.triggers.oracle_alerts")
 
 _VERDICT_EMOJI = {"Strongly Bullish": "🟢🟢", "Strongly Bearish": "🔴🔴"}
-_TAG = "💰 CRYPTO"
+# 🔮 on top of the plain CRYPTO tag distinguishes an Oracle read from a
+# routine ai_manager crypto post at a glance, on its own opening line.
+_TAG = "💰 CRYPTO 🔮"
 
 
 def run(ctx):
@@ -91,7 +94,8 @@ def run(ctx):
         emoji = _VERDICT_EMOJI[label]
 
         text = truncate(
-            f"{_TAG}: {emoji} ${symbol} Oracle: {label} ({composite['score']}/100, "
+            f"{_TAG}:\n"
+            f"{emoji} ${symbol} Oracle: {label} ({composite['score']}/100, "
             f"{composite['confidence']}% confidence)\n"
             f"{dot_for_change(change_24h)} ${fmt_price(price)} ({fmt_pct(change_24h)} 24h)\n"
             f"{result['regime']['label']} · {round(probs['p_up'] * 100)}% odds up next "
