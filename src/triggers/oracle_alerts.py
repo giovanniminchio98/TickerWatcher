@@ -16,25 +16,27 @@ AND by verdict label: re-alerting the same label back-to-back (e.g. still
 fires once the model's read has actually flipped since the last alert, on
 top of the cooldown.
 
-Shares the exact same account-wide day/night posting cap as ai_manager.py
-(same ctx.state["ai_manager"] window_id/window_posts bookkeeping, same
-config/ai_manager.json day_max_posts/night_max_posts/pacing) rather than
-having its own separate budget -- confirmed live this trigger originally
-bypassed the cap entirely, letting it post outside the pacing the rest of
-the account is held to. Reuses ai_manager's own window helpers directly
-instead of duplicating that logic (safe: ai_manager.py never imports this
-module, so there's no cycle). Always opens with the 💰 CRYPTO tag (never
-the urgent JUST IN/BREAKING tags -- a quant signal read is never "breaking
-news", so it should never skip the pacing cap the way real urgent news
-can), logged to story_history like every other trigger's posts (so
-ai_manager's own dedup/Claude judgment sees it too), and carries a short
-disclaimer in the actual post text rather than only in code comments."""
+Deliberately independent of ai_manager's day/night posting cap -- by
+design, not an oversight: these are a genuinely different kind of content
+(a quant model's own reading of live price data, not editorial judgment),
+and the account owner wants them free to fire whenever the signal is
+genuinely strong rather than competing with ai_manager's queue for a
+shared daily allowance. The one throttle is a flat global
+min_minutes_between_any_alert (default 60, i.e. at most one oracle alert
+per hour across every coin combined) -- keeps it from bursting multiple
+alerts in the same run/hour even if several coins cross the bar at once.
+
+Always opens with the 💰 CRYPTO tag (matching the account's fixed tag
+vocabulary; never the urgent JUST IN/BREAKING tags -- a quant signal read
+is never "breaking news"), logged to story_history like every other
+trigger's posts (so ai_manager's own dedup/Claude judgment is aware of
+it), and carries a short disclaimer in the actual post text rather than
+only in code comments."""
 import logging
 
 from src import story_history
 from src.formatting import dot_for_change, fmt_pct, fmt_price, truncate
 from src.sources import ai_manager_brain
-from src.triggers import ai_manager
 
 logger = logging.getLogger("tickerwatch.triggers.oracle_alerts")
 
@@ -44,15 +46,16 @@ _TAG = "💰 CRYPTO"
 
 def run(ctx):
     cfg = ctx.config["thresholds"].get("oracle", {})
-    am_cfg = ctx.config["ai_manager"]
     state = ctx.state["oracle_alerts"]
-    am_state = ctx.state["ai_manager"]
+    state.setdefault("last_alert_time_global", None)
     now_ts = ctx.now.timestamp()
     max_per_run = cfg.get("max_alerts_per_run", 1)
     fired = 0
 
-    window_id, window_kind, window_start, window_end = ai_manager._current_window(ctx, am_cfg)
-    ai_manager._roll_window(am_state, window_id)
+    last_global = state["last_alert_time_global"]
+    min_minutes_global = cfg.get("min_minutes_between_any_alert", 60)
+    if last_global is not None and (now_ts - last_global) / 60 < min_minutes_global:
+        return False
 
     for asset in ctx.config["watchlist"]["crypto"]:
         if fired >= max_per_run:
@@ -79,13 +82,6 @@ def run(ctx):
         if already_cooling_down:
             continue
 
-        # never urgent -- a quant signal read never earns the JUST IN/
-        # BREAKING cap exception, it always respects the normal pacing
-        allowed = ai_manager._paced_cap_for(window_kind, am_cfg, window_start, window_end, ctx.now, urgent=False)
-        if am_state["window_posts"] >= allowed:
-            logger.info("oracle_alerts: declining %s alert, day/night posting cap reached", symbol)
-            break
-
         if not ctx.budget.can_spend(has_link=False):
             break
 
@@ -106,9 +102,9 @@ def run(ctx):
         if tweet_id:
             ctx.budget.record_spend(has_link=False, text=text)
             story_history.add_entry(ctx.state, text=text, url=None, now_ts=now_ts)
-            am_state["window_posts"] += 1
             state["last_alert_time"][symbol] = now_ts
             state["last_alert_label"][symbol] = label
+            state["last_alert_time_global"] = now_ts
             fired += 1
 
     return fired > 0

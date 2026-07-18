@@ -18,10 +18,11 @@
     }
   },
   "oracle": {
-    "_comment": "Gates src/triggers/oracle_alerts.py -- the CryptoScope Oracle quant signal (src/sources/cryptoscope_oracle.py), recomputed fresh every run from Kraken klines for every coin in watchlist.crypto. Only alerts on a Strongly Bullish/Bearish verdict with real signal agreement (min_confidence), and only once per coin per min_hours_between_alerts UNLESS the verdict label itself has changed since the last alert.",
+    "_comment": "Gates src/triggers/oracle_alerts.py -- the CryptoScope Oracle quant signal (src/sources/cryptoscope_oracle.py), recomputed fresh every run from Kraken klines for every coin in watchlist.crypto. Only alerts on a Strongly Bullish/Bearish verdict with real signal agreement (min_confidence), and only once per coin per min_hours_between_alerts UNLESS the verdict label itself has changed since the last alert. Deliberately NOT gated by ai_manager's day/night posting cap -- min_minutes_between_any_alert is its own flat, independent throttle (across every coin combined) instead.",
     "min_confidence": 60,
     "min_hours_between_alerts": 12,
-    "max_alerts_per_run": 1
+    "max_alerts_per_run": 1,
+    "min_minutes_between_any_alert": 60
   },
   "polls": {
     "days_of_week": [4],
