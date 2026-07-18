@@ -7,12 +7,20 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-18",
-    "last_call_time": 1784354459.6222,
-    "post_queue": [],
+    "last_call_time": 1784368858.173727,
+    "post_queue": [
+      {
+        "link_url": "https://decrypt.co/373699/morning-minute-citadel-securities-invests-400m-in-crypto-com",
+        "queued_at": 1784368858.173727,
+        "reasoning": "Wait -- Citadel/Crypto.com has already been posted twice in recent history per RECENTLY POSTED. Skipping this to avoid repetition.",
+        "second_part": null,
+        "text": "\ud83d\udcb0 CRYPTO: Citadel Securities (a top Wall Street market-making firm) just put $400M into Crypto.com, valuing it at $20B -- but this week crypto majors gave back most of their weekly gains as broader markets sold off.\n\nBig institutional bets don't stop short-term volatility."
+      }
+    ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 4,
+    "posts_since_last_second_part": 5,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -89,23 +97,23 @@
       }
     },
     "window_id": "2026-07-18-day",
-    "window_posts": 3
+    "window_posts": 4
   },
   "budget": {
     "daily": {
       "date": "2026-07-18",
-      "posts_used": 8,
-      "usd_used": 0.12
+      "posts_used": 9,
+      "usd_used": 0.135
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 168,
-    "usd_used": 6.96
+    "posts_used": 169,
+    "usd_used": 6.975
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.5285
+    "usd_used": 1.5572
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -593,6 +601,11 @@
       "posted_at": 1784361659.492307,
       "text": "\ud83d\udcf0 NEWS: UK courts just sentenced two hackers linked to Scattered Spider, the group US prosecutors say extorted dozens of companies in a $115M crypto ransom scheme.\n\nBoth pleaded guilty.",
       "url": "https://cointelegraph.com/news/london-police-sentence-hackers-crypto-ransom-public-transport?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784368858.173727,
+      "text": "\ud83d\udea8 JUST IN: Tech and crypto stocks are broadly red today, but $BTC is bucking the trend, up 1.5% to $63,942 while SPY and QQQ both fall nearly 1-1.5%.",
+      "url": null
     }
   ],
   "telegram": {
