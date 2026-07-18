@@ -297,7 +297,8 @@
   },
   "oracle_alerts": {
     "last_alert_label": {},
-    "last_alert_time": {}
+    "last_alert_time": {},
+    "last_alert_time_global": null
   },
   "polls": {
     "last_posted_date": "2026-07-17"
