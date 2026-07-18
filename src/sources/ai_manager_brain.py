@@ -14,6 +14,15 @@ Reposting (retweet/quote-tweet) used to live here too -- removed entirely
 by explicit choice: the account owner reposts manually when something's
 worth it, so this call only ever decides original content now.
 
+Also in the snapshot: a per-coin CryptoScope Oracle read (snapshot["oracle"],
+built by ai_manager.py's _oracle_snapshot_lines from ctx.oracle -- see
+src/sources/cryptoscope_oracle.py and main.py's _fetch_oracle_data). This is
+a real statistical signal (a weighted technical/Monte-Carlo composite)
+recomputed fresh every run from live Binance price history, not a
+fabricated number -- Claude may reference it the same way it references
+prices/news, but framed as a model/statistical read, never a certain
+prediction (see the ORACLE prompt rule below).
+
 The RECENTLY POSTED context (news_snapshot's URL exclusion too) is shared
 across triggers on purpose: confirmed live that news_alerts.py's
 mechanical keyword-matched alerts and this call's own Claude-judged
@@ -100,6 +109,7 @@ TAGS = ["🚨 JUST IN", "🚨 BREAKING", "📊 CONTEXT", "💰 CRYPTO", "🤖 AI
 
 def _build_prompt(snapshot):
     prices_lines = "\n".join(snapshot["prices"]) or "(no notable price data)"
+    oracle_lines = "\n".join(snapshot.get("oracle", [])) or "(no oracle read available yet)"
     news_lines = "\n".join(
         f'{i}. [{a["source"]}] {a["title"]} -- {a["summary"]}' for i, a in enumerate(snapshot["news"])
     ) or "(no matching news)"
@@ -246,6 +256,15 @@ def _build_prompt(snapshot):
         "reader's time -- that should be rare, not a default. This doesn't lower the bar: a post "
         "still has to be genuinely useful and never filler, it just means look harder before "
         "concluding there's nothing.\n"
+        "- QUANT ORACLE below is a real statistical signal for each tracked coin (a weighted "
+        "technical/Monte-Carlo composite verdict, confidence score, and regime read), recomputed "
+        "fresh this run from live price history -- not fabricated, but also not a certainty. You "
+        "may reference it when genuinely relevant (e.g. it lines up with or notably contradicts a "
+        "price move or story you're already covering), always framed as a statistical/model read "
+        "('our quant model reads...', 'the signal composite shows...', 'statistically leaning...') "
+        "and never as a guarantee or financial advice, and never with numbers beyond what's shown "
+        "there. Most posts won't need it at all -- use it only when it genuinely adds value, never "
+        "just to fill space.\n"
         "- For each post, decide second_part: an optional continuation posted immediately as a "
         "reply to the post itself, when the topic has genuine depth worth adding -- more mechanism, "
         "a concrete example, the second half of a comparison, not a restatement or filler. Most "
@@ -279,6 +298,7 @@ def _build_prompt(snapshot):
         "inside that text.\n\n"
         f"TODAY: {snapshot.get('day_context', '(unknown)')}\n\n"
         f"PRICES:\n{prices_lines}\n\n"
+        f"QUANT ORACLE (CryptoScope signal, this run, per tracked coin):\n{oracle_lines}\n\n"
         f"NEWS (indexed):\n{news_lines}\n\n"
         f"EARNINGS TODAY (tracked companies only):\n{earnings_lines}\n\n"
         f"RECENT PRESS RELEASES (tracked companies only):\n{press_lines}\n\n"
