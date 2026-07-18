@@ -7,13 +7,28 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 6,
+    "calls_today": 7,
     "date": "2026-07-18",
-    "last_call_checkpoint": "2026-07-18-21",
-    "last_call_time": 1784401255.002734,
-    "post_queue": [],
+    "last_call_checkpoint": "2026-07-19-00",
+    "last_call_time": 1784412065.467657,
+    "post_queue": [
+      {
+        "link_url": "https://decrypt.co/373767/ecb-warns-stablecoins-drain-bank-deposits",
+        "queued_at": 1784412065.467657,
+        "reasoning": "This expands meaningfully on the prior brief ECB post (which only mentioned the deposit-drain warning) with the new detail of the 3-layer threat and the digital euro pitch -- concretely new content, not a repeat. Second_part adds real mechanism depth on why deposits matter, which the earlier post didn't cover.",
+        "second_part": "Banks make money lending out your deposits. If people move cash into stablecoins instead of savings accounts, banks have less to lend with -- that's the 'drain' the ECB is worried about, not just a pricing gimmick.",
+        "text": "\ud83d\udcf0 NEWS: The ECB just laid out a 3-part warning on how stablecoins (crypto tokens pegged to $1) could hurt regular banks -- competing for deposits, payments, and even credit.\n\nTheir fix: push the EU to launch its own digital euro instead of letting private stablecoins take over everyday payments."
+      },
+      {
+        "link_url": "https://cointelegraph.com/news/okx-europe-lets-users-convert-usdt-to-mica-compliant-usdc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "queued_at": 1784412065.467657,
+        "reasoning": "Distinct new story not covered recently -- regulatory-driven stablecoin shift in Europe, genuinely useful for readers holding USDT in the EU, explains MiCA inline for unfamiliar readers.",
+        "second_part": null,
+        "text": "\ud83d\udcb0 CRYPTO: OKX Europe now lets users swap USDT for USDC directly, giving Europeans an easy exit from Tether's stablecoin.\n\nMiCA, the EU's new crypto rulebook, doesn't fully recognize USDT -- so exchanges are quietly steering users toward USDC, which does comply."
+      }
+    ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 1,
+    "posts_since_last_second_part": 2,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -90,23 +105,23 @@
       }
     },
     "window_id": "2026-07-18-night",
-    "window_posts": 0
+    "window_posts": 1
   },
   "budget": {
     "daily": {
       "date": "2026-07-18",
-      "posts_used": 13,
-      "usd_used": 0.195
+      "posts_used": 14,
+      "usd_used": 0.21
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 173,
-    "usd_used": 7.035
+    "posts_used": 174,
+    "usd_used": 7.05
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.6605
+    "usd_used": 1.6986
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -625,6 +640,11 @@
       "posted_at": 1784398175.807428,
       "text": "\ud83d\udcf0 NEWS: A South Dakota crypto investor just got federally indicted over an alleged $20 million fraud.",
       "url": "https://cointelegraph.com/news/us-indicts-crypto-investor-over-alleged-20m-fraud-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784412065.467657,
+      "text": "\ud83d\udea8 JUST IN: Crypto is quietly green while stocks bleed -- $BTC +1% to $64,708, ETH +1.1%, even DOGE and ADA up slightly. Meanwhile SPY -1%, QQQ -1.5%, NVDA -2.2%, NFLX -7.3%.",
+      "url": null
     }
   ],
   "telegram": {
