@@ -21,15 +21,7 @@ from src.formatting import dot_for_change, fmt_pct, fmt_price, truncate
 
 logger = logging.getLogger("tickerwatch.triggers.oracle_alerts")
 
-_VERDICT_EMOJI = {
-    "Strongly Bullish": "🟢🟢", "Strongly Bearish": "🔴🔴",
-    # TEMP DEBUG: widened to all 7 labels + min_confidence dropped to 0
-    # (see config/thresholds.json) so a live test post goes out regardless
-    # of current market conditions, to verify the analyze() -> post-text
-    # struct/type pipeline end to end. Revert both after the test.
-    "Bullish": "🟢", "Lean Bullish": "🟢", "Neutral": "⚪",
-    "Lean Bearish": "🔴", "Bearish": "🔴",
-}
+_VERDICT_EMOJI = {"Strongly Bullish": "🟢🟢", "Strongly Bearish": "🔴🔴"}
 
 
 def run(ctx):
