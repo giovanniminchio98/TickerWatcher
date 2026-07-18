@@ -40,11 +40,7 @@ from src.sources import ai_manager_brain
 
 logger = logging.getLogger("tickerwatch.triggers.oracle_alerts")
 
-_VERDICT_EMOJI = {  # TEMP: widened for a live style test, revert to Strongly-only after
-    "Strongly Bullish": "🟢🟢", "Bullish": "🟢", "Lean Bullish": "🟢",
-    "Neutral": "⚪",
-    "Lean Bearish": "🔴", "Bearish": "🔴", "Strongly Bearish": "🔴🔴",
-}
+_VERDICT_EMOJI = {"Strongly Bullish": "🟢🟢", "Strongly Bearish": "🔴🔴"}
 _TAG = "💰 CRYPTO"
 
 
