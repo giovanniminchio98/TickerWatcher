@@ -10,15 +10,7 @@
     "calls_today": 3,
     "date": "2026-07-18",
     "last_call_time": 1784368858.173727,
-    "post_queue": [
-      {
-        "link_url": "https://decrypt.co/373699/morning-minute-citadel-securities-invests-400m-in-crypto-com",
-        "queued_at": 1784368858.173727,
-        "reasoning": "Wait -- Citadel/Crypto.com has already been posted twice in recent history per RECENTLY POSTED. Skipping this to avoid repetition.",
-        "second_part": null,
-        "text": "\ud83d\udcb0 CRYPTO: Citadel Securities (a top Wall Street market-making firm) just put $400M into Crypto.com, valuing it at $20B -- but this week crypto majors gave back most of their weekly gains as broader markets sold off.\n\nBig institutional bets don't stop short-term volatility."
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 5,
     "posts_today": 9,
