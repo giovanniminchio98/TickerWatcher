@@ -259,6 +259,9 @@
     "period": "2026-07",
     "usd_used": 0.0
   },
+  "monthly_calendar": {
+    "last_posted_month": null
+  },
   "news": {
     "posted_count_today": 2,
     "posted_date": "2026-07-18",
