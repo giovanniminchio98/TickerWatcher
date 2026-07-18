@@ -58,6 +58,7 @@ DEFAULT_STATE = {
         "low_budget_alert_sent_period": None,
     },
     "telegram": {"last_report_date": None},
+    "monthly_calendar": {"last_posted_month": None},
     "run": {"any_trigger_fired_today": False, "last_run_date": None},
 }
 

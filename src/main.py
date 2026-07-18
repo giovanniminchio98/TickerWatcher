@@ -32,6 +32,7 @@ from src.triggers import (
     content_drafts,
     filler,
     historical_flashback,
+    monthly_calendar,
     news_alerts,
     polls,
     price_alerts,
@@ -95,6 +96,7 @@ ENABLED = {
     # unconditional behavior.
     "filler": False,
     "budget_report": True,
+    "monthly_calendar": True,
 }
 
 
@@ -158,6 +160,11 @@ def main():
     # is the only reply path now, see reply_suggestions.py. Same "never
     # touches X" reasoning as content_drafts, doesn't affect filler
     _safe_run("reply_suggestions", reply_suggestions.run, ctx)
+
+    # Telegram channel only (public, posts-only channel) -- once-a-month
+    # earnings calendar, never touches X, same "never affects filler"
+    # reasoning as content_drafts/reply_suggestions above
+    _safe_run("monthly_calendar", monthly_calendar.run, ctx)
 
     # independent of the X pipeline/budget above -- always attempted, since
     # this is what tells you when to top up X credits

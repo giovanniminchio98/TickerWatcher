@@ -26,4 +26,5 @@ def load_all():
         "reply_suggestions": _load("reply_suggestions.json"),
         "filler": _load("filler.json"),
         "media": _load("media.json"),
+        "financial_calendar": _load("financial_calendar.json"),
     }

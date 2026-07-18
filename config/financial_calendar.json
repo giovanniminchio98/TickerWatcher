@@ -1,0 +1,8 @@
+{
+  "_comment": "Ticker list for src/triggers/monthly_calendar.py's once-a-month Telegram-channel-only earnings report -- deliberately separate from watchlist.json since this covers companies (e.g. the major banks) not otherwise tracked for price/post purposes. A ticker appearing in more than one category (e.g. NVDA in both Big Tech and AI/Semis) is de-duplicated automatically -- listed under both here just for readability of the category grouping.",
+  "categories": {
+    "Big Tech": ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"],
+    "AI/Semis": ["NVDA", "AMD", "PLTR", "AVGO", "ASML", "MU"],
+    "Major Banks": ["JPM", "BAC", "GS", "C", "WFC", "MS"]
+  }
+}
