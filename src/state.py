@@ -23,6 +23,7 @@ DEFAULT_STATE = {
     "comment_engagement": {},
     "ai_manager": {
         "last_call_time": None,
+        "last_call_checkpoint": None,
         "date": None,
         "calls_today": 0,
         "window_id": None,
