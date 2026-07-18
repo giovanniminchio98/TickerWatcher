@@ -56,11 +56,16 @@ on the monthly budget):
    (default 2), the main cost lever since news is the only post type with a
    real clickable link anywhere in the thread.
 3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
-4. **Scheduled daily post** — market snapshot / Fear & Greed Index (rotates, or both)
-5. **Historical flashback** — filler, max once/day, only if nothing else fired
-6. **Polls** — ~1x/week engagement mechanic
-7. **Self-reply updates** — replies to the bot's *own* tweets only, never others'
-8. **Filler** (disabled by default — see "Filler" below) — absolute last
+4. **CryptoScope Oracle verdict alerts** — a quant signal composite (Monte-Carlo
+   forecast + technical signals, ported from the crypto-scope site's engine),
+   recomputed fresh every run from live Binance candles for every coin in
+   `watchlist.crypto` — fires only on a genuinely strong, high-confidence
+   Strongly Bullish/Bearish read (see "CryptoScope Oracle" below)
+5. **Scheduled daily post** — market snapshot / Fear & Greed Index (rotates, or both)
+6. **Historical flashback** — filler, max once/day, only if nothing else fired
+7. **Polls** — ~1x/week engagement mechanic
+8. **Self-reply updates** — replies to the bot's *own* tweets only, never others'
+9. **Filler** (disabled by default — see "Filler" below) — absolute last
    resort, only posts if nothing above did this run. Picks from
    `config/filler.json`'s ~100 generic engagement questions/facts (no
    repeats until the list is exhausted, then reshuffles).
@@ -101,6 +106,49 @@ its own look.
 
 Each post type is its own function in `src/triggers/`, toggled independently
 in the `ENABLED` dict at the top of `src/main.py`.
+
+### CryptoScope Oracle (quant signal alerts + AI Manager context)
+
+`crypto-scope` (a separate static-site repo) has a client-side "Oracle"
+engine (`oracle.js`) that turns a candle series into a full quant read: a
+Monte-Carlo GBM forecast, Hurst exponent regime detection, risk stats
+(VaR/CVaR/Sharpe/Sortino), distribution stats (skew/kurtosis/autocorrelation),
+and a fused, weighted 0-100 "verdict" composite with a confidence score.
+`src/sources/cryptoscope_oracle.py` is a straight Python port of that same
+math — same functions, same weights, same signal set — so TickerWatch can
+use it as shared per-run Context (`ctx.oracle`) instead of only having plain
+spot prices to react to.
+
+Unlike the crypto-scope site itself (a once-a-day static data bundle,
+refreshed by its own separate GitHub Action), the Oracle here is recomputed
+**fresh every TickerWatch run** — every hourly cron tick, not once a day —
+from `src/sources/binance.py`'s keyless klines endpoint (1h candles, 200-bar
+lookback, no API key or rate-limit headache), for every coin in
+`watchlist.crypto`. `main.py`'s `_fetch_oracle_data` runs this once per run
+(same per-symbol error isolation as every other data source: one bad/missing
+Binance pair is logged and skipped, never breaks the others) and hands the
+result to every trigger via `ctx.oracle[symbol]`.
+
+Two things consume it:
+- **`src/triggers/oracle_alerts.py`** — a new, deliberately conservative post
+  type: it only fires when a coin's composite verdict reaches a genuinely
+  strong reading (Strongly Bullish/Bearish) *and* the model's own signals
+  agree enough to clear `thresholds.oracle.min_confidence`. Deduped per coin
+  so re-alerting the same still-true verdict every hour is never noise (see
+  `thresholds.oracle.min_hours_between_alerts`) — a repeat only fires once
+  the read has actually changed.
+- **`ai_manager_brain.py`'s prompt** — every coin's current verdict/
+  confidence/regime/probability read is handed to Claude as a
+  `QUANT ORACLE` section alongside prices and news, explicitly framed as a
+  real (not fabricated) statistical read it may reference when relevant,
+  never as financial advice or a guarantee.
+
+This only ever adds a real, computed number to the pipeline — it never
+changes what coins are tracked or how often prices are fetched; just add
+more entries to `watchlist.crypto` and the Oracle (and its alerts) picks
+them up automatically. If a coin's Binance pair ticker differs from
+`f"{symbol}USDT"` (the default guess), set `"binance_symbol"` explicitly on
+that watchlist entry.
 
 ### News trend-line images
 
@@ -593,13 +641,16 @@ src/
   x_client.py     tweepy wrapper (post/reply/retweet/poll/media upload), DRY_RUN support
   media.py        news trend-icon -> X media_id helper
   formatting.py   number/text formatting, thread splitting
-  sources/        one file per external API (coingecko, twelvedata, whale_btc,
-                  whale_eth, news_rss, paraphrase, reply_writer, draft_writer,
-                  ai_manager_brain, feargreed)
+  sources/        one file per external API (coingecko, binance, twelvedata,
+                  whale_btc, whale_eth, news_rss, paraphrase, reply_writer,
+                  draft_writer, ai_manager_brain, feargreed), plus
+                  cryptoscope_oracle.py (Python port of crypto-scope's
+                  oracle.js quant engine, see "CryptoScope Oracle" above)
   triggers/       one file per post type (whale_alerts, news_alerts,
-                  price_alerts, scheduled_daily, historical_flashback, polls,
-                  self_reply, filler, retweets, comment_engagement,
-                  content_drafts, ai_manager, reply_manager, budget_report)
+                  price_alerts, oracle_alerts, scheduled_daily,
+                  historical_flashback, polls, self_reply, filler, retweets,
+                  comment_engagement, content_drafts, ai_manager,
+                  reply_manager, budget_report)
   image_budget.py     third, independent budget cap for image generation (OpenAI/DALL-E) -- currently unused by AI Manager, kept ready if that changes
   telegram_client.py  bot-chat + channel + cost-chat message senders, free, independent of the X budget
 .github/workflows/tickerwatch.yml   cron schedule + secret wiring + state commit
