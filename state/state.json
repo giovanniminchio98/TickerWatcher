@@ -7,12 +7,20 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 4,
+    "calls_today": 5,
     "date": "2026-07-18",
-    "last_call_time": 1784383254.842222,
-    "post_queue": [],
+    "last_call_time": 1784397657.396901,
+    "post_queue": [
+      {
+        "link_url": "https://cointelegraph.com/news/us-indicts-crypto-investor-over-alleged-20m-fraud-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "queued_at": 1784397657.396901,
+        "reasoning": "Concrete new fraud case not covered in recent posts, plain-language explanation of the Ponzi mechanism, genuinely useful for readers to recognize the pattern.",
+        "second_part": null,
+        "text": "\ud83d\udcf0 NEWS: A South Dakota crypto investor just got federally indicted over an alleged $20 million fraud.\n\nProsecutors say he took investor money on false promises, paid old investors with new money (a classic Ponzi pattern), then laundered the proceeds through crypto exchanges."
+      }
+    ],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 6,
+    "posts_since_last_second_part": 0,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -89,23 +97,23 @@
       }
     },
     "window_id": "2026-07-18-day",
-    "window_posts": 5
+    "window_posts": 6
   },
   "budget": {
     "daily": {
       "date": "2026-07-18",
-      "posts_used": 10,
-      "usd_used": 0.15
+      "posts_used": 12,
+      "usd_used": 0.18
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 170,
-    "usd_used": 6.99
+    "posts_used": 172,
+    "usd_used": 7.02
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.5913
+    "usd_used": 1.6254
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -606,6 +614,11 @@
       "posted_at": 1784383254.842222,
       "text": "\ud83d\udcf0 NEWS: Kaspersky just flagged a new malware framework targeting crypto investors through fake GitHub apps and social engineering.\n\nAttackers pose as legit open-source projects to trick investors into installing trojanized code that steals wallet access.",
       "url": "https://cointelegraph.com/news/kaspersky-malware-framework-crypto-investors?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784397657.396901,
+      "text": "\ud83d\udcb0 CRYPTO: Massive options bets are stacking up on bitcoin hitting $72,000 by month end -- right when the Fed meets on interest rates.\n\nCall spreads are options trades betting a price will rise to a target.",
+      "url": "https://www.coindesk.com/markets/2026/07/18/massive-bitcoin-call-spreads-target-usd72-000-by-month-end-right-when-the-fed-meets"
     }
   ],
   "telegram": {
