@@ -1,14 +1,18 @@
-"""Post type: CryptoScope Oracle verdict alerts. Fires only when a tracked
+"""Post type: CryptoScope Oracle verdict alerts. Fires when a tracked
 coin's quant signal composite (src/sources/cryptoscope_oracle.py -- the same
 Monte-Carlo/technical-signal engine that powers the crypto-scope site,
 ported to Python and recomputed fresh every run from Kraken's keyless 1h
-klines, see ctx.oracle / main.py's _fetch_oracle_data) reaches a genuinely
-strong reading -- Strongly Bullish/Bearish with real signal agreement
-(confidence >= thresholds.oracle.min_confidence) -- not on every score
-wobble. Deliberately conservative: this is a statistical read of price
-history, not a guarantee, so it only speaks up when the model itself is
-confident, and stays quiet on Neutral/Lean readings and low-confidence
-scores.
+klines, see ctx.oracle / main.py's _fetch_oracle_data) reads Bullish/
+Bearish or stronger, with real signal agreement (confidence >=
+thresholds.oracle.min_confidence) -- not on every score wobble, and never
+on Neutral/Lean readings. Tuned for a real posting cadence (~4-5/day
+target, across 11 tracked coins) rather than only the rarest Strongly
+Bullish/Bearish extremes: confirmed live that real-world composite scores
+mostly sit in the 40-50 (Neutral/Lean) range, so gating on "Strongly"
+alone (score >=72 or <=28) almost never fired in practice. Bullish/
+Bearish (score >=60 or <=40) is a meaningfully wider net while still
+skipping the mushy middle. Single emoji (🟢/🔴) marks the regular
+Bullish/Bearish tier, double (🟢🟢/🔴🔴) marks Strongly.
 
 Deduped per coin by config/thresholds.json's oracle.min_hours_between_alerts
 AND by verdict label: re-alerting the same label back-to-back (e.g. still
@@ -41,7 +45,10 @@ from src.sources import ai_manager_brain
 
 logger = logging.getLogger("tickerwatch.triggers.oracle_alerts")
 
-_VERDICT_EMOJI = {"Strongly Bullish": "🟢🟢", "Strongly Bearish": "🔴🔴"}
+_VERDICT_EMOJI = {
+    "Strongly Bullish": "🟢🟢", "Bullish": "🟢",
+    "Strongly Bearish": "🔴🔴", "Bearish": "🔴",
+}
 # 🔮 on top of the plain CRYPTO tag distinguishes an Oracle read from a
 # routine ai_manager crypto post at a glance, on its own opening line.
 _TAG = "💰 CRYPTO 🔮"
