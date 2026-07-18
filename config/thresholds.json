@@ -9,23 +9,69 @@
     "pct_change_trigger": 5.0,
     "min_hours_between_repeat_alerts": 6,
     "milestones": {
-      "BTC": [50000, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 150000, 200000],
-      "ETH": [2000, 2500, 3000, 3500, 4000, 5000, 6000],
-      "SOL": [100, 150, 200, 250, 300, 400],
-      "XRP": [1, 1.5, 2, 3, 5],
-      "SPY": [500, 550, 600, 650, 700],
-      "QQQ": [400, 450, 500, 550, 600]
+      "BTC": [
+        50000,
+        60000,
+        70000,
+        80000,
+        90000,
+        100000,
+        110000,
+        120000,
+        150000,
+        200000
+      ],
+      "ETH": [
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+        5000,
+        6000
+      ],
+      "SOL": [
+        100,
+        150,
+        200,
+        250,
+        300,
+        400
+      ],
+      "XRP": [
+        1,
+        1.5,
+        2,
+        3,
+        5
+      ],
+      "SPY": [
+        500,
+        550,
+        600,
+        650,
+        700
+      ],
+      "QQQ": [
+        400,
+        450,
+        500,
+        550,
+        600
+      ]
     }
   },
   "oracle": {
     "_comment": "Gates src/triggers/oracle_alerts.py -- the CryptoScope Oracle quant signal (src/sources/cryptoscope_oracle.py), recomputed fresh every run from Kraken klines for every coin in watchlist.crypto. Only alerts on a Strongly Bullish/Bearish verdict with real signal agreement (min_confidence), and only once per coin per min_hours_between_alerts UNLESS the verdict label itself has changed since the last alert. Deliberately NOT gated by ai_manager's day/night posting cap -- min_minutes_between_any_alert is its own flat, independent throttle (across every coin combined) instead.",
-    "min_confidence": 60,
+    "min_confidence": 0,
     "min_hours_between_alerts": 12,
     "max_alerts_per_run": 1,
     "min_minutes_between_any_alert": 60
   },
   "polls": {
-    "days_of_week": [4],
+    "days_of_week": [
+      4
+    ],
     "asset": "BTC",
     "horizon_days": 4
   },
@@ -38,7 +84,12 @@
     "post_both": false
   },
   "flashback": {
-    "years_back_options": [1, 2, 3, 4]
+    "years_back_options": [
+      1,
+      2,
+      3,
+      4
+    ]
   },
   "filler": {
     "_comment": "Lowest priority of all -- only posts if nothing else fired this run. max_per_day bounds worst-case cost; with hourly checks, 24 would mean 'every empty hour' literally. Lower this (e.g. to 4-6) if filler ends up eating too much of the monthly budget -- see README cost math.",
