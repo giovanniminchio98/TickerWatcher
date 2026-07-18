@@ -302,7 +302,8 @@
     "last_alert_time": {
       "BTC": 1784412722.172499
     },
-    "last_alert_time_global": 1784412722.172499
+    "last_alert_time_global": 1784412722.172499,
+    "rotation_index": 0
   },
   "polls": {
     "last_posted_date": "2026-07-17"
@@ -311,6 +312,7 @@
     "last_alert_price": {
       "AAPL": 327.57001,
       "ADA": 0.165975,
+      "AVAX": 6.58,
       "BNB": 570.18,
       "BTC": 61980,
       "DOGE": 0.072299,
