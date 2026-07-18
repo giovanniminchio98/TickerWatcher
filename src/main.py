@@ -144,6 +144,10 @@ def _fetch_oracle_data(config):
         try:
             candles = kraken.get_klines(pair, interval="1h", limit=200)
             oracle_data[symbol] = cryptoscope_oracle.analyze(candles)
+            logger.info(  # TEMP: debug for new-coins verification, revert after
+                "DEBUG oracle fetch %s (%s): %d candles, analyzed=%s",
+                symbol, pair, len(candles), oracle_data[symbol] is not None,
+            )
         except Exception:
             logger.exception("CryptoScope oracle analysis failed for %s (%s)", symbol, pair)
             oracle_data[symbol] = None
