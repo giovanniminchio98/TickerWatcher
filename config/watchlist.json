@@ -10,7 +10,8 @@
     { "symbol": "USDT", "name": "Tether", "coingecko_id": "tether" },
     { "symbol": "BNB", "name": "BNB", "coingecko_id": "binancecoin" },
     { "symbol": "USDC", "name": "USD Coin", "coingecko_id": "usd-coin" },
-    { "symbol": "TRX", "name": "Tron", "coingecko_id": "tron" }
+    { "symbol": "TRX", "name": "Tron", "coingecko_id": "tron" },
+    { "symbol": "AVAX", "name": "Avalanche", "coingecko_id": "avalanche-2" }
   ],
   "stocks": [
     { "symbol": "SPY", "name": "S&P 500 ETF" },
