@@ -1,4 +1,4 @@
 {
   "_comment": "Attaches the coin's official CoinGecko-hosted logo to whale/price alert posts. No extra API key needed -- the image URL now comes back for free in the same /coins/markets call already used for prices every run. Set enabled=false to instantly stop attaching media without a code change, e.g. if a live billing check shows X charges extra for posts with media (same style of test used to confirm cashtags were free).",
-  "enabled": true
+  "enabled": false
 }
