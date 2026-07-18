@@ -334,8 +334,23 @@ def _enforce_single_cashtag(text):
     return "".join(parts)
 
 
+# Unifies spelled-out scale words with their abbreviation so "$400 million"
+# and "$400M" normalize to the identical token -- confirmed live that a
+# duplicate post slipped through _is_likely_duplicate because the original
+# story used spelled-out units ("$400 million... $20 billion") while the
+# repeat used abbreviations ("$400M... $20B"): naive lowercase+strip-spaces
+# treated "$400million" and "$400m" as two unrelated numbers.
+_UNIT_WORD_TO_ABBREV = (("million", "m"), ("billion", "b"), ("trillion", "t"), ("thousand", "k"))
+
+
 def _salient_numbers(text):
-    return {m.group().lower().replace(" ", "") for m in _SALIENT_NUMBER_RE.finditer(text)}
+    numbers = set()
+    for m in _SALIENT_NUMBER_RE.finditer(text):
+        normalized = m.group().lower().replace(" ", "")
+        for word, abbrev in _UNIT_WORD_TO_ABBREV:
+            normalized = normalized.replace(word, abbrev)
+        numbers.add(normalized)
+    return numbers
 
 
 def _is_likely_duplicate(text, prior_texts, min_shared=2):
@@ -362,12 +377,16 @@ def _is_likely_duplicate(text, prior_texts, min_shared=2):
     return False
 
 
-# Confirmed live, verbatim: a batch's reasoning field read "...the recent
-# posts list explicitly includes this exact story already... This is a
-# duplicate and should NOT be posted" -- and should_post was still true for
-# that same item. Claude's own reasoning correctly diagnosed the problem
-# and then contradicted itself in the very next field. When the reasoning
-# text says this plainly, trust it over the boolean.
+# Confirmed live, verbatim, twice now, with different exact phrasing each
+# time -- a batch's reasoning field correctly diagnosed the problem and then
+# contradicted itself in the very next field (should_post stayed true):
+#   1) "...This is a duplicate and should NOT be posted."
+#   2) "Wait -- Citadel/Crypto.com has already been posted twice in recent
+#      history... Skipping this to avoid repetition." -- this one slipped
+#      through the original phrase list entirely ("already been posted" vs.
+#      the listed "already posted", and "skipping this" wasn't listed at
+#      all), while still sitting in should_post=true and getting queued.
+# When the reasoning text says this plainly, trust it over the boolean.
 _NEGATIVE_REASONING_PHRASES = (
     "should not be posted",
     "should not post",
@@ -376,9 +395,14 @@ _NEGATIVE_REASONING_PHRASES = (
     "is a duplicate",
     "this is a duplicate",
     "already posted",
+    "already been posted",
     "already covered",
     "was already covered",
     "not be posted",
+    "skipping this",
+    "skip this",
+    "to avoid repetition",
+    "avoid repeating",
 )
 
 
