@@ -89,8 +89,8 @@
         "resolved_user_id": "951329744804392960"
       }
     },
-    "window_id": "2026-07-18-day",
-    "window_posts": 7
+    "window_id": "2026-07-18-night",
+    "window_posts": 0
   },
   "budget": {
     "daily": {
@@ -294,6 +294,10 @@
       "https://www.coindesk.com/web3/2026/07/17/airbnb-ceo-says-x-account-was-hacked-attacker-posted-ai-slop-thread-on-tokenization",
       "https://www.coindesk.com/tech/2026/07/16/galaxy-targets-institutional-stablecoin-yield-with-new-defi-vaults"
     ]
+  },
+  "oracle_alerts": {
+    "last_alert_label": {},
+    "last_alert_time": {}
   },
   "polls": {
     "last_posted_date": "2026-07-17"
