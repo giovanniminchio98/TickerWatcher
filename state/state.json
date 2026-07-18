@@ -11,17 +11,9 @@
     "date": "2026-07-18",
     "last_call_checkpoint": "2026-07-19-00",
     "last_call_time": 1784412065.467657,
-    "post_queue": [
-      {
-        "link_url": "https://cointelegraph.com/news/okx-europe-lets-users-convert-usdt-to-mica-compliant-usdc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "queued_at": 1784412065.467657,
-        "reasoning": "Distinct new story not covered recently -- regulatory-driven stablecoin shift in Europe, genuinely useful for readers holding USDT in the EU, explains MiCA inline for unfamiliar readers.",
-        "second_part": null,
-        "text": "\ud83d\udcb0 CRYPTO: OKX Europe now lets users swap USDT for USDC directly, giving Europeans an easy exit from Tether's stablecoin.\n\nMiCA, the EU's new crypto rulebook, doesn't fully recognize USDT -- so exchanges are quietly steering users toward USDC, which does comply."
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 0,
+    "posts_since_last_second_part": 1,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -98,18 +90,18 @@
       }
     },
     "window_id": "2026-07-18-night",
-    "window_posts": 2
+    "window_posts": 3
   },
   "budget": {
     "daily": {
       "date": "2026-07-18",
-      "posts_used": 17,
-      "usd_used": 0.255
+      "posts_used": 18,
+      "usd_used": 0.27
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 177,
-    "usd_used": 7.095
+    "posts_used": 178,
+    "usd_used": 7.11
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -319,6 +311,7 @@
     "last_alert_price": {
       "AAPL": 327.57001,
       "ADA": 0.165975,
+      "BNB": 570.18,
       "BTC": 61980,
       "DOGE": 0.072299,
       "ETH": 1759.85,
@@ -326,6 +319,9 @@
       "QQQ": 717.69,
       "SOL": 74.48,
       "SPY": 754.72998,
+      "TRX": 0.325673,
+      "USDC": 0.999896,
+      "USDT": 0.999323,
       "XRP": 1.059
     },
     "last_alert_time": {}
@@ -652,6 +648,11 @@
       "posted_at": 1784412722.172499,
       "text": "\ud83d\udcf0 NEWS: The ECB just laid out a 3-part warning on how stablecoins (crypto tokens pegged to $1) could hurt regular banks -- competing for deposits, payments, and even credit.",
       "url": "https://decrypt.co/373767/ecb-warns-stablecoins-drain-bank-deposits"
+    },
+    {
+      "posted_at": 1784413662.826628,
+      "text": "\ud83d\udcb0 CRYPTO: OKX Europe now lets users swap USDT for USDC directly, giving Europeans an easy exit from Tether's stablecoin.",
+      "url": "https://cointelegraph.com/news/okx-europe-lets-users-convert-usdt-to-mica-compliant-usdc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ],
   "telegram": {
