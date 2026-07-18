@@ -18,8 +18,8 @@
     }
   },
   "oracle": {
-    "_comment": "Gates src/triggers/oracle_alerts.py -- the CryptoScope Oracle quant signal (src/sources/cryptoscope_oracle.py), recomputed fresh every run from Binance klines for every coin in watchlist.crypto. Only alerts on a Strongly Bullish/Bearish verdict with real signal agreement (min_confidence), and only once per coin per min_hours_between_alerts UNLESS the verdict label itself has changed since the last alert.",
-    "min_confidence": 60,
+    "_comment": "Gates src/triggers/oracle_alerts.py -- the CryptoScope Oracle quant signal (src/sources/cryptoscope_oracle.py), recomputed fresh every run from Binance klines for every coin in watchlist.crypto. Only alerts on a Strongly Bullish/Bearish verdict with real signal agreement (min_confidence), and only once per coin per min_hours_between_alerts UNLESS the verdict label itself has changed since the last alert. TEMP DEBUG: min_confidence dropped to 0 for a live struct/type test post -- revert to 60 after.",
+    "min_confidence": 0,
     "min_hours_between_alerts": 12,
     "max_alerts_per_run": 1
   },
