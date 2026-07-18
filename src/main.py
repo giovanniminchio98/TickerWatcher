@@ -22,7 +22,7 @@ from src.claude_budget import ClaudeBudget
 from src.config import load_all
 from src.context import Context
 from src.image_budget import ImageBudget
-from src.sources import coingecko
+from src.sources import coingecko, cryptoscope_oracle, kraken
 from src.state import load_state, save_state
 from src.x_client import DRY_RUN, XClient
 from src.triggers import (
@@ -34,6 +34,7 @@ from src.triggers import (
     historical_flashback,
     monthly_calendar,
     news_alerts,
+    oracle_alerts,
     polls,
     price_alerts,
     reply_manager,
@@ -59,6 +60,7 @@ ENABLED = {
     "whale_alerts": False,
     "news_alerts": True,
     "price_alerts": True,
+    "oracle_alerts": True,
     "scheduled_daily": True,
     "historical_flashback": True,
     "polls": True,
@@ -122,6 +124,32 @@ def _fetch_prices(config):
         return {}
 
 
+def _fetch_oracle_data(config):
+    """Runs the CryptoScope Oracle (src/sources/cryptoscope_oracle.py, a
+    Python port of crypto-scope's oracle.js quant engine) fresh every run,
+    for every coin in watchlist.crypto, against Kraken's keyless klines feed
+    (src/sources/kraken.py). Originally used Binance, but confirmed live
+    that Binance.com's public API returns HTTP 451 for every request from
+    GitHub Actions' US-hosted runners -- it never worked here at all, on
+    any coin, any run. Kraken has no such restriction on public market
+    data. Unlike crypto-scope's own deployment (a once-a-day static
+    bundle), this recomputes the full signal/Monte-Carlo read every hourly
+    cron run so the verdict never lags real price action. One bad/missing
+    symbol is logged and skipped, never takes down the others -- same
+    isolation pattern as _fetch_prices and every trigger below."""
+    oracle_data = {}
+    for asset in config["watchlist"]["crypto"]:
+        symbol = asset["symbol"]
+        pair = kraken.kraken_pair(symbol)
+        try:
+            candles = kraken.get_klines(pair, interval="1h", limit=200)
+            oracle_data[symbol] = cryptoscope_oracle.analyze(candles)
+        except Exception:
+            logger.exception("CryptoScope oracle analysis failed for %s (%s)", symbol, pair)
+            oracle_data[symbol] = None
+    return oracle_data
+
+
 def main():
     config = load_all()
     state = load_state()
@@ -129,13 +157,18 @@ def main():
     claude_budget = ClaudeBudget(state, config["claude_budget"])
     image_budget = ImageBudget(state, config["image_budget"])
     prices = _fetch_prices(config)
+    oracle_data = _fetch_oracle_data(config)
     x_client = XClient()
-    ctx = Context(config, state, budget, x_client, prices, claude_budget=claude_budget, image_budget=image_budget)
+    ctx = Context(
+        config, state, budget, x_client, prices,
+        claude_budget=claude_budget, image_budget=image_budget, oracle=oracle_data,
+    )
 
     anything_fired = False
     anything_fired |= bool(_safe_run("whale_alerts", whale_alerts.run, ctx))
     anything_fired |= bool(_safe_run("news_alerts", news_alerts.run, ctx))
     anything_fired |= bool(_safe_run("price_alerts", price_alerts.run, ctx))
+    anything_fired |= bool(_safe_run("oracle_alerts", oracle_alerts.run, ctx))
     anything_fired |= bool(_safe_run("scheduled_daily", scheduled_daily.run, ctx))
     anything_fired |= bool(_safe_run("historical_flashback", historical_flashback.run, ctx, anything_fired))
     anything_fired |= bool(_safe_run("polls", polls.run, ctx))

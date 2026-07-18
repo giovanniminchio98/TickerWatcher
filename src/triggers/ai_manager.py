@@ -269,6 +269,31 @@ def _price_snapshot_lines(ctx):
     return lines
 
 
+def _oracle_snapshot_lines(ctx):
+    """One line per tracked coin summarizing this run's CryptoScope Oracle
+    read (ctx.oracle, computed fresh every run by main.py's
+    _fetch_oracle_data from live Binance price history -- see
+    src/sources/cryptoscope_oracle.py) -- a real statistical signal, not a
+    fabricated number, so Claude can weigh it like any other real data
+    point in the prompt. Coins with too little candle history yet
+    (analyze() returned None) are simply omitted rather than padded with
+    a placeholder line."""
+    lines = []
+    for asset in ctx.config["watchlist"]["crypto"]:
+        result = ctx.oracle.get(asset["symbol"])
+        if not result:
+            continue
+        composite = result["composite"]
+        probs = result["probs"]
+        lines.append(
+            f"{asset['symbol']}: {composite['label']} (score {composite['score']}/100, "
+            f"{composite['confidence']}% confidence) -- {result['regime']['label']}; "
+            f"{round(probs['p_up'] * 100)}% odds up over the next {result['meta']['horizon']}h, "
+            f"median move {fmt_pct(probs['med_ret'] * 100)}"
+        )
+    return lines
+
+
 def _earnings_snapshot(ctx):
     """Today's earnings calendar (Twelve Data, free-tier endpoint), scoped
     to watchlist.stocks_broad -- gives Claude a real, timely "X reports
@@ -601,6 +626,7 @@ def run(ctx):
     snapshot = {
         "day_context": _day_context(ctx),
         "prices": _price_snapshot_lines(ctx),
+        "oracle": _oracle_snapshot_lines(ctx),
         "news": _news_snapshot(ctx),
         "earnings": _earnings_snapshot(ctx),
         "press_releases": _press_releases_snapshot(ctx),

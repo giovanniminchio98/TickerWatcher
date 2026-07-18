@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 
 class Context:
-    def __init__(self, config, state, budget, x_client, prices, claude_budget=None, image_budget=None):
+    def __init__(self, config, state, budget, x_client, prices, claude_budget=None, image_budget=None, oracle=None):
         self.config = config
         self.state = state
         self.budget = budget
@@ -11,6 +11,7 @@ class Context:
         self.image_budget = image_budget
         self.x = x_client
         self.prices = prices  # {coingecko_id: {"usd": float, "usd_24h_change": float}}
+        self.oracle = oracle or {}  # {symbol: cryptoscope_oracle.analyze() result, or None}
         self.now = datetime.now(timezone.utc)
 
     def register_self_reply_candidate(self, symbol, price, tweet_id):
