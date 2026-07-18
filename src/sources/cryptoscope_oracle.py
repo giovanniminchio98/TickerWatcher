@@ -19,7 +19,7 @@ touch/target probabilities), so keeping it out saves memory with zero loss
 of anything actually used by src/triggers/oracle_alerts.py or ai_manager.
 
 Unlike crypto-scope's site (a daily static bundle), this is recomputed
-fresh every TickerWatch run straight from src/sources/binance.py's keyless
+fresh every TickerWatch run straight from src/sources/kraken.py's keyless
 klines -- see main.py's _fetch_oracle_data.
 """
 import math

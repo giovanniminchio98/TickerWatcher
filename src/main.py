@@ -22,7 +22,7 @@ from src.claude_budget import ClaudeBudget
 from src.config import load_all
 from src.context import Context
 from src.image_budget import ImageBudget
-from src.sources import binance, coingecko, cryptoscope_oracle
+from src.sources import coingecko, cryptoscope_oracle, kraken
 from src.state import load_state, save_state
 from src.x_client import DRY_RUN, XClient
 from src.triggers import (
@@ -127,8 +127,12 @@ def _fetch_prices(config):
 def _fetch_oracle_data(config):
     """Runs the CryptoScope Oracle (src/sources/cryptoscope_oracle.py, a
     Python port of crypto-scope's oracle.js quant engine) fresh every run,
-    for every coin in watchlist.crypto, against Binance's keyless klines
-    feed. Unlike crypto-scope's own deployment (a once-a-day static
+    for every coin in watchlist.crypto, against Kraken's keyless klines feed
+    (src/sources/kraken.py). Originally used Binance, but confirmed live
+    that Binance.com's public API returns HTTP 451 for every request from
+    GitHub Actions' US-hosted runners -- it never worked here at all, on
+    any coin, any run. Kraken has no such restriction on public market
+    data. Unlike crypto-scope's own deployment (a once-a-day static
     bundle), this recomputes the full signal/Monte-Carlo read every hourly
     cron run so the verdict never lags real price action. One bad/missing
     symbol is logged and skipped, never takes down the others -- same
@@ -136,9 +140,9 @@ def _fetch_oracle_data(config):
     oracle_data = {}
     for asset in config["watchlist"]["crypto"]:
         symbol = asset["symbol"]
-        pair = asset.get("binance_symbol") or f"{symbol}USDT"
+        pair = kraken.kraken_pair(symbol)
         try:
-            candles = binance.get_klines(pair, interval="1h", limit=200)
+            candles = kraken.get_klines(pair, interval="1h", limit=200)
             oracle_data[symbol] = cryptoscope_oracle.analyze(candles)
         except Exception:
             logger.exception("CryptoScope oracle analysis failed for %s (%s)", symbol, pair)

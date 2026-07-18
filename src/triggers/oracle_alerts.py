@@ -1,7 +1,7 @@
 """Post type: CryptoScope Oracle verdict alerts. Fires only when a tracked
 coin's quant signal composite (src/sources/cryptoscope_oracle.py -- the same
 Monte-Carlo/technical-signal engine that powers the crypto-scope site,
-ported to Python and recomputed fresh every run from Binance's keyless 1h
+ported to Python and recomputed fresh every run from Kraken's keyless 1h
 klines, see ctx.oracle / main.py's _fetch_oracle_data) reaches a genuinely
 strong reading -- Strongly Bullish/Bearish with real signal agreement
 (confidence >= thresholds.oracle.min_confidence) -- not on every score
