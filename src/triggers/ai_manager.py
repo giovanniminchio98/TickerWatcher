@@ -198,6 +198,25 @@ def _paced_cap_for(kind, cfg, start, end, now, urgent):
     return min(hard_cap, math.ceil(fraction * hard_cap))
 
 
+def _day_context(ctx):
+    """A plain-English line telling Claude what day it actually is, so it
+    can phrase STOCK price timing correctly -- confirmed live that a post
+    said stocks moved 'today' on a weekend, when US markets are closed and
+    that move actually happened in Friday's session. Crypto trades 24/7 so
+    it never has this problem; this is purely a US-stock-market framing
+    issue. Simple weekday/weekend check (via ctx.now, not US-Eastern-exact)
+    -- doesn't account for market holidays, but that's a much rarer edge
+    case than every single weekend."""
+    day_name = ctx.now.strftime("%A, %B %d, %Y")
+    if ctx.now.weekday() >= 5:  # Saturday=5, Sunday=6
+        return (
+            f"{day_name} -- a weekend. US stock markets are closed; any stock price move "
+            "reflects the last trading session (Friday), not something that happened today. "
+            "Crypto trades 24/7 and is unaffected."
+        )
+    return f"{day_name} -- a weekday. US stock markets are open during their normal trading hours."
+
+
 def _ready_for_call(ctx, cfg, state):
     if state["calls_today"] >= cfg["max_calls_per_day"]:
         return False
@@ -522,6 +541,7 @@ def run(ctx):
         return fired
 
     snapshot = {
+        "day_context": _day_context(ctx),
         "prices": _price_snapshot_lines(ctx),
         "news": _news_snapshot(ctx),
         "earnings": _earnings_snapshot(ctx),
