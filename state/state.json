@@ -94,13 +94,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-18",
-      "posts_used": 3,
-      "usd_used": 0.045
+      "posts_used": 4,
+      "usd_used": 0.06
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 163,
-    "usd_used": 6.885
+    "posts_used": 164,
+    "usd_used": 6.9
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -135,7 +135,9 @@
       "https://cointelegraph.com/news/injective-files-sec-transfer-agent-registration-bring-securities-ownership-records-onchain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/bitpay-licensing-mica-stablecoin-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.coindesk.com/web3/2026/07/17/airbnb-ceo-says-x-account-was-hacked-attacker-posted-ai-slop-thread-on-tokenization",
-      "https://cointelegraph.com/news/ftx-distribute-millions-creditors-fifth-payment-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/ftx-distribute-millions-creditors-fifth-payment-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/crypto-biz-when-dollars-disappear-stablecoins-step-in?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/okx-europe-lets-users-convert-usdt-to-mica-compliant-usdc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -144,7 +146,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-18"
   },
   "filler": {
@@ -246,7 +248,7 @@
     ]
   },
   "flashback": {
-    "last_posted_date": "2026-07-17"
+    "last_posted_date": "2026-07-18"
   },
   "image_budget": {
     "low_budget_alert_sent_period": null,
