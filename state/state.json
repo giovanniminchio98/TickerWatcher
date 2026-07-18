@@ -7,12 +7,12 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 3,
+    "calls_today": 4,
     "date": "2026-07-18",
-    "last_call_time": 1784368858.173727,
+    "last_call_time": 1784383254.842222,
     "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 5,
+    "posts_since_last_second_part": 6,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -89,23 +89,23 @@
       }
     },
     "window_id": "2026-07-18-day",
-    "window_posts": 4
+    "window_posts": 5
   },
   "budget": {
     "daily": {
       "date": "2026-07-18",
-      "posts_used": 9,
-      "usd_used": 0.135
+      "posts_used": 10,
+      "usd_used": 0.15
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 169,
-    "usd_used": 6.975
+    "posts_used": 170,
+    "usd_used": 6.99
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.5572
+    "usd_used": 1.5913
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -598,6 +598,11 @@
       "posted_at": 1784368858.173727,
       "text": "\ud83d\udea8 JUST IN: Tech and crypto stocks are broadly red today, but $BTC is bucking the trend, up 1.5% to $63,942 while SPY and QQQ both fall nearly 1-1.5%.",
       "url": null
+    },
+    {
+      "posted_at": 1784383254.842222,
+      "text": "\ud83d\udcf0 NEWS: Kaspersky just flagged a new malware framework targeting crypto investors through fake GitHub apps and social engineering.\n\nAttackers pose as legit open-source projects to trick investors into installing trojanized code that steals wallet access.",
+      "url": "https://cointelegraph.com/news/kaspersky-malware-framework-crypto-investors?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ],
   "telegram": {
