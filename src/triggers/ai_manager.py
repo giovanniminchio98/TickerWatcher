@@ -10,7 +10,8 @@ immediately, any others are queued in state["ai_manager"]["post_queue"]
 and drained one item per subsequent run, relying on main.py's hourly cron
 cadence to naturally spread them out over the following hours. This is
 what decouples the visible posting cadence (high) from the Claude call
-cadence (kept low, every ~3.5-4h, to control cost even on Sonnet 5 at full
+cadence (fixed, every 3h on a clock checkpoint -- see
+_CALL_CHECKPOINT_HOURS -- to control cost even on Sonnet 5 at full
 post-intro pricing) -- see ai_manager_brain.py's docstring for the cost
 reasoning. A queued post older than max_queue_age_hours is dropped rather
 than fired stale.
@@ -217,16 +218,26 @@ def _day_context(ctx):
     return f"{day_name} -- a weekday. US stock markets are open during their normal trading hours."
 
 
+# Fixed clock checkpoints (Europe/Brussels, matching every other time-of-day
+# decision in this module) instead of a rolling "N hours since last call"
+# gate -- confirmed live that the old elapsed-time+jitter approach drifted
+# over time and produced uneven gaps, reading as "long stretches of nothing
+# then a burst." Every 3 hours, on the hour, every day: 00/03/06/09/12/15/
+# 18/21. Deliberately no jitter this time -- the whole point is now
+# predictable spacing, not avoiding a clockwork pattern.
+_CALL_CHECKPOINT_HOURS = (0, 3, 6, 9, 12, 15, 18, 21)
+
+
 def _ready_for_call(ctx, cfg, state):
     if state["calls_today"] >= cfg["max_calls_per_day"]:
         return False
-    last_call = state.get("last_call_time")
-    if last_call is None:
-        return True
-    hours_since = (ctx.now.timestamp() - last_call) / 3600
-    # small random jitter so the cadence isn't perfectly clockwork
-    required_gap = cfg["min_hours_between_calls"] + random.uniform(0, 0.5)
-    return hours_since >= required_gap
+    brussels_now = ctx.now.astimezone(BRUSSELS_TZ)
+    if brussels_now.hour not in _CALL_CHECKPOINT_HOURS:
+        return False
+    # guards against firing twice for the same checkpoint if a run somehow
+    # executes more than once within that hour (retry, manual trigger, etc.)
+    checkpoint_id = brussels_now.strftime("%Y-%m-%d-%H")
+    return state.get("last_call_checkpoint") != checkpoint_id
 
 
 def _price_snapshot_lines(ctx):
@@ -428,6 +439,23 @@ def _enforce_opening_tag(text):
     return f"🚨 JUST IN: {text}"
 
 
+def _minutes_to_next_checkpoint(ctx):
+    """Exact minutes until the next fixed 3-hour checkpoint (see
+    _CALL_CHECKPOINT_HOURS) -- unlike the old elapsed-time+jitter cadence,
+    checkpoints are deterministic clock times, so this is an exact
+    countdown, not an estimate."""
+    brussels_now = ctx.now.astimezone(BRUSSELS_TZ)
+    for h in _CALL_CHECKPOINT_HOURS:
+        candidate = brussels_now.replace(hour=h, minute=0, second=0, microsecond=0)
+        if candidate > brussels_now:
+            return int((candidate - brussels_now).total_seconds() // 60)
+    # every checkpoint today has passed -- wrap to the first one tomorrow
+    tomorrow_first = (brussels_now + timedelta(days=1)).replace(
+        hour=_CALL_CHECKPOINT_HOURS[0], minute=0, second=0, microsecond=0
+    )
+    return int((tomorrow_first - brussels_now).total_seconds() // 60)
+
+
 def _send_run_summary(ctx, cfg, state, reason, posted_this_run):
     """One short bot-chat-only line every run (never the public channel),
     regardless of what happened -- separate from _send_audit_message (which
@@ -437,19 +465,13 @@ def _send_run_summary(ctx, cfg, state, reason, posted_this_run):
     anything, and how many items are already queued for the next run(s) to
     drain automatically -- so a quiet run reads as "expected, nothing due"
     rather than leaving you to guess. When the reason is the cooldown gate
-    specifically, also shows an approximate ETA to the next eligible call
-    (based on min_hours_between_calls -- doesn't account for the small
-    random jitter _ready_for_call adds, so it's an estimate, not exact)."""
+    specifically, also shows the exact time to the next 3-hour checkpoint."""
     queue_len = len(state.get("post_queue", []))
     post_label = "posted" if posted_this_run else "no post"
     eta_suffix = ""
     if "cooldown" in reason:
-        last_call = state.get("last_call_time")
-        if last_call is not None:
-            remaining_hours = cfg.get("min_hours_between_calls", 3.5) - (ctx.now.timestamp() - last_call) / 3600
-            total_minutes = max(0, round(remaining_hours * 60))
-            h, m = divmod(total_minutes, 60)
-            eta_suffix = f" · next call in ~{h}h {m}m" if h else f" · next call in ~{m}m"
+        h, m = divmod(_minutes_to_next_checkpoint(ctx), 60)
+        eta_suffix = f" · next call in ~{h}h {m}m" if h else f" · next call in ~{m}m"
     telegram_client.send_message(f"🤖 AI Manager: {reason} · {post_label} · queue: {queue_len} left{eta_suffix}")
 
 
@@ -554,6 +576,7 @@ def run(ctx):
     state.setdefault("posts_since_last_second_part", 0)
     state.setdefault("window_id", None)
     state.setdefault("window_posts", 0)
+    state.setdefault("last_call_checkpoint", None)
 
     window_id, window_kind, window_start, window_end = _current_window(ctx, cfg)
     _roll_window(state, window_id)
@@ -594,17 +617,19 @@ def run(ctx):
     if usage is not None:
         ctx.claude_budget.record_spend(usage, cfg["model"])
     if decision is None:
-        # outright API failure or an unparseable response -- don't start the
-        # cadence cooldown on a call that produced nothing usable, so the
-        # very next hourly run retries immediately instead of waiting out a
-        # full cooldown for a call that never actually happened. calls_today
-        # still increments either way, so a persistently broken call can't
-        # retry more than max_calls_per_day times in one day.
-        _send_run_summary(ctx, cfg, state, "new call failed/unparsed, will retry next run", fired)
+        # outright API failure or an unparseable response -- don't mark this
+        # checkpoint as used on a call that produced nothing usable. The
+        # earliest retry is still the next 3-hour checkpoint (not sooner --
+        # _ready_for_call requires an aligned checkpoint hour regardless),
+        # but at least a persistently broken call doesn't permanently burn
+        # today's checkpoint slot. calls_today still increments either way,
+        # so repeated failures can't retry more than max_calls_per_day times.
+        _send_run_summary(ctx, cfg, state, "new call failed/unparsed, will retry next checkpoint", fired)
         return fired
 
-    # only a successfully parsed decision starts the real cooldown
+    # only a successfully parsed decision marks this checkpoint as used
     state["last_call_time"] = ctx.now.timestamp()
+    state["last_call_checkpoint"] = ctx.now.astimezone(BRUSSELS_TZ).strftime("%Y-%m-%d-%H")
 
     # cap what gets queued against the window's HARD cap (not the paced
     # sub-allowance) -- pacing is enforced at drain time instead (see

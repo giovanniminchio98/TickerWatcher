@@ -25,9 +25,9 @@ time-windowed (not count-windowed) memory.
 Batching (not one post per call) is what lets total posts/day run much
 higher than the Claude call cadence itself -- see ai_manager.py for how
 the batch gets queued and drained one item per subsequent run. The call
-cadence (min_hours_between_calls, ~3.5-4h) and batch size
-(posts_per_batch) are tuned together so a full batch's queue lasts
-roughly until the next call -- i.e. aiming for close to one post per
+cadence (fixed 3-hour clock checkpoints, see _CALL_CHECKPOINT_HOURS) and
+batch size (posts_per_batch) are tuned together so a full batch's queue
+lasts roughly until the next call -- i.e. aiming for close to one post per
 hourly run, not just "a few times a day" -- while still leaving genuine
 room to post fewer (or none) when there isn't enough real substance,
 never padding to hit a count. Because only the first queued item fires
