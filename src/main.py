@@ -57,12 +57,12 @@ ENABLED = {
     # covers genuinely notable market moves with real explanation attached.
     # Code kept intact -- flip back to True to resume.
     "whale_alerts": False,
-    "news_alerts": True,
-    "price_alerts": True,
-    "scheduled_daily": True,
-    "historical_flashback": True,
-    "polls": True,
-    "self_reply": True,
+    "news_alerts": False,  # TEMP: disabled for monthly_calendar Telegram-only test
+    "price_alerts": False,  # TEMP: disabled for monthly_calendar Telegram-only test
+    "scheduled_daily": False,  # TEMP: disabled for monthly_calendar Telegram-only test
+    "historical_flashback": False,  # TEMP: disabled for monthly_calendar Telegram-only test
+    "polls": False,  # TEMP: disabled for monthly_calendar Telegram-only test
+    "self_reply": False,  # TEMP: disabled for monthly_calendar Telegram-only test
     # disabled by default: reposting (retweet/quote-tweet) is a manual,
     # human-only decision now -- ai_manager no longer touches it either.
     # Code kept intact -- flip back to True to resume unconditional
@@ -74,7 +74,7 @@ ENABLED = {
     # equally. Code kept intact -- flip back to True if that ever changes.
     "comment_engagement": False,
     "content_drafts": True,
-    "ai_manager": True,
+    "ai_manager": False,  # TEMP: disabled for monthly_calendar Telegram-only test
     # disabled by default: X's "you must be mentioned or otherwise engaged
     # by the author" reply restriction hit every account we tried,
     # including the smaller reply_only ones added specifically on the
