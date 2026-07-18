@@ -10,17 +10,9 @@
     "calls_today": 2,
     "date": "2026-07-18",
     "last_call_time": 1784354459.6222,
-    "post_queue": [
-      {
-        "link_url": "https://cointelegraph.com/news/london-police-sentence-hackers-crypto-ransom-public-transport?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "queued_at": 1784354459.6222,
-        "reasoning": "Distinct new story about crypto crime/enforcement, not covered in recent posts. Kept evergreen and self-contained for a later hourly slot.",
-        "second_part": null,
-        "text": "\ud83d\udcf0 NEWS: UK courts just sentenced two hackers linked to Scattered Spider, the group US prosecutors say extorted dozens of companies in a $115M crypto ransom scheme.\n\nBoth pleaded guilty. A reminder that crypto theft isn't just DeFi exploits -- organized ransomware crews target real companies too."
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 3,
+    "posts_since_last_second_part": 4,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -97,18 +89,18 @@
       }
     },
     "window_id": "2026-07-18-day",
-    "window_posts": 2
+    "window_posts": 3
   },
   "budget": {
     "daily": {
       "date": "2026-07-18",
-      "posts_used": 7,
-      "usd_used": 0.105
+      "posts_used": 8,
+      "usd_used": 0.12
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 167,
-    "usd_used": 6.945
+    "posts_used": 168,
+    "usd_used": 6.96
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -596,6 +588,11 @@
       "posted_at": 1784358058.036276,
       "text": "\ud83d\udcf0 NEWS: Senator Warren wants Trump's crypto earnings reported annually through 2026, following his $1.4B disclosure.",
       "url": "https://cointelegraph.com/news/senator-warren-2026-reporting-donald-trump-crypto-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784361659.492307,
+      "text": "\ud83d\udcf0 NEWS: UK courts just sentenced two hackers linked to Scattered Spider, the group US prosecutors say extorted dozens of companies in a $115M crypto ransom scheme.\n\nBoth pleaded guilty.",
+      "url": "https://cointelegraph.com/news/london-police-sentence-hackers-crypto-ransom-public-transport?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ],
   "telegram": {
