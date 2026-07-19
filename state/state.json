@@ -7,10 +7,10 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 0,
+    "calls_today": 1,
     "date": "2026-07-19",
-    "last_call_checkpoint": "2026-07-19-00",
-    "last_call_time": 1784412065.467657,
+    "last_call_checkpoint": "2026-07-19-03",
+    "last_call_time": 1784422860.129569,
     "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 1,
@@ -95,18 +95,18 @@
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 5,
-      "usd_used": 0.075
+      "posts_used": 6,
+      "usd_used": 0.09
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 183,
-    "usd_used": 7.185
+    "posts_used": 184,
+    "usd_used": 7.2
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.6986
+    "usd_used": 1.7391
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -146,7 +146,9 @@
       "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments",
       "https://www.coindesk.com/markets/2026/07/18/massive-bitcoin-call-spreads-target-usd72-000-by-month-end-right-when-the-fed-meets",
       "https://cointelegraph.com/news/kaspersky-malware-framework-crypto-investors?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/dutch-court-knaken-crypto-platform-bankruptcy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/dutch-court-knaken-crypto-platform-bankruptcy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/stablecoin-growth-bank-deposits-ecbs-cipollone?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/london-police-sentence-hackers-crypto-ransom-public-transport?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -155,7 +157,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 4,
+    "posted_count_today": 6,
     "posted_date": "2026-07-19"
   },
   "filler": {
@@ -302,14 +304,17 @@
     ]
   },
   "oracle_alerts": {
+    "last_alert_hour_id": "2026-07-19-01",
     "last_alert_label": {
-      "BTC": "Lean Bearish"
+      "BTC": "Lean Bearish",
+      "ETH": "Neutral"
     },
     "last_alert_time": {
-      "BTC": 1784419274.788931
+      "BTC": 1784419274.788931,
+      "ETH": 1784422860.129569
     },
     "last_alert_time_global": 1784419274.788931,
-    "rotation_index": 1
+    "rotation_index": 2
   },
   "polls": {
     "last_posted_date": "2026-07-17"
@@ -675,6 +680,11 @@
     {
       "posted_at": 1784419274.788931,
       "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\ud83d\udd34 $BTC Oracle: Lean Bearish (44/100, 24% confidence)\n\ud83d\udfe2 $64,800 (+1.42% 24h)\nPersistent / trending \u00b7 low vol \u00b7 biased sideways \u00b7 56% odds up next 40h \u00b7 statistical read, not advice",
+      "url": null
+    },
+    {
+      "posted_at": 1784422860.129569,
+      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $ETH Oracle: Neutral (48/100, 35% confidence)\n\ud83d\udfe2 $1,860 (+1.14% 24h)\nPersistent / trending \u00b7 moderate vol \u00b7 biased sideways \u00b7 60% odds up next 40h\nstatistical read, not advice",
       "url": null
     }
   ],
