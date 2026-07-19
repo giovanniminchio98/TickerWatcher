@@ -7,8 +7,8 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 7,
-    "date": "2026-07-18",
+    "calls_today": 0,
+    "date": "2026-07-19",
     "last_call_checkpoint": "2026-07-19-00",
     "last_call_time": 1784412065.467657,
     "post_queue": [],
@@ -94,14 +94,14 @@
   },
   "budget": {
     "daily": {
-      "date": "2026-07-18",
-      "posts_used": 18,
-      "usd_used": 0.27
+      "date": "2026-07-19",
+      "posts_used": 4,
+      "usd_used": 0.06
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 178,
-    "usd_used": 7.11
+    "posts_used": 182,
+    "usd_used": 7.17
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -142,7 +142,9 @@
       "https://cointelegraph.com/news/senator-warren-2026-reporting-donald-trump-crypto-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/markets/bitcoin-price-sags-under-625k-as-iran-strikes-add-to-us-stocks-pressure?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/hsbc-bank-of-england-approval-digital-securities-sandbox?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/sbi-receives-mas-approval-to-acquire-singaporean-coinhako?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/sbi-receives-mas-approval-to-acquire-singaporean-coinhako?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments",
+      "https://www.coindesk.com/markets/2026/07/18/massive-bitcoin-call-spreads-target-usd72-000-by-month-end-right-when-the-fed-meets"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -151,8 +153,8 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 8,
-    "posted_date": "2026-07-18"
+    "posted_count_today": 2,
+    "posted_date": "2026-07-19"
   },
   "filler": {
     "posted_count_today": 2,
@@ -265,7 +267,7 @@
   },
   "news": {
     "posted_count_today": 2,
-    "posted_date": "2026-07-18",
+    "posted_date": "2026-07-19",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -292,7 +294,9 @@
       "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion",
       "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition",
       "https://www.coindesk.com/web3/2026/07/17/airbnb-ceo-says-x-account-was-hacked-attacker-posted-ai-slop-thread-on-tokenization",
-      "https://www.coindesk.com/tech/2026/07/16/galaxy-targets-institutional-stablecoin-yield-with-new-defi-vaults"
+      "https://www.coindesk.com/tech/2026/07/16/galaxy-targets-institutional-stablecoin-yield-with-new-defi-vaults",
+      "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments",
+      "https://cointelegraph.com/news/trump-teleprompter-operator-made-100k-betting-kalshi-markets-tied-to-speeches-abc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ]
   },
   "oracle_alerts": {
@@ -300,10 +304,10 @@
       "BTC": "Lean Bearish"
     },
     "last_alert_time": {
-      "BTC": 1784412722.172499
+      "BTC": 1784419274.788931
     },
-    "last_alert_time_global": 1784412722.172499,
-    "rotation_index": 0
+    "last_alert_time_global": 1784419274.788931,
+    "rotation_index": 1
   },
   "polls": {
     "last_posted_date": "2026-07-17"
@@ -499,8 +503,8 @@
     "last_run_date": null
   },
   "scheduled_daily": {
-    "last_posted_date": "2026-07-18",
-    "rotate_index": 6
+    "last_posted_date": "2026-07-19",
+    "rotate_index": 7
   },
   "self_reply": {
     "pending": []
@@ -655,6 +659,21 @@
       "posted_at": 1784413662.826628,
       "text": "\ud83d\udcb0 CRYPTO: OKX Europe now lets users swap USDT for USDC directly, giving Europeans an easy exit from Tether's stablecoin.",
       "url": "https://cointelegraph.com/news/okx-europe-lets-users-convert-usdt-to-mica-compliant-usdc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784419274.788931,
+      "text": "\ud83d\udea8 JUST IN: Trump is focusing on Brazil's payments infrastructure as dollar stablecoins gain market share in the country's transaction systems.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments"
+    },
+    {
+      "posted_at": 1784419274.788931,
+      "text": "\ud83d\udea8 JUST IN: Federal regulators are investigating whether a Trump teleprompter operator used insider knowledge to make $100,000 in profits through event-based prediction markets.\n(via CoinTelegraph)",
+      "url": "https://cointelegraph.com/news/trump-teleprompter-operator-made-100k-betting-kalshi-markets-tied-to-speeches-abc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784419274.788931,
+      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\ud83d\udd34 $BTC Oracle: Lean Bearish (44/100, 24% confidence)\n\ud83d\udfe2 $64,800 (+1.42% 24h)\nPersistent / trending \u00b7 low vol \u00b7 biased sideways \u00b7 56% odds up next 40h \u00b7 statistical read, not advice",
+      "url": null
     }
   ],
   "telegram": {
