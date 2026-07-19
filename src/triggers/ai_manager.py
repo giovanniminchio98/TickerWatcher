@@ -669,7 +669,14 @@ def run(ctx):
 
     queued_items = []
     declined_posts = []
-    already_posted_texts = snapshot["own_recent_posts"]
+    # Deliberately NOT snapshot["own_recent_posts"] (capped at 30 for the
+    # prompt) -- confirmed live that the same story slipped past this check
+    # 3 times over 57 hours because a high-volume day pushed the earlier
+    # mentions past that cap before they aged out of the 72h window. This
+    # deterministic check is cheap local comparison, not prompt tokens, so
+    # it gets the full uncapped window instead -- see story_history.py's
+    # recent_texts docstring.
+    already_posted_texts = story_history.recent_texts(ctx.state, ctx.now.timestamp(), limit=None)
     for post in (decision.get("posts") or [])[: cfg.get("posts_per_batch", 1)]:
         if not post.get("should_post") or not post.get("text"):
             declined_posts.append(post)

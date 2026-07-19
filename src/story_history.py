@@ -53,6 +53,19 @@ def recent_texts(state, now_ts, limit=30):
     Claude's own semantic judgment of "is this basically the same story" --
     catches same-story-different-URL cases plain URL matching can't. Capped
     at `limit` most recent to keep the prompt a reasonable size even on an
-    unusually high-volume day."""
+    unusually high-volume day.
+
+    Pass limit=None for the full window with no item cap -- confirmed live
+    that the same Citadel/Crypto.com $400M story got posted three times
+    over 57 hours (each from a different outlet, so recent_urls' URL match
+    never caught it either) because a high-volume day (oracle_alerts alone
+    added 8+ posts in a few hours) pushed the earlier mentions past the
+    default limit=30 well before they aged out of the 72h window --
+    ai_manager.py's deterministic _is_likely_duplicate check needs the
+    *whole* window, uncapped, since it's cheap local string comparison, not
+    something that costs prompt tokens the way the LLM-facing snapshot
+    field does. Only the prompt's own "RECENTLY POSTED" context should stay
+    capped at the default -- Claude doesn't need hundreds of old posts to
+    judge voice/style, just the deterministic backstop does."""
     history = _prune(state.get("story_history", []), now_ts)
     return [e["text"] for e in reversed(history)][:limit]
