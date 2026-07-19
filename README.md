@@ -150,9 +150,21 @@ them up automatically. If a coin's Binance pair ticker differs from
 `f"{symbol}USDT"` (the default guess), set `"binance_symbol"` explicitly on
 that watchlist entry.
 
+### Oracle image attachments
+
+CryptoScope Oracle posts (`src/triggers/oracle_alerts.py`) are the one
+exception to the "no coin logos" rule below — every post attaches up to 2
+images via `src/oracle_media.py`: the coin's own logo
+(`assets/oracle/{btc,eth,sol,xrp}.*`, user-supplied) plus a green "up" or
+red "down" trend chart (`assets/oracle/trend_{up,down}.jpeg`), picked from
+whether the verdict is Bullish or Bearish. Gated independently by
+`config/media.json`'s `"oracle_enabled"` flag (separate from every other
+media gate in that file) so it can be switched off without touching news
+alerts' own trend-icon feature below.
+
 ### News trend-line images
 
-No post type attaches a coin logo — that was tried for whale and price
+No other post type attaches a coin logo — that was tried for whale and price
 alerts and pulled back in both cases (didn't look good in practice). The one
 remaining media attachment is on news alerts: a small themed red/green/gray
 trend-line graphic (`assets/trend_up.png` / `trend_down.png` /
@@ -640,6 +652,7 @@ src/
   ops_alerts.py   "something is broken" Telegram safety net for X/Claude API failures
   x_client.py     tweepy wrapper (post/reply/retweet/poll/media upload), DRY_RUN support
   media.py        news trend-icon -> X media_id helper
+  oracle_media.py oracle_alerts coin-logo + trend-chart -> X media_ids helper
   formatting.py   number/text formatting, thread splitting
   sources/        one file per external API (coingecko, binance, twelvedata,
                   whale_btc, whale_eth, news_rss, paraphrase, reply_writer,

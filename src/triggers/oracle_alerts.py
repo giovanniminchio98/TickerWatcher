@@ -79,11 +79,18 @@ needing to be rewritten if wanted again later.
 All four share the same header line (tag, verdict emoji, escalation
 prefix, score/confidence) and the same closing disclaimer -- only the
 middle body differs, so a real signal is exactly as visible regardless
-of which style happened to be picked."""
+of which style happened to be picked.
+
+Every post also carries up to 2 images (src/oracle_media.py): the coin's
+own logo (assets/oracle/{btc,eth,sol,xrp}.*) plus a green "up" or red
+"down" trend chart picked from the verdict's Bullish/Bearish direction
+(assets/oracle/trend_{up,down}.jpeg) -- both user-supplied, checked into
+the repo. Gated by config/media.json's oracle_enabled flag, independent
+of every other trigger's own media decision."""
 import logging
 import random
 
-from src import story_history
+from src import oracle_media, story_history
 from src.formatting import dot_for_change, fmt_pct, fmt_price, truncate
 from src.sources import ai_manager_brain
 
@@ -278,7 +285,8 @@ def _run_alert(ctx, cfg, state, now_ts, hour_id):
         price = result["meta"]["price"]
         change_24h = ctx.prices.get(asset["coingecko_id"], {}).get("usd_24h_change")
         text = _format_post(cfg, symbol, result, price, change_24h)
-        tweet_id = ctx.x.post(text)
+        media_ids = oracle_media.get_media_ids(ctx, symbol, label)
+        tweet_id = ctx.x.post(text, media_ids=media_ids)
         if tweet_id:
             _record_post(ctx, state, symbol, label, text, now_ts, hour_id)
             fired += 1
@@ -309,11 +317,13 @@ def _run_rotation(ctx, cfg, state, now_ts, hour_id):
 
         price = result["meta"]["price"]
         change_24h = ctx.prices.get(asset["coingecko_id"], {}).get("usd_24h_change")
+        label = result["composite"]["label"]
         text = _format_post(cfg, symbol, result, price, change_24h)
-        tweet_id = ctx.x.post(text)
+        media_ids = oracle_media.get_media_ids(ctx, symbol, label)
+        tweet_id = ctx.x.post(text, media_ids=media_ids)
         if not tweet_id:
             return False
-        _record_post(ctx, state, symbol, result["composite"]["label"], text, now_ts, hour_id)
+        _record_post(ctx, state, symbol, label, text, now_ts, hour_id)
         return True
 
     return False

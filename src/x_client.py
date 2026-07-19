@@ -41,7 +41,8 @@ class XClient:
 
     def upload_media(self, image_bytes):
         """Uploads raw image bytes to X, returns a media_id_string for use in
-        post()'s media_id, or None on any failure (never blocks the post)."""
+        post()'s media_id/media_ids, or None on any failure (never blocks
+        the post)."""
         if DRY_RUN or not image_bytes:
             return None
         import io
@@ -53,17 +54,22 @@ class XClient:
             logger.exception("Failed to upload media")
             return None
 
-    def post(self, text, poll_options=None, poll_duration_minutes=None, media_id=None, quote_tweet_id=None):
+    def post(self, text, poll_options=None, poll_duration_minutes=None, media_id=None, media_ids=None, quote_tweet_id=None):
+        # media_ids (plural) attaches multiple images (X allows up to 4) --
+        # e.g. oracle_alerts.py pairing a coin logo with a trend chart on
+        # the same post. media_id (singular) stays for the existing
+        # single-image callers (news_alerts.py etc).
+        ids = list(media_ids) if media_ids else ([media_id] if media_id else None)
         if DRY_RUN:
-            logger.info("[DRY RUN] would post (media_id=%s, quote_tweet_id=%s):\n%s", media_id, quote_tweet_id, text)
+            logger.info("[DRY RUN] would post (media_ids=%s, quote_tweet_id=%s):\n%s", ids, quote_tweet_id, text)
             return "dryrun-tweet-id"
         try:
             kwargs = {"text": text}
             if poll_options:
                 kwargs["poll_options"] = poll_options
                 kwargs["poll_duration_minutes"] = poll_duration_minutes or 1440
-            if media_id:
-                kwargs["media_ids"] = [media_id]
+            if ids:
+                kwargs["media_ids"] = ids
             if quote_tweet_id:
                 kwargs["quote_tweet_id"] = quote_tweet_id
             resp = self.client.create_tweet(**kwargs)
