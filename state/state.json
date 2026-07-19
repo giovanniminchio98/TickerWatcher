@@ -95,13 +95,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 4,
-      "usd_used": 0.06
+      "posts_used": 5,
+      "usd_used": 0.075
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 182,
-    "usd_used": 7.17
+    "posts_used": 183,
+    "usd_used": 7.185
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -144,7 +144,9 @@
       "https://cointelegraph.com/news/hsbc-bank-of-england-approval-digital-securities-sandbox?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/sbi-receives-mas-approval-to-acquire-singaporean-coinhako?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments",
-      "https://www.coindesk.com/markets/2026/07/18/massive-bitcoin-call-spreads-target-usd72-000-by-month-end-right-when-the-fed-meets"
+      "https://www.coindesk.com/markets/2026/07/18/massive-bitcoin-call-spreads-target-usd72-000-by-month-end-right-when-the-fed-meets",
+      "https://cointelegraph.com/news/kaspersky-malware-framework-crypto-investors?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/dutch-court-knaken-crypto-platform-bankruptcy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -153,7 +155,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-19"
   },
   "filler": {
@@ -255,7 +257,7 @@
     ]
   },
   "flashback": {
-    "last_posted_date": "2026-07-18"
+    "last_posted_date": "2026-07-19"
   },
   "image_budget": {
     "low_budget_alert_sent_period": null,
