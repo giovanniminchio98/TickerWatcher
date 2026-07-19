@@ -93,7 +93,11 @@ ENABLED = {
     # the posts that are actually working, pending a possible revisit
     # later. Code kept intact -- flip back to True to resume.
     "oracle_alerts": False,
-    "scheduled_daily": True,
+    # disabled for now (2026-07-19): a bare daily price listing (market
+    # snapshot) with no explanation -- ai_manager already covers this
+    # kind of content with real context attached. Code kept intact --
+    # flip back to True to resume.
+    "scheduled_daily": False,
     "historical_flashback": True,
     # disabled for now (2026-07-19): dropped to trim the account down to
     # the posts that are actually working. Code kept intact -- flip back
