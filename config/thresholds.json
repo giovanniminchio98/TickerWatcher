@@ -19,7 +19,7 @@
   },
   "oracle": {
     "_comment": "Gates src/triggers/oracle_alerts.py -- the CryptoScope Oracle quant signal (src/sources/cryptoscope_oracle.py), recomputed fresh every run from Kraken klines for every coin in watchlist.crypto. 'mode' switches the whole trigger between 'alert' (only post when a coin's read genuinely clears min_confidence -- see oracle_alerts.py's _meets_alert_bar) and 'rotation' (post every run regardless, cycling through every coin on a fixed schedule, with the same min_confidence bar only controlling the 🚨/⚠️ escalation prefix, not whether it posts at all) -- flip this one string to switch back, no code change needed. min_hours_between_alerts/max_alerts_per_run only apply in 'alert' mode. Deliberately NOT gated by ai_manager's day/night posting cap in either mode -- the throttle is a fixed UTC calendar-hour bucket instead (state.oracle_alerts.last_alert_hour_id), not an elapsed-minutes timer, specifically because a timer can skip an hour when the cron's exact firing second drifts -- see oracle_alerts.py's module docstring for the live-confirmed bug this replaced.",
-    "mode": "rotation",
+    "mode": "alert",
     "min_confidence": 35,
     "min_hours_between_alerts": 12,
     "max_alerts_per_run": 1

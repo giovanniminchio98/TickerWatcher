@@ -62,15 +62,20 @@ posts (so ai_manager's own dedup/Claude judgment is aware of it), and
 carries a short disclaimer in the actual post text rather than only in
 code comments.
 
-Four post STYLES, picked at random per post (_STYLES) so consecutive
-posts don't all look identical -- each surfaces a different slice of the
-same already-computed Oracle result, no new data fetching involved:
+Four post-style builders exist (_STYLE_BODY_BUILDERS), picked at random
+per post from whichever subset is listed in _STYLES so consecutive posts
+don't all look identical -- each surfaces a different slice of the same
+already-computed Oracle result, no new data fetching involved:
 - "snapshot" (the original design): price + 24h change + regime + P(up)
 - "levels": nearest support/resistance from the fractal-pivot detector
 - "forecast": Monte Carlo touch-probabilities and a 90% price range, with
   the actual horizon stated explicitly (never a bare, unscoped number)
 - "momentum": RSI/MACD/Stochastic with plain-language overbought/
   oversold/neutral framing
+Currently only "snapshot" and "forecast" are active in _STYLES -- "levels"
+and "momentum" are deliberately kept implemented but unused (not deleted)
+so they're a one-line _STYLES change away from coming back, rather than
+needing to be rewritten if wanted again later.
 All four share the same header line (tag, verdict emoji, escalation
 prefix, score/confidence) and the same closing disclaimer -- only the
 middle body differs, so a real signal is exactly as visible regardless
@@ -94,7 +99,9 @@ _STRONG_LABELS = {"Strongly Bullish", "Strongly Bearish"}
 # 🔮 on top of the plain CRYPTO tag distinguishes an Oracle read from a
 # routine ai_manager crypto post at a glance, on its own opening line.
 _TAG = "💰 CRYPTO 🔮"
-_STYLES = ("snapshot", "levels", "forecast", "momentum")
+# "levels" and "momentum" are implemented (see _STYLE_BODY_BUILDERS below)
+# but deliberately left out of the active pool -- add them back here if wanted.
+_STYLES = ("snapshot", "forecast")
 _STYLE_TITLES = {
     "snapshot": "Oracle", "levels": "Levels", "forecast": "Forecast", "momentum": "Momentum",
 }

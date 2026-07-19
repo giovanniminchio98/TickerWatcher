@@ -3,15 +3,7 @@
     { "symbol": "BTC", "name": "Bitcoin", "coingecko_id": "bitcoin" },
     { "symbol": "ETH", "name": "Ethereum", "coingecko_id": "ethereum" },
     { "symbol": "SOL", "name": "Solana", "coingecko_id": "solana" },
-    { "symbol": "XRP", "name": "XRP", "coingecko_id": "ripple" },
-    { "symbol": "ADA", "name": "Cardano", "coingecko_id": "cardano" },
-    { "symbol": "DOGE", "name": "Dogecoin", "coingecko_id": "dogecoin" },
-    { "symbol": "LINK", "name": "Chainlink", "coingecko_id": "chainlink" },
-    { "symbol": "USDT", "name": "Tether", "coingecko_id": "tether" },
-    { "symbol": "BNB", "name": "BNB", "coingecko_id": "binancecoin" },
-    { "symbol": "USDC", "name": "USD Coin", "coingecko_id": "usd-coin" },
-    { "symbol": "TRX", "name": "Tron", "coingecko_id": "tron" },
-    { "symbol": "AVAX", "name": "Avalanche", "coingecko_id": "avalanche-2" }
+    { "symbol": "XRP", "name": "XRP", "coingecko_id": "ripple" }
   ],
   "stocks": [
     { "symbol": "SPY", "name": "S&P 500 ETF" },
