@@ -14,18 +14,25 @@ already made a real Claude call and decided a batch of posts (the Telegram
 audit message went out, that spend was real), but then something inside
 the same run's later network calls never returned, so the queued posts
 never got drained and the state update never got committed -- the whole
-decision was silently lost even though a genuine external cause (a slow/
-stalled HTTP response somewhere, no per-call timeout to cut it off) was to
-blame, not a code bug in the trigger's own logic. The two most likely
-individual culprits (feedparser's URL-fetching in news_rss.py, and
-tweepy.Client's HTTP calls in x_client.py) both lack an explicit
-request-level timeout by default -- rather than chase every library's own
-timeout API (which varies, and is easy to miss somewhere else next time),
-_safe_run wraps every trigger call in a single, uniform watchdog: any
-trigger that runs past _TRIGGER_TIMEOUT_SECONDS gets interrupted and
-treated exactly like any other trigger failure -- logged, skipped, the
-rest of the run continues normally instead of the whole job dying at the
-15-minute ceiling.
+decision was silently lost. Root-caused via the traceback of a *second*
+incident after the watchdog below first shipped (with too tight a default,
+see _TRIGGER_TIMEOUTS): part of what looked like a hang was actually
+ai_manager's own get_quotes_batch call finishing on schedule at its
+documented ~5 minutes (30 stock symbols, deliberate 60s pauses between
+rate-limited chunks) -- not a bug at all, just legitimately slow. The
+remaining unexplained gap (after that Claude call, trying to drain/post
+the decided batch) is still most likely an HTTP call with no client-side
+timeout somewhere in that path (tweepy.Client in x_client.py is the
+prime suspect -- no explicit timeout configured), but the exact call was
+never pinned down before this watchdog started catching it. Rather than
+chase every library's own timeout API (which varies, and is easy to miss
+somewhere else next time), _safe_run wraps every trigger call in one
+uniform watchdog instead: any trigger that runs past its allotted timeout
+(_TRIGGER_TIMEOUT_SECONDS by default, or a longer override in
+_TRIGGER_TIMEOUTS for a trigger with a known-legitimate slow path) gets
+interrupted and treated exactly like any other trigger failure -- logged,
+skipped, the rest of the run continues normally instead of the whole job
+dying at the 15-minute ceiling.
 
 If nothing posts/replies/reposts this run, one Telegram bot-chat message
 confirms the pipeline still ran and checked everything -- otherwise a
@@ -128,8 +135,18 @@ ENABLED = {
 # a few HTTP fetches, one or two X posts normally finishes in well under
 # 30s) but far short of the workflow's 15-minute job ceiling, so a hung
 # trigger still leaves plenty of the run's budget for every trigger after
-# it -- see module docstring for the live incident this fixes.
+# it -- see module docstring for the live incident this fixes. ai_manager
+# is the one deliberate exception (see _TRIGGER_TIMEOUTS below): confirmed
+# live that this default of 120s is too tight for it specifically and
+# killed a perfectly legitimate call, not a real hang -- ai_manager's own
+# get_quotes_batch fetch (30 stock symbols, 6 chunks, a deliberate 60s
+# pause between each to respect Twelve Data's free-tier rate limit -- see
+# twelvedata.py's get_quotes_batch docstring) takes ~5 minutes by design,
+# which is *why* the job timeout itself was raised to 15 minutes in the
+# first place. Every other trigger has no such known-legitimate slow path
+# and stays on the tight default.
 _TRIGGER_TIMEOUT_SECONDS = 120
+_TRIGGER_TIMEOUTS = {"ai_manager": 600}
 
 
 class _TriggerTimeout(Exception):
@@ -137,15 +154,16 @@ class _TriggerTimeout(Exception):
 
 
 def _alarm_handler(signum, frame):
-    raise _TriggerTimeout(f"exceeded {_TRIGGER_TIMEOUT_SECONDS}s watchdog timeout")
+    raise _TriggerTimeout("exceeded watchdog timeout")
 
 
 def _safe_run(name, fn, *args):
     if not ENABLED.get(name, True):
         logger.info("[%s] disabled, skipping", name)
         return False
+    timeout = _TRIGGER_TIMEOUTS.get(name, _TRIGGER_TIMEOUT_SECONDS)
     old_handler = signal.signal(signal.SIGALRM, _alarm_handler)
-    signal.alarm(_TRIGGER_TIMEOUT_SECONDS)
+    signal.alarm(timeout)
     try:
         result = fn(*args)
         logger.info("[%s] fired=%s", name, bool(result))
