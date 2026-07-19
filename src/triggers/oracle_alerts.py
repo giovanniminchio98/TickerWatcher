@@ -35,11 +35,24 @@ Deliberately independent of ai_manager's day/night posting cap in both
 modes -- these are a genuinely different kind of content (a quant model's
 own reading of live price data, not editorial judgment), not competing
 with ai_manager's queue for a shared allowance. The one throttle in
-either mode is a flat global min_minutes_between_any_alert (default 60,
-i.e. at most one Oracle post per hour across every coin combined) -- in
-rotation mode this is what turns "one post per hourly cron run" into a
-real cap rather than just an assumption, and in both modes it guards
-against a manual re-trigger double-posting inside the same hour.
+either mode is "have we already posted in this UTC calendar hour"
+(state.oracle_alerts.last_alert_hour_id, "%Y-%m-%d-%H") -- at most one
+Oracle post per hour across every coin combined, and in rotation mode
+this is what turns "one post per hourly cron run" into a real guarantee.
+
+Deliberately a fixed hour-bucket check, NOT an elapsed-minutes timer
+(e.g. "60 minutes since the last post") -- confirmed live that an
+elapsed-time throttle can skip an entire hour: the external cron doesn't
+fire at exactly :00:00 every time, it lands a few seconds to a minute
+into the hour, so a post at :00:51 followed by next hour's cron at
+:00:39 is only 59m48s apart and would get wrongly blocked by a strict
+60-minute timer. A calendar-hour bucket has no such race: it only cares
+whether the current run's hour differs from the last post's hour, so it
+can never skip a genuinely new hour no matter how the exact seconds
+land. Same lesson already learned once this session for ai_manager's
+call cadence (elapsed-time+jitter drifted; fixed clock checkpoints
+didn't) -- applied here as fixed calendar hours rather than fixed
+clock-of-day checkpoints, since this trigger runs on every cron tick.
 
 Always opens with its own 💰 CRYPTO 🔮 tag on its own line (the 🔮
 distinguishes it from a routine ai_manager crypto post at a glance --
@@ -201,32 +214,31 @@ def _format_post(cfg, symbol, result, price, change_24h, style=None):
     )
 
 
-def _record_post(ctx, state, symbol, label, text, now_ts):
+def _record_post(ctx, state, symbol, label, text, now_ts, hour_id):
     ctx.budget.record_spend(has_link=False, text=text)
     story_history.add_entry(ctx.state, text=text, url=None, now_ts=now_ts)
     state["last_alert_time"][symbol] = now_ts
     state["last_alert_label"][symbol] = label
-    state["last_alert_time_global"] = now_ts
+    state["last_alert_hour_id"] = hour_id
 
 
 def run(ctx):
     cfg = ctx.config["thresholds"].get("oracle", {})
     state = ctx.state["oracle_alerts"]
-    state.setdefault("last_alert_time_global", None)
+    state.setdefault("last_alert_hour_id", None)
     state.setdefault("rotation_index", 0)
 
     now_ts = ctx.now.timestamp()
-    last_global = state["last_alert_time_global"]
-    min_minutes_global = cfg.get("min_minutes_between_any_alert", 60)
-    if last_global is not None and (now_ts - last_global) / 60 < min_minutes_global:
+    hour_id = ctx.now.strftime("%Y-%m-%d-%H")
+    if state["last_alert_hour_id"] == hour_id:
         return False
 
     if cfg.get("mode", "alert") == "rotation":
-        return _run_rotation(ctx, cfg, state, now_ts)
-    return _run_alert(ctx, cfg, state, now_ts)
+        return _run_rotation(ctx, cfg, state, now_ts, hour_id)
+    return _run_alert(ctx, cfg, state, now_ts, hour_id)
 
 
-def _run_alert(ctx, cfg, state, now_ts):
+def _run_alert(ctx, cfg, state, now_ts, hour_id):
     max_per_run = cfg.get("max_alerts_per_run", 1)
     fired = 0
 
@@ -261,13 +273,13 @@ def _run_alert(ctx, cfg, state, now_ts):
         text = _format_post(cfg, symbol, result, price, change_24h)
         tweet_id = ctx.x.post(text)
         if tweet_id:
-            _record_post(ctx, state, symbol, label, text, now_ts)
+            _record_post(ctx, state, symbol, label, text, now_ts, hour_id)
             fired += 1
 
     return fired > 0
 
 
-def _run_rotation(ctx, cfg, state, now_ts):
+def _run_rotation(ctx, cfg, state, now_ts, hour_id):
     """Posts exactly one coin's current snapshot per run, regardless of
     how strong the signal is. Walks forward from state.rotation_index,
     skipping (but still consuming the slot of) any coin with no data this
@@ -294,7 +306,7 @@ def _run_rotation(ctx, cfg, state, now_ts):
         tweet_id = ctx.x.post(text)
         if not tweet_id:
             return False
-        _record_post(ctx, state, symbol, result["composite"]["label"], text, now_ts)
+        _record_post(ctx, state, symbol, result["composite"]["label"], text, now_ts, hour_id)
         return True
 
     return False

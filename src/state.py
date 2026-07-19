@@ -17,7 +17,7 @@ DEFAULT_STATE = {
     "price": {"last_alert_price": {}, "last_alert_time": {}},
     "oracle_alerts": {
         "last_alert_time": {}, "last_alert_label": {},
-        "last_alert_time_global": None, "rotation_index": 0,
+        "last_alert_hour_id": None, "rotation_index": 0,
     },
     "scheduled_daily": {"last_posted_date": None, "rotate_index": 0},
     "flashback": {"last_posted_date": None},
