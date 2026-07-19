@@ -13,6 +13,14 @@ logger = logging.getLogger("tickerwatch.triggers.scheduled_daily")
 def _build_snapshot_text(ctx):
     watchlist = ctx.config["watchlist"]
     crypto_by_symbol = {c["symbol"]: c for c in watchlist["crypto"]}
+    # US stock markets are closed on weekends -- a stock quote at that point
+    # is just Friday's stale close, which would misleadingly sit right next
+    # to genuinely live crypto prices as if both were moving right now.
+    # Skipping stock lines entirely (rather than caveating each one) is the
+    # same weekend reasoning already applied to ai_manager's prompt, just
+    # enforced here in code since this trigger is fully mechanical -- no LLM
+    # to phrase the caveat itself. Crypto-only snapshots are unaffected.
+    is_weekend = ctx.now.weekday() >= 5
     lines = [f"📊 Market Snapshot — {ctx.now.strftime('%b %d, %Y')}"]
     cashtag_used = False
     for symbol in watchlist.get("snapshot_order", []):
@@ -30,6 +38,8 @@ def _build_snapshot_text(ctx):
                 label = f"${symbol}"
                 cashtag_used = True
         else:
+            if is_weekend:
+                continue
             try:
                 q = twelvedata.get_quote(symbol)
             except Exception:
