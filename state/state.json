@@ -95,13 +95,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 9,
-      "usd_used": 0.135
+      "posts_used": 10,
+      "usd_used": 0.15
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 187,
-    "usd_used": 7.245
+    "posts_used": 188,
+    "usd_used": 7.26
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -306,10 +306,11 @@
     ]
   },
   "oracle_alerts": {
-    "last_alert_hour_id": "2026-07-19-04",
+    "last_alert_hour_id": "2026-07-19-05",
     "last_alert_label": {
       "ADA": "Neutral",
       "BTC": "Lean Bearish",
+      "DOGE": "Neutral",
       "ETH": "Neutral",
       "SOL": "Lean Bearish",
       "XRP": "Lean Bearish"
@@ -317,12 +318,13 @@
     "last_alert_time": {
       "ADA": 1784433659.298847,
       "BTC": 1784419274.788931,
+      "DOGE": 1784437261.694487,
       "ETH": 1784422860.129569,
       "SOL": 1784426459.481993,
       "XRP": 1784430062.585621
     },
     "last_alert_time_global": 1784419274.788931,
-    "rotation_index": 5
+    "rotation_index": 6
   },
   "polls": {
     "last_posted_date": "2026-07-17"
@@ -708,6 +710,11 @@
     {
       "posted_at": 1784433659.298847,
       "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $ADA Oracle: Neutral (53/100, 23% confidence)\n\ud83d\udd34 $0.1668 (-0.67% 24h)\nPersistent / trending \u00b7 moderate vol \u00b7 biased sideways \u00b7 48% odds up next 40h\nstatistical read, not advice",
+      "url": null
+    },
+    {
+      "posted_at": 1784437261.694487,
+      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $DOGE Levels: Neutral (48/100, 29% confidence)\n$0.0723 (-0.19% 24h)\n\ud83d\udd34 Resistance: $0.0724 / $0.0735 / $0.0744\n\ud83d\udfe2 Support: $0.0723 / $0.0714\nstatistical read, not advice",
       "url": null
     }
   ],
