@@ -54,12 +54,14 @@ requirements now, not just nice-to-haves, alongside a generous, not
 token, use of emoji throughout so the post stays easy to skim.
 
 No images and no links on X, by deliberate choice: instead of image/link
-"extras", Claude can give a post real depth via second_part -- a genuine
-continuation posted immediately as its own reply when a topic has enough
-substance to expand on, rather than an image or an outbound click. When a
-post does use second_part, the main text ends with a short, natural
-pointer to it so a reader knows to check the reply. The account's own
-profile is meant to be enough to inform a reader end to end on X itself.
+"extras", every post now gets a mandatory second_part -- posted
+immediately as its own reply, its one job is explaining the news and what
+it actually means in clear, simple terms (not a restatement of the
+headline, not extra trivia). This is a hard requirement on every post, not
+a "when there's enough depth" judgment call like it used to be. The main
+text always ends with a short, natural pointer to it so a reader knows to
+check the reply. The account's own profile is meant to be enough to
+inform a reader end to end on X itself.
 (Image generation code -- src/sources/image_gen.py/DALL-E -- is untouched
 and still callable if this changes later; this trigger just doesn't use
 it right now.)
@@ -125,8 +127,6 @@ def _build_prompt(snapshot):
     filler_examples = "\n".join(f"- {t}" for t in snapshot.get("filler_examples", [])) or "(none)"
 
     posts_per_batch = snapshot.get("posts_per_batch", 1)
-    second_part_every_n = snapshot.get("second_part_every_n_posts", 4)
-    since_second_part = snapshot.get("posts_since_last_second_part", 0)
     tags_list = ", ".join(TAGS)
 
     return (
@@ -265,21 +265,22 @@ def _build_prompt(snapshot):
         "and never as a guarantee or financial advice, and never with numbers beyond what's shown "
         "there. Most posts won't need it at all -- use it only when it genuinely adds value, never "
         "just to fill space.\n"
-        "- For each post, decide second_part: an optional continuation posted immediately as a "
-        "reply to the post itself, when the topic has genuine depth worth adding -- more mechanism, "
-        "a concrete example, the second half of a comparison, not a restatement or filler. Most "
-        f"posts should stay a single tweet. Aim for roughly 1 in every {second_part_every_n} posts "
-        f"to use a second_part -- {since_second_part} post(s) have gone out since the last one that "
-        "had one -- but treat that as a loose guide, not a rule: give a genuinely deep topic its "
-        "second_part regardless of the count, and leave a routine post single even if one is 'due'. "
-        f"Leave second_part null when it isn't warranted. Every hard rule below (character limit, "
-        "plain-language/no-link, the weekend stock rules, everything) applies to second_part exactly "
-        "as much as to the main post -- second_part is not exempt from anything just because the "
-        "main post already satisfied it. Whenever you "
-        "do use a second_part, end the main post's text with a short, natural pointer to it (e.g. "
-        "'here's why:', 'the mechanism:', '\U0001F9F5👇', or similar, varied rather than the same "
-        "phrase every time) so a reader knows to check the reply -- never leave the main post "
-        "reading as fully self-contained when more is actually coming.\n"
+        "- Every single post MUST have a second_part -- a mandatory reply posted immediately after "
+        "the main post, with exactly one job: explain the news and what it actually means, in clear, "
+        "simple terms someone with no background could follow. This is not optional and not "
+        "judgment-based anymore -- every post gets one, no exceptions, regardless of tag or topic. "
+        "It should genuinely add understanding (the mechanism behind it, why it matters, what "
+        "happens next, a plain-language 'here's what this means for you/the market'), never just "
+        "restate the headline in different words and never pad with filler when there's nothing more "
+        "to say -- if the main post's own built-in explanation already said everything genuinely "
+        "worth saying, use the second_part to go one layer deeper (the mechanism, the context, the "
+        "likely consequence) rather than repeating it. second_part must never be null or empty -- "
+        "every post needs a real one. Every hard rule above (character limit, plain-language/no-link, "
+        "the weekend stock rules, everything) applies to second_part exactly as much as to the main "
+        "post -- second_part is not exempt from anything just because the main post already satisfied "
+        "it. Always end the main post's text with a short, natural pointer to it (e.g. 'here's why:', "
+        "'the mechanism:', '\U0001F9F5👇', or similar, varied rather than the same phrase every time) "
+        "so a reader knows to check the reply.\n"
         "- If a post is based on one specific article from the NEWS list below, set news_index to "
         "its index -- its real source link gets shown alongside the post in this account's Telegram "
         "channel (never on X itself, X never carries a link here). Leave news_index null when the "
@@ -318,7 +319,7 @@ def _build_prompt(snapshot):
         f"GENERIC ENGAGEMENT EXAMPLES (style reference only, see the original-post rule above):\n{filler_examples}\n\n"
         "Respond with ONLY raw JSON (no markdown fences, no commentary), exactly matching this "
         "shape:\n"
-        '{"posts": [{"should_post": bool, "text": string or null, "second_part": string or null, '
+        '{"posts": [{"should_post": bool, "text": string or null, "second_part": string, '
         '"news_index": int or null, "reasoning": string}, ...]}\n'
         f'"posts" may contain 0 to {posts_per_batch} items -- only include items where should_post '
         'is true and worth publishing.'

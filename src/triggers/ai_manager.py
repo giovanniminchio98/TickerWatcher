@@ -34,12 +34,11 @@ by explicit choice: reposts are now a manual, human decision only, so this
 trigger never touches X's retweet/quote endpoints.
 
 No images, no links on X, by deliberate choice (see ai_manager_brain.py's
-docstring) -- instead, each post's second_part field (Claude's own
-per-post call, nudged by how long it's been since the last one that used
-it -- see config's second_part_every_n_posts) decides whether the post
-gets a genuine continuation posted immediately as a reply, when the topic
-has real depth worth adding. Most posts stay a single tweet. This account's
-own profile is meant to be enough to inform a reader end to end on X, with
+docstring) -- instead, every post's second_part field is now mandatory
+(Claude must always fill it in, see ai_manager_brain.py's prompt): a
+reply posted immediately after the main post whose one job is explaining
+the news and its meaning in clear, simple terms. This account's own
+profile is meant to be enough to inform a reader end to end on X, with
 no outbound clicks needed there.
 
 Telegram is the one exception: when a post is based on a specific news
@@ -583,9 +582,6 @@ def _drain_queue(ctx, cfg, state, window_kind, window_start, window_end):
     has_second_part = bool(second_part)
     story_history.add_entry(ctx.state, text=text, url=link_url, now_ts=ctx.now.timestamp())
     state["window_posts"] += 1
-    state["posts_since_last_second_part"] = (
-        0 if has_second_part else state.get("posts_since_last_second_part", 0) + 1
-    )
     telegram_client.send_message(
         f"✅ X post created ({'two-part' if has_second_part else 'single'})"
     )
@@ -598,7 +594,6 @@ def run(ctx):
     today_str = ctx.now.strftime("%Y-%m-%d")
     _roll_day(state, today_str)
     state.setdefault("post_queue", [])
-    state.setdefault("posts_since_last_second_part", 0)
     state.setdefault("window_id", None)
     state.setdefault("window_posts", 0)
     state.setdefault("last_call_checkpoint", None)
@@ -633,8 +628,6 @@ def run(ctx):
         "own_recent_posts": story_history.recent_texts(ctx.state, ctx.now.timestamp()),
         "filler_examples": _filler_examples(ctx),
         "posts_per_batch": cfg.get("posts_per_batch", 1),
-        "second_part_every_n_posts": cfg.get("second_part_every_n_posts", 4),
-        "posts_since_last_second_part": state.get("posts_since_last_second_part", 0),
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])

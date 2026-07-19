@@ -325,18 +325,13 @@ as long as it's genuinely good and not filler for filler's sake.
 
 **No images, no links on X, by deliberate choice — the profile itself
 should be enough to inform a reader end to end.** Instead of image/link
-"extras", Claude decides `second_part` per post: an optional genuine
-continuation posted immediately as its own reply, when a topic has real
-depth worth adding (more mechanism, a concrete example, the second half of
-a comparison — never a restatement or filler). Nudged by
-`second_part_every_n_posts` (default 4, i.e. roughly 1 in every 4 posts)
-and how many posts have gone out since the last one that used it — but
-it's a loose guide, not a rule: a genuinely deep topic gets a `second_part`
-regardless of the count, and a routine post stays a single tweet even when
-one's "due." Most posts are a single tweet. Whenever a post does get a
-`second_part`, its main text ends with a short, natural pointer to it
-(varied wording, not the same phrase every time) so a reader knows to
-check the reply. Telegram is the one exception to "no links": when a post
+"extras", every post now gets a mandatory `second_part`: a reply posted
+immediately after the main post whose one job is explaining the news and
+what it actually means, in clear, simple terms — not a restatement of the
+headline, not filler. This is a hard requirement now, not a judgment call
+— every post gets one, no exceptions. Its main text always ends with a
+short, natural pointer to it (varied wording, not the same phrase every
+time) so a reader knows to check the reply. Telegram is the one exception to "no links": when a post
 is based on a specific news article (`news_index`), the channel copy
 always shows that article's real source link — X itself still never
 carries one. (`src/sources/image_gen.py`, DALL-E-based image generation,
@@ -571,12 +566,12 @@ actions/month (~$1-2) on top of the total above.
 **AI Manager's posts specifically — no images, no links means a flat, low
 rate.** Every post is a plain, link-free tweet at the base $0.015 rate —
 there's no $0.20 link surcharge to worry about since links are never used
-here at all. A post's optional `second_part` (roughly 1 in 4,
-`second_part_every_n_posts`) is just another $0.015 reply, not a cost
-multiplier. At 12 posts/day with 3 of them getting a `second_part` (15
+here at all. Every post now gets a mandatory `second_part` explainer reply
+(no longer a roughly-1-in-4 nudge), so every post is really 2 tweets: the
+main post plus its explainer reply, each at $0.015. At 12 posts/day (24
 total tweets):
 
-15 × $0.015 ≈ $0.225/day → **~$6.75/month**
+24 × $0.015 ≈ $0.36/day → **~$10.80/month**
 
 Simple and cheap regardless of format mix, since nothing here varies in
 price the way image-vs-link used to. Reposts (retweet/quote, capped at
@@ -889,7 +884,7 @@ ever blocks or breaks the rest of the run.
 - **`config/budget.json`** — the monthly X API cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/claude_budget.json`** — the monthly Claude API cap, sized alongside `budget.json`'s to sum to the account-wide ceiling (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/image_budget.json`** — the monthly image-generation (DALL-E) cap, a separate provider/bill outside the X+Claude $50 structure (see [Cost math](#cost-math-and-the-budget-cap)).
-- **`config/ai_manager.json`** — AI Manager's model, call cadence, post/repost daily caps, `posts_per_batch`, and `second_part_every_n_posts` (how often a post gets a genuine continuation reply) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--repost-decisions).
+- **`config/ai_manager.json`** — AI Manager's model, call cadence, post/repost daily caps, and `posts_per_batch` — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--autonomous-post--repost-decisions). Every post's `second_part` explainer reply is now mandatory (enforced in the prompt, not a config knob).
 - **`config/reply_manager.json`** — Reply Manager's model, call cadence, and daily reply cap — see [Reply Manager](#reply-manager-disabled-by-default--xs-reply-restriction-isnt-a-per-account-setting).
 - **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).
 

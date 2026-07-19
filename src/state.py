@@ -33,7 +33,6 @@ DEFAULT_STATE = {
         "window_id": None,
         "window_posts": 0,
         "post_queue": [],
-        "posts_since_last_second_part": 0,
     },
     "story_history": [],
     "reply_manager": {
