@@ -11,17 +11,9 @@
     "date": "2026-07-19",
     "last_call_checkpoint": "2026-07-19-12",
     "last_call_time": 1784456385.597501,
-    "post_queue": [
-      {
-        "link_url": "https://decrypt.co/373682/leaks-reveal-suno-fed-thousands-hours-deezer-youtube-pond5-data-ai",
-        "queued_at": 1784456385.597501,
-        "reasoning": "Distinct, newsworthy AI story not covered recently, genuinely explains why it matters (copyright/training data controversy extending to music AI).",
-        "second_part": null,
-        "text": "\ud83e\udd16 AI: A leaked source code repo reportedly shows AI music tool Suno trained on thousands of hours of audio pulled from Deezer, YouTube, and Pond5.\n\nIf true, it means a popular AI song-generator was built on scraped copyrighted and licensed content without clear permission -- the same legal fight already playing out with AI text and image models is now hitting music."
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 0,
+    "posts_since_last_second_part": 1,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -98,18 +90,18 @@
       }
     },
     "window_id": "2026-07-19-day",
-    "window_posts": 1
+    "window_posts": 2
   },
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 14,
-      "usd_used": 0.21
+      "posts_used": 15,
+      "usd_used": 0.225
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 192,
-    "usd_used": 7.32
+    "posts_used": 193,
+    "usd_used": 7.335
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -743,6 +735,11 @@
       "posted_at": 1784456385.597501,
       "text": "\ud83d\udea8 JUST IN: Citadel Securities (a major Wall Street market maker) just put $400M into Crypto.com, valuing it at $20B.",
       "url": "https://decrypt.co/373693/crypto-com-hits-20b-valuation-after-400m-citadel-securities-investment"
+    },
+    {
+      "posted_at": 1784458861.570409,
+      "text": "\ud83e\udd16 AI: A leaked source code repo reportedly shows AI music tool Suno trained on thousands of hours of audio pulled from Deezer, YouTube, and Pond5.",
+      "url": "https://decrypt.co/373682/leaks-reveal-suno-fed-thousands-hours-deezer-youtube-pond5-data-ai"
     }
   ],
   "telegram": {
