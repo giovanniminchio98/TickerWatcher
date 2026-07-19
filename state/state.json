@@ -95,13 +95,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 6,
-      "usd_used": 0.09
+      "posts_used": 7,
+      "usd_used": 0.105
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 184,
-    "usd_used": 7.2
+    "posts_used": 185,
+    "usd_used": 7.215
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -148,7 +148,9 @@
       "https://cointelegraph.com/news/kaspersky-malware-framework-crypto-investors?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/dutch-court-knaken-crypto-platform-bankruptcy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/stablecoin-growth-bank-deposits-ecbs-cipollone?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/london-police-sentence-hackers-crypto-ransom-public-transport?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/london-police-sentence-hackers-crypto-ransom-public-transport?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/us-indicts-crypto-investor-over-alleged-20m-fraud-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://decrypt.co/373770/openai-gpt-5-6-vs-anthropic-fable-5-review"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -157,7 +159,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 6,
+    "posted_count_today": 8,
     "posted_date": "2026-07-19"
   },
   "filler": {
@@ -304,17 +306,19 @@
     ]
   },
   "oracle_alerts": {
-    "last_alert_hour_id": "2026-07-19-01",
+    "last_alert_hour_id": "2026-07-19-02",
     "last_alert_label": {
       "BTC": "Lean Bearish",
-      "ETH": "Neutral"
+      "ETH": "Neutral",
+      "SOL": "Lean Bearish"
     },
     "last_alert_time": {
       "BTC": 1784419274.788931,
-      "ETH": 1784422860.129569
+      "ETH": 1784422860.129569,
+      "SOL": 1784426459.481993
     },
     "last_alert_time_global": 1784419274.788931,
-    "rotation_index": 2
+    "rotation_index": 3
   },
   "polls": {
     "last_posted_date": "2026-07-17"
@@ -685,6 +689,11 @@
     {
       "posted_at": 1784422860.129569,
       "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $ETH Oracle: Neutral (48/100, 35% confidence)\n\ud83d\udfe2 $1,860 (+1.14% 24h)\nPersistent / trending \u00b7 moderate vol \u00b7 biased sideways \u00b7 60% odds up next 40h\nstatistical read, not advice",
+      "url": null
+    },
+    {
+      "posted_at": 1784426459.481993,
+      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\ud83d\udd34 $SOL Oracle: Lean Bearish (46/100, 18% confidence)\n\ud83d\udfe2 $75.67 (+0.60% 24h)\nRandom walk \u00b7 low vol \u00b7 biased sideways \u00b7 42% odds up next 40h\nstatistical read, not advice",
       "url": null
     }
   ],
