@@ -2,9 +2,30 @@
 TickerWatch orchestrator. Runs every trigger in strict priority order so the
 most important content (whale alerts, news) always gets a shot at the budget
 before lower-priority content (flashback, polls) does. Every trigger call is
-wrapped in its own try/except: one broken data source is logged and skipped,
-it never takes down the whole run. State is always saved at the end, even on
-partial failure, so dedup/budget tracking never goes backwards.
+wrapped in its own try/except AND a hard per-trigger watchdog timeout (see
+_safe_run/_TRIGGER_TIMEOUT_SECONDS): one broken OR hung data source is
+logged and skipped, it never takes down the whole run. State is always
+saved at the end, even on partial failure, so dedup/budget tracking never
+goes backwards.
+
+Confirmed live: a run once hung for the full 15-minute job timeout
+(GitHub Actions killed it, "The operation was canceled") -- ai_manager had
+already made a real Claude call and decided a batch of posts (the Telegram
+audit message went out, that spend was real), but then something inside
+the same run's later network calls never returned, so the queued posts
+never got drained and the state update never got committed -- the whole
+decision was silently lost even though a genuine external cause (a slow/
+stalled HTTP response somewhere, no per-call timeout to cut it off) was to
+blame, not a code bug in the trigger's own logic. The two most likely
+individual culprits (feedparser's URL-fetching in news_rss.py, and
+tweepy.Client's HTTP calls in x_client.py) both lack an explicit
+request-level timeout by default -- rather than chase every library's own
+timeout API (which varies, and is easy to miss somewhere else next time),
+_safe_run wraps every trigger call in a single, uniform watchdog: any
+trigger that runs past _TRIGGER_TIMEOUT_SECONDS gets interrupted and
+treated exactly like any other trigger failure -- logged, skipped, the
+rest of the run continues normally instead of the whole job dying at the
+15-minute ceiling.
 
 If nothing posts/replies/reposts this run, one Telegram bot-chat message
 confirms the pipeline still ran and checked everything -- otherwise a
@@ -14,6 +35,7 @@ one from the outside.
 Toggle a post type off by flipping it to False in ENABLED below.
 """
 import logging
+import signal
 import sys
 
 from src import telegram_client
@@ -102,10 +124,28 @@ ENABLED = {
 }
 
 
+# Generous relative to any legitimate trigger's real work (a Claude call,
+# a few HTTP fetches, one or two X posts normally finishes in well under
+# 30s) but far short of the workflow's 15-minute job ceiling, so a hung
+# trigger still leaves plenty of the run's budget for every trigger after
+# it -- see module docstring for the live incident this fixes.
+_TRIGGER_TIMEOUT_SECONDS = 120
+
+
+class _TriggerTimeout(Exception):
+    pass
+
+
+def _alarm_handler(signum, frame):
+    raise _TriggerTimeout(f"exceeded {_TRIGGER_TIMEOUT_SECONDS}s watchdog timeout")
+
+
 def _safe_run(name, fn, *args):
     if not ENABLED.get(name, True):
         logger.info("[%s] disabled, skipping", name)
         return False
+    old_handler = signal.signal(signal.SIGALRM, _alarm_handler)
+    signal.alarm(_TRIGGER_TIMEOUT_SECONDS)
     try:
         result = fn(*args)
         logger.info("[%s] fired=%s", name, bool(result))
@@ -113,6 +153,9 @@ def _safe_run(name, fn, *args):
     except Exception:
         logger.exception("[%s] failed, skipping this run", name)
         return False
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, old_handler)
 
 
 def _fetch_prices(config):
