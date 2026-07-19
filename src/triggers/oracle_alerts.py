@@ -47,8 +47,23 @@ never the urgent JUST IN/BREAKING tags, a quant signal read is never
 "breaking news"), logged to story_history like every other trigger's
 posts (so ai_manager's own dedup/Claude judgment is aware of it), and
 carries a short disclaimer in the actual post text rather than only in
-code comments."""
+code comments.
+
+Four post STYLES, picked at random per post (_STYLES) so consecutive
+posts don't all look identical -- each surfaces a different slice of the
+same already-computed Oracle result, no new data fetching involved:
+- "snapshot" (the original design): price + 24h change + regime + P(up)
+- "levels": nearest support/resistance from the fractal-pivot detector
+- "forecast": Monte Carlo touch-probabilities and a 90% price range, with
+  the actual horizon stated explicitly (never a bare, unscoped number)
+- "momentum": RSI/MACD/Stochastic with plain-language overbought/
+  oversold/neutral framing
+All four share the same header line (tag, verdict emoji, escalation
+prefix, score/confidence) and the same closing disclaimer -- only the
+middle body differs, so a real signal is exactly as visible regardless
+of which style happened to be picked."""
 import logging
+import random
 
 from src import story_history
 from src.formatting import dot_for_change, fmt_pct, fmt_price, truncate
@@ -66,6 +81,10 @@ _STRONG_LABELS = {"Strongly Bullish", "Strongly Bearish"}
 # 🔮 on top of the plain CRYPTO tag distinguishes an Oracle read from a
 # routine ai_manager crypto post at a glance, on its own opening line.
 _TAG = "💰 CRYPTO 🔮"
+_STYLES = ("snapshot", "levels", "forecast", "momentum")
+_STYLE_TITLES = {
+    "snapshot": "Oracle", "levels": "Levels", "forecast": "Forecast", "momentum": "Momentum",
+}
 
 
 def _meets_alert_bar(label, confidence, cfg):
@@ -83,20 +102,101 @@ def _escalation_prefix(label, confidence, cfg):
     return "🚨 " if label in _STRONG_LABELS else "⚠️ "
 
 
-def _format_post(cfg, symbol, result, price, change_24h):
+def _snapshot_body(result, price, change_24h):
+    probs = result["probs"]
+    return (
+        f"{dot_for_change(change_24h)} ${fmt_price(price)} ({fmt_pct(change_24h)} 24h)\n"
+        f"{result['regime']['label']} · {round(probs['p_up'] * 100)}% odds up next "
+        f"{result['meta']['horizon']}h"
+    )
+
+
+def _levels_body(result, price, change_24h):
+    levels = result["levels"]
+    resistances = levels.get("resistances") or []
+    supports = levels.get("supports") or []
+    res_str = " / ".join(f"${fmt_price(v)}" for v in resistances) if resistances else "none nearby"
+    sup_str = " / ".join(f"${fmt_price(v)}" for v in supports) if supports else "none nearby"
+    return (
+        f"${fmt_price(price)} ({fmt_pct(change_24h)} 24h)\n"
+        f"🔴 Resistance: {res_str}\n"
+        f"🟢 Support: {sup_str}"
+    )
+
+
+def _forecast_body(result, price, change_24h):
+    horizon = result["meta"]["horizon"]
+    targets = result["probs"]["targets"]
+    up5 = next((t for t in targets if t["label"] == "+5%"), None)
+    dn5 = next((t for t in targets if t["label"] == "−5%"), None)
+    range_lo = price * (1 + result["probs"]["range_lo"])
+    range_hi = price * (1 + result["probs"]["range_hi"])
+    touch_line = ""
+    if up5 and dn5:
+        touch_line = (
+            f"{round(up5['touch'] * 100)}% chance to touch +5%, "
+            f"{round(dn5['touch'] * 100)}% chance to touch -5%\n"
+        )
+    return (
+        f"${fmt_price(price)} · next {horizon}h forecast:\n"
+        f"{touch_line}"
+        f"90% range: ${fmt_price(range_lo)} – ${fmt_price(range_hi)}"
+    )
+
+
+def _rsi_label(v):
+    if v is None:
+        return "n/a"
+    if v > 70:
+        return f"{round(v)} (overbought)"
+    if v < 30:
+        return f"{round(v)} (oversold)"
+    return f"{round(v)} (neutral)"
+
+
+def _stoch_label(v):
+    if v is None:
+        return "n/a"
+    if v > 80:
+        return f"{round(v)} (overbought)"
+    if v < 20:
+        return f"{round(v)} (oversold)"
+    return f"{round(v)} (neutral)"
+
+
+def _momentum_body(result, price, change_24h):
+    momentum = result["momentum"]
+    macd = momentum.get("macd")
+    macd_label = "n/a"
+    if macd:
+        macd_label = "bullish" if macd["hist"] > 0 else ("bearish" if macd["hist"] < 0 else "flat")
+    return (
+        f"${fmt_price(price)} ({fmt_pct(change_24h)} 24h)\n"
+        f"RSI {_rsi_label(momentum.get('rsi'))} · MACD {macd_label} · "
+        f"Stoch {_stoch_label(momentum.get('stoch'))}"
+    )
+
+
+_STYLE_BODY_BUILDERS = {
+    "snapshot": _snapshot_body, "levels": _levels_body,
+    "forecast": _forecast_body, "momentum": _momentum_body,
+}
+
+
+def _format_post(cfg, symbol, result, price, change_24h, style=None):
+    style = style or random.choice(_STYLES)
     composite = result["composite"]
     label = composite["label"]
     confidence = composite["confidence"]
-    probs = result["probs"]
     emoji = _VERDICT_EMOJI.get(label, "⚪")
     prefix = _escalation_prefix(label, confidence, cfg)
+    header = (
+        f"{prefix}{emoji} ${symbol} {_STYLE_TITLES[style]}: {label} "
+        f"({composite['score']}/100, {confidence}% confidence)"
+    )
+    body = _STYLE_BODY_BUILDERS[style](result, price, change_24h)
     return truncate(
-        f"{_TAG}:\n"
-        f"{prefix}{emoji} ${symbol} Oracle: {label} ({composite['score']}/100, "
-        f"{confidence}% confidence)\n"
-        f"{dot_for_change(change_24h)} ${fmt_price(price)} ({fmt_pct(change_24h)} 24h)\n"
-        f"{result['regime']['label']} · {round(probs['p_up'] * 100)}% odds up next "
-        f"{result['meta']['horizon']}h · statistical read, not advice",
+        f"{_TAG}:\n{header}\n{body}\nstatistical read, not advice",
         ai_manager_brain.MAX_POST_LEN,
     )
 
