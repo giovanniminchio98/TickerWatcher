@@ -11,17 +11,9 @@
     "date": "2026-07-19",
     "last_call_checkpoint": "2026-07-19-18",
     "last_call_time": 1784476859.065344,
-    "post_queue": [
-      {
-        "link_url": "https://decrypt.co/373671/mira-murati-inkling-ai-model-openai-open-source",
-        "queued_at": 1784476859.065344,
-        "reasoning": "Standalone AI news story, not covered before, genuinely informative for readers tracking the AI landscape. Defines CTO inline, explains significance (open-weight competition dynamic) in plain terms without hype.",
-        "second_part": null,
-        "text": "\ud83e\udd16 AI: Mira Murati, former OpenAI CTO (chief technology officer), just released her first model since leaving -- called Inkling -- and made it fully open source.\n\nIt won't beat the top Chinese open-weight models, but it gives Western developers a real open alternative they haven't had much of until now."
-      }
-    ],
+    "post_queue": [],
     "posts_since_last_extra": 2,
-    "posts_since_last_second_part": 4,
+    "posts_since_last_second_part": 5,
     "posts_today": 9,
     "recent_news_urls": [
       "https://www.coindesk.com/markets/2026/07/15/bitcoin-tops-usd64-000-as-cooling-u-s-inflation-guts-the-fed-rate-hike-trade",
@@ -98,18 +90,18 @@
       }
     },
     "window_id": "2026-07-19-day",
-    "window_posts": 5
+    "window_posts": 6
   },
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 18,
-      "usd_used": 0.27
+      "posts_used": 19,
+      "usd_used": 0.285
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 196,
-    "usd_used": 7.38
+    "posts_used": 197,
+    "usd_used": 7.395
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -763,6 +755,11 @@
       "posted_at": 1784476859.065344,
       "text": "\ud83d\udcb0 CRYPTO: South Korea's regulator is moving toward sanctions against Dunamu, the parent company of Upbit, one of the country's largest crypto exchanges.",
       "url": "https://cointelegraph.com/news/south-korean-regulator-inspection-letter-upbit-36m-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784480456.523564,
+      "text": "\ud83e\udd16 AI: Mira Murati, former OpenAI CTO (chief technology officer), just released her first model since leaving -- called Inkling -- and made it fully open source.",
+      "url": "https://decrypt.co/373671/mira-murati-inkling-ai-model-openai-open-source"
     }
   ],
   "telegram": {
