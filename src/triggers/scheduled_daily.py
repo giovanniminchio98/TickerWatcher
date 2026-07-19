@@ -1,7 +1,9 @@
-"""Post type 4: always-post-once/day scheduled content -- market snapshot and/or
-Fear & Greed Index. Rotates between the two by default (post_both=false in
-config/thresholds.json) to keep the monthly post/cost count low; set
-post_both=true if your budget allows both every day."""
+"""Post type 4: always-post-once/day scheduled content -- market snapshot,
+plus (if config/thresholds.json's scheduled_daily.feargreed_enabled is
+true) the Fear & Greed Index rotated in alongside it. Disabled by default
+(2026-07-19) -- dropped as one of the less useful posts, market snapshot
+now fires alone every day. Code kept intact -- flip feargreed_enabled
+back to true to resume the old rotate/post_both behavior."""
 import logging
 
 from src.formatting import dot_for_change, fmt_pct, fmt_price, thread_parts, truncate
@@ -106,8 +108,10 @@ def run(ctx):
     if state["last_posted_date"] == today_str:
         return False
 
-    post_both = ctx.config["thresholds"]["scheduled_daily"].get("post_both", False)
-    if post_both:
+    cfg = ctx.config["thresholds"]["scheduled_daily"]
+    if not cfg.get("feargreed_enabled", False):
+        kinds = ["snapshot"]
+    elif cfg.get("post_both", False):
         kinds = ["snapshot", "feargreed"]
     else:
         kinds = ["snapshot"] if state["rotate_index"] % 2 == 0 else ["feargreed"]

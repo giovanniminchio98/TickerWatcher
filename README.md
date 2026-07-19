@@ -56,14 +56,17 @@ on the monthly budget):
    (default 2), the main cost lever since news is the only post type with a
    real clickable link anywhere in the thread.
 3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
-4. **CryptoScope Oracle verdict alerts** — a quant signal composite (Monte-Carlo
+4. **CryptoScope Oracle verdict alerts** (disabled by default, 2026-07-19 — see
+   "CryptoScope Oracle" below) — a quant signal composite (Monte-Carlo
    forecast + technical signals, ported from the crypto-scope site's engine),
-   recomputed fresh every run from live Binance candles for every coin in
+   recomputed fresh every run from live Kraken candles for every coin in
    `watchlist.crypto` — fires only on a genuinely strong, high-confidence
-   Strongly Bullish/Bearish read (see "CryptoScope Oracle" below)
-5. **Scheduled daily post** — market snapshot / Fear & Greed Index (rotates, or both)
+   Strongly Bullish/Bearish read
+5. **Scheduled daily post** — market snapshot only (Fear & Greed Index disabled
+   by default, 2026-07-19 — `scheduled_daily.feargreed_enabled` in
+   `config/thresholds.json`)
 6. **Historical flashback** — filler, max once/day, only if nothing else fired
-7. **Polls** — ~1x/week engagement mechanic
+7. **Polls** (disabled by default, 2026-07-19) — ~1x/week engagement mechanic
 8. **Self-reply updates** — replies to the bot's *own* tweets only, never others'
 9. **Filler** (disabled by default — see "Filler" below) — absolute last
    resort, only posts if nothing above did this run. Picks from

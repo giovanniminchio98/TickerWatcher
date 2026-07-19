@@ -95,7 +95,10 @@ ENABLED = {
     "oracle_alerts": False,
     "scheduled_daily": True,
     "historical_flashback": True,
-    "polls": True,
+    # disabled for now (2026-07-19): dropped to trim the account down to
+    # the posts that are actually working. Code kept intact -- flip back
+    # to True to resume.
+    "polls": False,
     "self_reply": True,
     # disabled by default: reposting (retweet/quote-tweet) is a manual,
     # human-only decision now -- ai_manager no longer touches it either.

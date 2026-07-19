@@ -35,6 +35,8 @@
     "max_replies_per_run": 1
   },
   "scheduled_daily": {
+    "_comment": "feargreed_enabled=false (2026-07-19) drops the Fear & Greed Index post entirely -- market snapshot fires alone every day now. Set true to bring it back, with post_both controlling whether it posts alongside the snapshot every day (true) or rotates with it every other day (false) -- same as before.",
+    "feargreed_enabled": false,
     "post_both": false
   },
   "flashback": {
