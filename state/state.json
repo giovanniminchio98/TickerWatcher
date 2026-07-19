@@ -95,13 +95,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 11,
-      "usd_used": 0.165
+      "posts_used": 12,
+      "usd_used": 0.18
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 189,
-    "usd_used": 7.275
+    "posts_used": 190,
+    "usd_used": 7.29
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -306,7 +306,7 @@
     ]
   },
   "oracle_alerts": {
-    "last_alert_hour_id": "2026-07-19-06",
+    "last_alert_hour_id": "2026-07-19-08",
     "last_alert_label": {
       "ADA": "Neutral",
       "BTC": "Lean Bearish",
@@ -314,6 +314,7 @@
       "ETH": "Neutral",
       "LINK": "Neutral",
       "SOL": "Lean Bearish",
+      "USDT": "Neutral",
       "XRP": "Lean Bearish"
     },
     "last_alert_time": {
@@ -323,10 +324,11 @@
       "ETH": 1784422860.129569,
       "LINK": 1784440861.626252,
       "SOL": 1784426459.481993,
+      "USDT": 1784448061.442174,
       "XRP": 1784430062.585621
     },
     "last_alert_time_global": 1784419274.788931,
-    "rotation_index": 7
+    "rotation_index": 8
   },
   "polls": {
     "last_posted_date": "2026-07-17"
@@ -722,6 +724,11 @@
     {
       "posted_at": 1784440861.626252,
       "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $LINK Forecast: Neutral (52/100, 25% confidence)\n$8.34 \u00b7 next 40h forecast:\n13% chance to touch +5%, 4% chance to touch -5%\n90% range: $8.02 \u2013 $8.83\nstatistical read, not advice",
+      "url": null
+    },
+    {
+      "posted_at": 1784448061.442174,
+      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $USDT Levels: Neutral (50/100, 21% confidence)\n$0.9993 (-0.00% 24h)\n\ud83d\udd34 Resistance: $0.9993\n\ud83d\udfe2 Support: $0.9992\nstatistical read, not advice",
       "url": null
     }
   ],
