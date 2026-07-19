@@ -89,7 +89,10 @@ ENABLED = {
     "whale_alerts": False,
     "news_alerts": True,
     "price_alerts": True,
-    "oracle_alerts": True,
+    # disabled for now (2026-07-19): dropped to trim the account down to
+    # the posts that are actually working, pending a possible revisit
+    # later. Code kept intact -- flip back to True to resume.
+    "oracle_alerts": False,
     "scheduled_daily": True,
     "historical_flashback": True,
     "polls": True,
