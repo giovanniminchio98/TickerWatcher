@@ -7,10 +7,10 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 5,
+    "calls_today": 6,
     "date": "2026-07-19",
-    "last_call_checkpoint": "2026-07-19-18",
-    "last_call_time": 1784476859.065344,
+    "last_call_checkpoint": "2026-07-19-21",
+    "last_call_time": 1784487659.175162,
     "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 5,
@@ -90,23 +90,23 @@
       }
     },
     "window_id": "2026-07-19-day",
-    "window_posts": 6
+    "window_posts": 7
   },
   "budget": {
     "daily": {
       "date": "2026-07-19",
-      "posts_used": 19,
-      "usd_used": 0.285
+      "posts_used": 21,
+      "usd_used": 0.315
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 197,
-    "usd_used": 7.395
+    "posts_used": 199,
+    "usd_used": 7.425
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.8915
+    "usd_used": 1.9303
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -760,10 +760,15 @@
       "posted_at": 1784480456.523564,
       "text": "\ud83e\udd16 AI: Mira Murati, former OpenAI CTO (chief technology officer), just released her first model since leaving -- called Inkling -- and made it fully open source.",
       "url": "https://decrypt.co/373671/mira-murati-inkling-ai-model-openai-open-source"
+    },
+    {
+      "posted_at": 1784487659.175162,
+      "text": "\ud83d\udcca CONTEXT: XRP barely moved after the recent CPI (inflation data) rally while bitcoin took a breather -- up just 0.09% in 24h versus BTC's broader swings.",
+      "url": "https://decrypt.co/373649/xrp-price-cant-keep-up-bitcoin-takes-breather"
     }
   ],
   "telegram": {
-    "last_report_date": "2026-07-18"
+    "last_report_date": "2026-07-19"
   },
   "whale": {
     "last_btc_block_height": 958176,
