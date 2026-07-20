@@ -272,7 +272,15 @@ def decide(snapshot, model):
     raw_text = extract_text(resp)
 
     try:
-        decision = json.loads(raw_text)
+        # strict=False: confirmed live that Claude can emit a literal
+        # newline character inside a JSON string value (from the post's
+        # own "headline, blank line, explanation" shape) instead of an
+        # escaped \n -- valid-looking text, but technically invalid JSON
+        # per strict parsers, which reject raw control characters inside
+        # strings. strict=False permits them without weakening anything
+        # else about the parse (still real JSON, just tolerant of this one
+        # common LLM-output quirk).
+        decision = json.loads(raw_text, strict=False)
     except Exception as e:
         logger.warning("ai_manager: could not parse Claude response: %r", e)
         ops_alerts.notify_claude_failure(f"ai_manager: couldn't parse response ({e})")
