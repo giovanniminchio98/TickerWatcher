@@ -47,14 +47,13 @@ on the monthly budget):
    channel copy still gets the real block-explorer link (Telegram is
    free), same pattern as news alerts' source URL.
 2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
-   The main post names the outlet only (no link, e.g. "via CoinDesk"), with
-   the real source URL in a follow-up reply -- X's algorithm has suppressed
-   reach on linked posts hard since March 2026, so this keeps the main post's
-   reach intact. Unlike whale alerts this doesn't save money (the link still
-   costs $0.20 wherever it lands, so it's ~$0.215/post total now) -- it's a
-   reach optimization, not a cost one. Capped at `keywords.max_articles_per_day`
-   (default 2), the main cost lever since news is the only post type with a
-   real clickable link anywhere in the thread.
+   No link, ever, on X (2026-07-20) — the main post names the outlet only
+   (e.g. "via CoinDesk"); the real source URL only ever shows up in the free
+   Telegram channel mirror. What used to be a link-reply is now a mandatory
+   plain-language explanation reply instead ("what this means," same pattern
+   as AI Manager's `second_part`) — a real cost saving now, not just a reach
+   one, since a link surcharge no longer applies here at all. Capped at
+   `keywords.max_articles_per_day` (default 2).
 3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
 4. **CryptoScope Oracle verdict alerts** (disabled by default, 2026-07-19 — see
    "CryptoScope Oracle" below) — a quant signal composite (Monte-Carlo
@@ -516,16 +515,16 @@ per-day cap existed. That's why `keywords.max_articles_per_day` (default 2)
 exists: it's the single biggest lever on cost, since news is the only post
 type where a real clickable link exists anywhere in the thread.
 
-| Post type | ~posts/month | Link? | Cost |
-|---|---|---|---|
-| Whale alerts (**paused by default**, capped 1/chain/run, cashtag only) | ~12 if re-enabled | no (see below) | $0.18 if re-enabled |
-| News (capped at 2/day, main + source-link reply, ~$0.215/article) | up to ~120 (60 articles) | reply only | up to $12.90 |
-| Price alerts | ~20 | no | $0.30 |
-| Scheduled daily | ~30 | no | $0.45 |
-| Flashback | ~8 | no | $0.12 |
-| Polls | ~4 | no | $0.06 |
-| Self-reply | ~15 | no | $0.23 |
-| **Real-content subtotal** | | | **~$1.16 - $14.06/month**, depending on how often news actually matches |
+| Post type | Status | ~posts/month | Link? | Cost |
+|---|---|---|---|---|
+| Whale alerts (capped 1/chain/run, cashtag only) | disabled | ~12 if re-enabled | no (see below) | $0.18 if re-enabled |
+| News (capped at 2/day, main + text-only explainer reply, no link ever) | on | up to ~120 (60 articles) | no | up to $1.80 |
+| Price alerts | on | ~20 | no | $0.30 |
+| Scheduled daily / Fear & Greed | disabled | 0 | no | $0 |
+| Flashback | on | ~8 | no | $0.12 |
+| Polls | disabled | 0 | no | $0 |
+| Self-reply | on | ~15 | no | $0.23 |
+| **Real-content subtotal** | | | | **~$0.65 - $2.45/month**, depending on how often news actually matches |
 
 Whale alerts use the asset as a `$` cashtag ($BTC/$ETH) rather than plain
 text or a hashtag-only mention — confirmed via a live billing test that this
@@ -533,12 +532,10 @@ does **not** trigger the $0.20 link surcharge (X's Smart Cashtags are a
 distinct in-app entity, never an external URL). X also caps posts at one
 cashtag each (403 Forbidden otherwise) — worth knowing if you ever add
 another asset mention to this post type.
-News still needs a real clickable source link somewhere (never reproduce
-article text verbatim, always cite a real source) — but that link lives in
-a reply instead of the main post, so
-the main post's reach isn't hit by X's link-suppression algorithm. This
-doesn't reduce cost the way whale alerts did (the link still costs $0.20
-wherever it lands), which is exactly why the per-day cap matters more here.
+News no longer carries a link anywhere on X (2026-07-20) — the real source
+URL only ever shows up in the free Telegram channel mirror. What used to be
+a link-reply is now a plain-language explanation reply instead (no link
+surcharge), which is what dropped this row's cost by roughly 7x.
 
 Watch the Telegram per-post/daily notifications for the first week or two to
 see where your real news volume lands, and adjust `max_articles_per_day`

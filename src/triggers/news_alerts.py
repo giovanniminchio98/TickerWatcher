@@ -8,6 +8,17 @@ The main post names the outlet (no URL) as its citation instead. Still
 bounded by keywords.max_articles_per_day, the main cost lever now that whale
 alerts dropped their link entirely too.
 
+Every post also gets a mandatory plain-language explanation posted as a
+reply right underneath it (src/sources/paraphrase.py's third output line) --
+same "explain the news, not just headline it" pattern as ai_manager's
+mandatory second_part, and same reasoning for why it's a reply instead of
+crammed into the main post: the main line stays a terse, skimmable headline,
+the reply is where the actual "what this means" value is. No link there
+either -- just text, same as everywhere else on this account now. Only
+available on the Claude paraphrase path; the mechanical fallback (no
+ANTHROPIC_API_KEY) has no explanation to give, so that post goes out
+without a reply rather than with an empty or fabricated one.
+
 The Telegram channel copy always gets the real article URL -- Telegram is
 free, so there's no reason to ever hold that link back there, same
 "Telegram can be more generous than X" pattern used everywhere else.
@@ -66,7 +77,9 @@ def run(ctx):
         if not ctx.budget.can_spend(has_link=False):
             break
         try:
-            summary, sentiment = paraphrase.paraphrase_with_sentiment(article["title"], article["summary"])
+            summary, sentiment, explanation = paraphrase.paraphrase_with_sentiment(
+                article["title"], article["summary"]
+            )
         except Exception:
             logger.exception("Paraphrase failed for %s", article["url"])
             continue
@@ -77,7 +90,16 @@ def run(ctx):
         if not tweet_id:
             continue
 
-        ctx.budget.record_spend(has_link=False, text=text, channel_link=("Source", article["url"]))
+        channel_text = f"{text}\n\n{explanation}" if explanation else text
+        ctx.budget.record_spend(
+            has_link=False, text=text, channel_text=channel_text, channel_link=("Source", article["url"])
+        )
+        if explanation and ctx.budget.can_spend(has_link=False):
+            reply_text = truncate(explanation)
+            reply_id = ctx.x.reply(reply_text, tweet_id)
+            if reply_id:
+                # already mirrored to the channel above via channel_text
+                ctx.budget.record_spend(has_link=False, text=explanation, mirror_to_channel=False)
         state["posted_urls"].append(article["url"])
         story_history.add_entry(ctx.state, text=text, url=article["url"], now_ts=ctx.now.timestamp())
         state["posted_count_today"] += 1
