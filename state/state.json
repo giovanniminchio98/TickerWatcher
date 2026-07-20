@@ -1,6 +1,6 @@
 {
   "ai_manager": {
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-20",
     "last_call_checkpoint": "2026-07-20-09",
     "last_call_time": 1784533490.961106
@@ -19,7 +19,7 @@
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.1223
+    "usd_used": 2.1511
   },
   "comment_engagement": {
     "WatcherGuru": {
