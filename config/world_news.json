@@ -1,0 +1,16 @@
+{
+  "_comment": "General world-news feeds for ai_manager's 3x/day recap (src/triggers/ai_manager.py's _world_news_snapshot) -- unlike config/keywords.json's finance/crypto/AI feeds, these are pulled unconditionally (news_rss.fetch_latest_articles, no keyword gate), since 'what's the latest important news' doesn't fit a keyword whitelist the way a finance alert does. 'lang' tells the prompt which items are non-English so Claude translates them inline while synthesizing the recap, rather than a separate translation call. Feed URLs occasionally change or get retired -- a broken feed is logged and skipped, never a hard failure for the whole run (see news_rss.py); check the live run logs after any feed list change to confirm each one is still resolving.",
+  "rss_feeds": [
+    { "name": "The Guardian", "url": "https://www.theguardian.com/world/rss", "whitelisted": true, "lang": "en" },
+    { "name": "BBC News", "url": "https://feeds.bbci.co.uk/news/world/rss.xml", "whitelisted": true, "lang": "en" },
+    { "name": "Deutsche Welle", "url": "https://rss.dw.com/xml/rss-en-all", "whitelisted": true, "lang": "en" },
+    { "name": "France 24", "url": "https://www.france24.com/en/rss", "whitelisted": true, "lang": "en" },
+    { "name": "Euronews", "url": "https://www.euronews.com/rss", "whitelisted": true, "lang": "en" },
+    { "name": "la Repubblica", "url": "https://www.repubblica.it/rss/homepage/rss2.0.xml", "whitelisted": true, "lang": "it" },
+    { "name": "Corriere della Sera", "url": "https://xml2.corriereobjects.it/rss/homepage.xml", "whitelisted": true, "lang": "it" },
+    { "name": "Le Monde", "url": "https://www.lemonde.fr/rss/une.xml", "whitelisted": true, "lang": "fr" },
+    { "name": "El Pais", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada", "whitelisted": true, "lang": "es" },
+    { "name": "Der Spiegel International", "url": "https://www.spiegel.de/international/index.rss", "whitelisted": true, "lang": "en" }
+  ],
+  "max_articles_per_feed": 3
+}

@@ -30,9 +30,6 @@ DEFAULT_STATE = {
         "last_call_checkpoint": None,
         "date": None,
         "calls_today": 0,
-        "window_id": None,
-        "window_posts": 0,
-        "post_queue": [],
     },
     "story_history": [],
     "reply_manager": {
