@@ -156,7 +156,9 @@
       "https://cointelegraph.com/news/south-korea-probed-40-cases-of-crypto-manipulation-over-2-years?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/south-korean-regulator-inspection-letter-upbit-36m-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/japanese-logistics-company-eyes-jpyc-stablecoin-to-pay-drivers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://decrypt.co/373767/ecb-warns-stablecoins-drain-bank-deposits"
+      "https://decrypt.co/373767/ecb-warns-stablecoins-drain-bank-deposits",
+      "https://cointelegraph.com/news/allbridge-core-pauses-cross-chain-bridge-after-165m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://decrypt.co/373699/morning-minute-citadel-securities-invests-400m-in-crypto-com"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -165,7 +167,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 6,
+    "posted_count_today": 8,
     "posted_date": "2026-07-20"
   },
   "filler": {
