@@ -289,14 +289,18 @@ are still in the snapshot, but explicitly demoted to secondary material —
 folded into a recap only when genuinely notable, never just because a
 price moved.
 
-**One post per call, no queue.** Each Claude call decides exactly one
-`should_post`/`text`/`second_part` recap, fired immediately if it clears
-the bar — there's no batch to spread across the day and nothing to pace,
-since the 3 fixed checkpoints already are the schedule. `should_post: false`
-is a correct, expected outcome whenever nothing in the period genuinely
-matters, not a failure to fix. The external cron dispatch (see "Scheduling"
-below) stays exactly as it is — still hourly — the internal checkpoint gate
-(`_CALL_CHECKPOINT_HOURS`) is what turns that into "only acts 3x/day," so
+**Up to 4 posts per call, no queue.** Each Claude call decides a batch of
+0 to `max_posts_per_call` (config/ai_manager.json, default 4) posts — a
+broad snapshot of the most important things since the last checkpoint, not
+forced into a single post. A busy period can genuinely warrant several
+distinct posts (each with its own topic and its own `second_part`); a quiet
+one can just as correctly warrant zero. No two posts in the same batch may
+cover the same story. Every accepted post fires immediately, one after
+another, in that same run — there's still no queue to spread things across
+the day, since the 3 fixed checkpoints already are the schedule. The
+external cron dispatch (see "Scheduling" below) stays exactly as it is —
+still hourly — the internal checkpoint gate (`_CALL_CHECKPOINT_HOURS`) is
+what turns that into "only acts 3x/day," so
 no cron-job.org changes are needed.
 
 **Post shape.** A fixed opening tag (`🌍 WORLD:`) followed by a punchy,
@@ -537,29 +541,30 @@ if you want more headroom before that point (with filler re-enabled):
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
 actions/month (~$1-2) on top of the total above.
 
-**AI Manager's posts specifically — 3x/day means very low volume now
-(2026-07-20 redesign).** Every recap is a plain, link-free tweet at the
-base $0.015 rate, plus its mandatory `second_part` explainer reply, also
-$0.015 — so a genuine recap is 2 tweets. At most 3 calls/day, and
-`should_post: false` is expected to fire sometimes (a call that finds
-nothing genuinely important correctly posts nothing), so worst case is 3
-recaps × 2 tweets/day:
+**AI Manager's posts specifically — 3 calls/day, up to 4 posts each
+(2026-07-20 redesign).** Every post is a plain, link-free tweet at the base
+$0.015 rate, plus its mandatory `second_part` explainer reply, also $0.015
+— so each post is really 2 tweets. Theoretical worst case (every one of
+the 3 daily calls maxes out at 4 posts) is the same ceiling as the old
+per-story design:
 
-6 × $0.015 ≈ $0.09/day → **~$2.70/month**
+3 calls × 4 posts × 2 tweets × $0.015 ≈ $0.36/day → **~$10.80/month worst case**
 
-A steep drop from the old per-story design's ~$10.80/month — this pipeline
-now uses a small slice of the $30 X cap, leaving substantial headroom.
-Reposts (retweet/quote, capped at 3/day) add on top of this at the same
-~$0.015/action rate if ever re-enabled (currently disabled — reposting is
-manual-only).
+In practice, an empty batch (0 posts) is explicitly correct whenever
+nothing clears the bar, and there's no pressure to pad up toward the max —
+so real usage should land well under that ceiling most days, likely closer
+to 1-2 posts/call than 4. Either way it's bounded by the same $30 X cap,
+with real headroom versus the worst case. Reposts (retweet/quote, capped at
+3/day) add on top of this at the same ~$0.015/action rate if ever
+re-enabled (currently disabled — reposting is manual-only).
 
-**Claude call cost drops the same way** — 3 calls/day instead of the old
-~6-7, each with a larger prompt (world news added) but much smaller output
-(one recap instead of up to 3 posts). At Sonnet 5's full post-intro pricing
-($3/$15 per 1M tokens), expect roughly **~$3-6/month**, comfortably inside
-the $20 Claude cap with substantial headroom — worth keeping an eye on the
-Telegram budget recap for the first week or two to confirm real token usage
-lands where expected once the larger world-news prompt is live.
+**Claude call cost** — 3 calls/day instead of the old ~6-7, each with a
+larger prompt (world news added) and output sized for up to `max_posts_per_call`
+full posts (same shape as the old per-call output, just fewer calls/day).
+At Sonnet 5's full post-intro pricing ($3/$15 per 1M tokens), expect
+roughly **~$5-10/month**, comfortably inside the $20 Claude cap — worth
+keeping an eye on the Telegram budget recap for the first week or two to
+confirm real token usage lands where expected.
 
 ### Two-budget design: X API + Claude API summing to one account-wide ceiling, plus a separate image budget
 
