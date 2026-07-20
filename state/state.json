@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-20",
-    "last_call_checkpoint": "2026-07-20-21",
-    "last_call_time": 1784574060.887273
+    "last_call_checkpoint": "2026-07-21-00",
+    "last_call_time": 1784585174.429159
   },
   "budget": {
     "daily": {
       "date": "2026-07-20",
-      "posts_used": 25,
-      "usd_used": 0.375
+      "posts_used": 29,
+      "usd_used": 0.435
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 224,
-    "usd_used": 7.8
+    "posts_used": 228,
+    "usd_used": 7.86
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.2609
+    "usd_used": 2.2963
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -455,11 +455,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784325663.784304,
-      "text": "\ud83d\udea8 JUST IN: FTX is sending out $900 million to creditors in its fifth payment round since the exchange collapsed.\n\nFTX went bankrupt in Nov 2022, freezing user funds.",
-      "url": "https://cointelegraph.com/news/ftx-distribute-millions-creditors-fifth-payment-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "posted_at": 1784329269.064673,
       "text": "\ud83d\udcb0 CRYPTO: Bolivia is moving to officially recognize USDT (a dollar-pegged crypto token) as the country runs short on actual US dollars.",
       "url": "https://cointelegraph.com/news/crypto-biz-when-dollars-disappear-stablecoins-step-in?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
@@ -682,6 +677,16 @@
     {
       "posted_at": 1784574060.887273,
       "text": "\ud83c\udf0d WORLD: Yemen's Houthi rebels just announced a 'maritime embargo' on Saudi Arabia, effective immediately, in response to a Saudi blockade of Yemeni ports and airports. \u2693\ud83d\udeab\n\nWhy it matters below:",
+      "url": null
+    },
+    {
+      "posted_at": 1784585174.429159,
+      "text": "Just saw this: Trump is slapping a 50% tariff on most Canadian goods -- autos, alcohol, dairy all hit. White House says Canada was \"discriminating\" against US products. Takes effect in 30 days. \ud83c\uddfa\ud83c\uddf8\ud83c\udde8\ud83c\udde6\ud83d\udcc9\n\nHoot hoot \ud83e\udd89",
+      "url": null
+    },
+    {
+      "posted_at": 1784585174.429159,
+      "text": "Okay, this one's heavy: the US just carried out its 10th straight night of strikes on Iran, and Trump is vowing revenge after American soldiers were killed. Both sides are still fighting over control of the Strait of Hormuz. \ud83d\udca5\ud83c\udf0a\n\nHoot hoot \ud83e\udd89",
       "url": null
     }
   ],
