@@ -7,11 +7,19 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-20",
-    "last_call_checkpoint": "2026-07-20-06",
-    "last_call_time": 1784520058.947512,
-    "post_queue": [],
+    "last_call_checkpoint": "2026-07-20-09",
+    "last_call_time": 1784530857.651972,
+    "post_queue": [
+      {
+        "link_url": "https://cointelegraph.com/news/allbridge-core-pauses-cross-chain-bridge-after-165m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "queued_at": 1784530857.651972,
+        "reasoning": "Genuinely sharp pattern-level insight (two separate bridge exploits in the same week, mechanism explained) rather than a routine recap -- meets the higher bar set for CONTEXT posts, and neither Allbridge nor Ostium exploit has been covered in recent posts.",
+        "second_part": "A bridge holds a pool of tokens on one chain to back tokens it issues on another. A flash loan lets an attacker borrow huge sums with zero collateral for one transaction, manipulate the bridge's exchange rate, then repay the loan -- pocketing the difference before anyone can react.",
+        "text": "\ud83d\udcca CONTEXT: Two DeFi (decentralized finance) bridges got drained in one week -- Allbridge lost $1.65M to a flash-loan exploit, Ostium lost $18M days earlier.\n\nBridges keep being the weakest link in crypto. Here's why they're such an easy target:"
+      }
+    ],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 5,
     "posts_today": 9,
@@ -90,23 +98,23 @@
       }
     },
     "window_id": "2026-07-20-day",
-    "window_posts": 1
+    "window_posts": 2
   },
   "budget": {
     "daily": {
       "date": "2026-07-20",
-      "posts_used": 7,
-      "usd_used": 0.105
+      "posts_used": 9,
+      "usd_used": 0.135
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 206,
-    "usd_used": 7.53
+    "posts_used": 208,
+    "usd_used": 7.56
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.0478
+    "usd_used": 2.0915
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -542,16 +550,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784264462.304867,
-      "text": "\ud83d\udea8 JUST IN: Visa is backing a new stablecoin platform called Open USD, stepping right into Circle's turf.\n\nCircle's USDC has been a dominant dollar-pegged stablecoin (a crypto token designed to hold $1 value).",
-      "url": "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
-    },
-    {
-      "posted_at": 1784268060.700012,
-      "text": "\ud83d\udcca CONTEXT: Almost every major tech and crypto name is red today -- $AMD -5%, GOOGL -4%, AVGO -5%, ORCL -6% -- while payment names like Visa and Mastercard are actually up.\n\nWhen growth and chip stocks sell off together but payment networks hold up, it usually\u2026",
-      "url": null
-    },
-    {
       "posted_at": 1784271665.04544,
       "text": "\ud83d\udcb0 CRYPTO: A DeFi (decentralized finance) protocol called Ostium just lost $18 million to an oracle exploit -- the latest in a wave of similar attacks.\n\nOracles are the price feeds smart contracts rely on to know an asset's real value.",
       "url": "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi"
@@ -780,6 +778,11 @@
       "posted_at": 1784520058.947512,
       "text": "\ud83d\udea8 JUST IN: Citadel Securities just put $400M into Crypto.com -- and in the same news cycle, Base (Coinbase's blockchain network) handed its app over to Cobie, a well-known crypto podcaster and trader. \ud83d\udd04\ud83e\udd1d",
       "url": null
+    },
+    {
+      "posted_at": 1784530857.651972,
+      "text": "\ud83d\udcb0 CRYPTO: Citadel Securities' $400M bet on Crypto.com wasn't a one-off -- Stripe is reportedly making a $53 billion move that could crown a stablecoin king.\n\nHere's the mechanism behind why Wall Street and payment giants keep circling stablecoins:",
+      "url": "https://decrypt.co/373636/morning-minute-base-hands-its-app-over-to-cobie"
     }
   ],
   "telegram": {
