@@ -422,10 +422,24 @@ def _post_recap(ctx, decision):
     reasoning = decision.get("reasoning", "")
     second_part = decision.get("second_part") or ""
 
-    if _reasoning_contradicts_post(reasoning) or _reasoning_contradicts_post(second_part):
+    # Only second_part is scanned here, not reasoning -- confirmed live
+    # (2026-07-20) that scanning reasoning produces false positives in this
+    # single-holistic-decision design: reasoning is never published (see
+    # ai_manager_brain.py's prompt), and Claude can legitimately narrate its
+    # own selection process in it ("the Fed story was already covered, so I
+    # focused on the UK PM transition instead") while still being genuinely
+    # confident about the ONE story it chose -- a blanket keyword scan can't
+    # tell "the topic I'm posting about was already covered" apart from "a
+    # DIFFERENT topic I considered and excluded was already covered." That
+    # distinction mattered less in the old per-post-batch design, where each
+    # post had its own individual reasoning field. second_part has no such
+    # ambiguity: it's published content with exactly one job (explain this
+    # post), so any of these phrases there is a genuine red flag -- this is
+    # the same check that caught the real leaked-self-doubt bug.
+    if _reasoning_contradicts_post(second_part):
         logger.warning(
-            "ai_manager: declining recap whose reasoning or second_part contradicts should_post=true: %s",
-            (reasoning or second_part)[:120],
+            "ai_manager: declining recap whose second_part contradicts should_post=true: %s",
+            second_part[:120],
         )
         _send_audit_message(None, reasoning)
         return False
