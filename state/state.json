@@ -7,10 +7,10 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-20",
-    "last_call_checkpoint": "2026-07-20-03",
-    "last_call_time": 1784509260.129113,
+    "last_call_checkpoint": "2026-07-20-06",
+    "last_call_time": 1784520058.947512,
     "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 5,
@@ -89,24 +89,24 @@
         "resolved_user_id": "951329744804392960"
       }
     },
-    "window_id": "2026-07-19-night",
+    "window_id": "2026-07-20-day",
     "window_posts": 1
   },
   "budget": {
     "daily": {
       "date": "2026-07-20",
-      "posts_used": 5,
-      "usd_used": 0.075
+      "posts_used": 7,
+      "usd_used": 0.105
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 204,
-    "usd_used": 7.5
+    "posts_used": 206,
+    "usd_used": 7.53
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.0108
+    "usd_used": 2.0478
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -542,21 +542,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784250061.446905,
-      "text": "\ud83d\udea8 JUST IN: Citadel Securities just put $400 million into Crypto.com, valuing the exchange at $20 billion. \ud83d\udcb0\n\nCitadel Securities is one of the biggest market-making firms in traditional finance -- this is old-school Wall Street market plumbing buying a serious\u2026",
-      "url": "https://www.coindesk.com/business/2026/07/16/citadel-securities-invests-usd400-million-in-crypto-com-valuing-exchange-at-usd20-billion"
-    },
-    {
-      "posted_at": 1784253665.591857,
-      "text": "\ud83d\udcca CONTEXT: Almost every crypto-adjacent stock is down way more than bitcoin itself today -- $HOOD -8%, MARA -7%, RIOT -6%, COIN -4%, while BTC is only -1%.",
-      "url": null
-    },
-    {
-      "posted_at": 1784257261.420361,
-      "text": "\ud83d\udcf0 NEWS: DTCC just moved tokenized securities into live trading -- not a pilot, the real thing. \ud83c\udfe6\u26a1\n\nDTCC is the institution that settles nearly every US stock trade behind the scenes.",
-      "url": "https://www.coindesk.com/business/2026/07/15/dtcc-moves-tokenized-securities-into-live-trading-marking-a-milestone-for-wall-street-s-blockchain-push"
-    },
-    {
       "posted_at": 1784264462.304867,
       "text": "\ud83d\udea8 JUST IN: Visa is backing a new stablecoin platform called Open USD, stepping right into Circle's turf.\n\nCircle's USDC has been a dominant dollar-pegged stablecoin (a crypto token designed to hold $1 value).",
       "url": "https://www.coindesk.com/business/2026/07/16/visa-backs-open-usd-with-new-stablecoin-platform-as-circle-faces-fresh-competition"
@@ -790,6 +775,11 @@
       "posted_at": 1784509260.129113,
       "text": "\ud83d\udea8 JUST IN: Visa just launched a Stablecoin Platform letting banks and fintech firms plug dollar-pegged crypto tokens straight into Visa's payment network.",
       "url": "https://decrypt.co/373668/visa-stablecoin-platform-banks-fintech-open-usd"
+    },
+    {
+      "posted_at": 1784520058.947512,
+      "text": "\ud83d\udea8 JUST IN: Citadel Securities just put $400M into Crypto.com -- and in the same news cycle, Base (Coinbase's blockchain network) handed its app over to Cobie, a well-known crypto podcaster and trader. \ud83d\udd04\ud83e\udd1d",
+      "url": null
     }
   ],
   "telegram": {
