@@ -125,7 +125,7 @@ def _day_context(ctx):
 # Deliberately clock-time-based, not elapsed-time+jitter -- same lesson
 # already learned once this session (an elapsed-time cadence drifted over
 # time and produced uneven gaps); a fixed clock is predictable instead.
-_CALL_CHECKPOINT_HOURS = (0, 6, 12, 21)  # TEMPORARY: 0 added for a live test, revert after
+_CALL_CHECKPOINT_HOURS = (6, 12, 21)
 
 
 def _ready_for_call(ctx, cfg, state):
