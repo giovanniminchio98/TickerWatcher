@@ -303,10 +303,13 @@ still hourly — the internal checkpoint gate (`_CALL_CHECKPOINT_HOURS`) is
 what turns that into "only acts 3x/day," so
 no cron-job.org changes are needed.
 
-**Post shape.** A fixed opening tag (`🌍 WORLD:`) followed by a punchy,
-headline-style take, a blank line, then a plain-language sentence on why it
-matters — same "never assume familiarity, define unfamiliar terms inline"
-rule the rest of the account holds to. **No images, no links on X.**
+**Post shape.** A fixed signature line (`Hoot hoot 🦉`, on its own line —
+2026-07-20: replaced the old `🌍 WORLD:` tag, which stopped carrying any
+real information once every post became the same single format) followed
+by a blank line, then a punchy, headline-style take, another blank line,
+then a plain-language sentence on why it matters — same "never assume
+familiarity, define unfamiliar terms inline" rule the rest of the account
+holds to. **No images, no links on X.**
 Instead, every recap gets a mandatory `second_part`: a reply posted
 immediately after the main post whose one job is explaining what it
 actually means, in clear, simple terms — never a restatement of the

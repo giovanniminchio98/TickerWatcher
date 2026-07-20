@@ -363,17 +363,18 @@ def _reasoning_contradicts_post(text):
 
 
 def _enforce_opening_tag(text):
-    """Every recap must open with ai_manager_brain.TAG -- same
-    defense-in-depth pattern as _enforce_single_cashtag: the prompt already
-    requires this, but a rule stated in a prompt is a request, not a
-    guarantee, and a post silently missing its tag breaks the profile's
-    visual consistency. Prepends the tag if it's somehow missing rather
-    than letting the post go out untagged."""
+    """Every recap must open with ai_manager_brain.OPENER ("Hoot hoot 🦉"),
+    on its own line, followed by a blank line before the post itself --
+    same defense-in-depth pattern as _enforce_single_cashtag: the prompt
+    already requires this, but a rule stated in a prompt is a request, not
+    a guarantee, and a post silently missing its signature breaks the
+    profile's visual consistency. Prepends it if it's somehow missing
+    rather than letting the post go out unsigned."""
     stripped = text.lstrip()
-    tag_prefix = f"{ai_manager_brain.TAG}:"
-    if stripped.startswith(tag_prefix):
+    opener_prefix = f"{ai_manager_brain.OPENER}\n\n"
+    if stripped.startswith(opener_prefix):
         return text
-    return f"{tag_prefix} {text}"
+    return f"{opener_prefix}{text}"
 
 
 def _minutes_to_next_checkpoint(ctx):

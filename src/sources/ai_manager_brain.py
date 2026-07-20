@@ -38,10 +38,14 @@ The RECENTLY POSTED context (this account's own post history, shared
 across every trigger via src/story_history.py) still guards against
 covering the same real-world story again too soon.
 
-Every post opens with a single fixed tag (see TAG below) and is written
-in the same plain-language, no-jargon-without-a-definition, genuinely
-useful style the rest of the account already holds to. No images, no
-links on X, by deliberate account-wide choice -- see second_part below.
+Every post opens with a fixed signature line (see OPENER below, "Hoot
+hoot 🦉" -- 2026-07-20: replaced the old "🌍 WORLD" geo-tag, which stopped
+carrying any real information once every post became the same single
+format/tag; a brand signature at least builds recognizability instead)
+and is written in the same plain-language, no-jargon-without-a-definition,
+genuinely useful style the rest of the account already holds to. No
+images, no links on X, by deliberate account-wide choice -- see
+second_part below.
 
 second_part is still mandatory on every post in the batch (2026-07-20
 decision, carried over unchanged from the per-story design): a reply
@@ -88,10 +92,11 @@ logger = logging.getLogger("tickerwatch.ai_manager_brain")
 
 MAX_POST_LEN = 260
 
-# Single fixed opening tag -- there's only one post type/format now (a
+# Fixed opening signature line -- there's only one post type/format now (a
 # periodic recap), so unlike the old 6-tag vocabulary (JUST IN/BREAKING/
 # CONTEXT/CRYPTO/AI/NEWS) there's nothing for Claude to choose between.
-TAG = "🌍 WORLD"
+# Own line, followed by a blank line, then the actual post begins.
+OPENER = "Hoot hoot 🦉"
 
 
 def _world_news_line(article):
@@ -150,8 +155,8 @@ def _build_prompt(snapshot):
         "never skip an item just because it isn't in English.\n\n"
         "Hard rules:\n"
         f"- HARD LIMIT, no exceptions: the post's text, and separately second_part, must be AT MOST "
-        f"{MAX_POST_LEN} characters -- counting literally everything (the opening tag, the colon and "
-        f"space after it, every emoji, every space). Not {MAX_POST_LEN + 1}, not one character more. "
+        f"{MAX_POST_LEN} characters -- counting literally everything (the opening signature line, "
+        f"every blank line, every emoji, every space). Not {MAX_POST_LEN + 1}, not one character more. "
         "This is X's real hard technical limit, not a style preference -- a post that goes over gets "
         "cut off automatically and reads as broken, unfinished, cut mid-word. Before finalizing, "
         f"actually count the length; if it's over {MAX_POST_LEN}, shorten it (cut a clause, a word, "
@@ -171,13 +176,15 @@ def _build_prompt(snapshot):
         "matters, never a bare headline with nothing explained. Whenever you name an acronym, "
         "organization, or technical term a general reader likely won't recognize, define it briefly "
         "the moment it's introduced, in a short clause -- don't assume familiarity.\n"
-        f"- The post MUST open with exactly this tag, verbatim, followed by a colon and a space: "
-        f"'{TAG}'. Never invent a different tag, never skip it.\n"
-        "- Post shape: two visually distinct parts separated by a blank line (a real line break, not "
-        "just a space). Part 1, right after the opening tag: the punchy, headline-style take itself "
-        "-- short, direct, written like a wire alert (this is what someone gets from a half-second "
-        "glance while scrolling). Part 2, after the blank line: a clear sentence or two on why it "
-        "matters, in plain language. Never merge the two into one continuous paragraph. Use genuinely "
+        f"- The post MUST open with exactly this line, verbatim, on its own line, followed by a blank "
+        f"line (a real line break) before the post itself begins: '{OPENER}'. Never invent a "
+        "different opener, never skip it, never put anything else on that first line with it.\n"
+        "- Post shape after the opener: two visually distinct parts separated by a blank line (a real "
+        "line break, not just a space). Part 1, right after the opener's blank line: the punchy, "
+        "headline-style take itself -- short, direct, written like a wire alert (this is what someone "
+        "gets from a half-second glance while scrolling). Part 2, after another blank line: a clear "
+        "sentence or two on why it matters, in plain language. Never merge the two into one continuous "
+        "paragraph. Use genuinely "
         "generous emoji throughout (several, not just one or two; never use \U0001F517, since "
         "Telegram already prefixes its own link line with that same emoji). No @mentions. Should "
         "read like a real person's take, not a bot alert. When a post has one genuinely central "
