@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-20",
-    "last_call_checkpoint": "2026-07-20-09",
-    "last_call_time": 1784533490.961106
+    "last_call_checkpoint": "2026-07-20-10",
+    "last_call_time": 1784535719.188184
   },
   "budget": {
     "daily": {
       "date": "2026-07-20",
-      "posts_used": 9,
-      "usd_used": 0.135
+      "posts_used": 13,
+      "usd_used": 0.195
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 208,
-    "usd_used": 7.56
+    "posts_used": 212,
+    "usd_used": 7.62
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.1511
+    "usd_used": 2.185
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -455,11 +455,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784271665.04544,
-      "text": "\ud83d\udcb0 CRYPTO: A DeFi (decentralized finance) protocol called Ostium just lost $18 million to an oracle exploit -- the latest in a wave of similar attacks.\n\nOracles are the price feeds smart contracts rely on to know an asset's real value.",
-      "url": "https://www.coindesk.com/business/2026/07/15/ostium-suffers-usd18-million-exploit-as-oracle-attack-wave-continues-to-hit-defi"
-    },
-    {
       "posted_at": 1784278865.811339,
       "text": "\ud83d\udea8 JUST IN: Citadel Securities just invested $400 million into Crypto.com, valuing the exchange at $20 billion.\n\nCitadel Securities is one of the largest market-making firms in traditional finance -- old-school Wall Street putting real money into a crypto exch\u2026",
       "url": "https://cointelegraph.com/news/citadel-securities-invests-400m-in-cryptocom-at-20b-valuation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
@@ -688,6 +683,16 @@
       "posted_at": 1784530857.651972,
       "text": "\ud83d\udcb0 CRYPTO: Citadel Securities' $400M bet on Crypto.com wasn't a one-off -- Stripe is reportedly making a $53 billion move that could crown a stablecoin king.\n\nHere's the mechanism behind why Wall Street and payment giants keep circling stablecoins:",
       "url": "https://decrypt.co/373636/morning-minute-base-hands-its-app-over-to-cobie"
+    },
+    {
+      "posted_at": 1784535719.188184,
+      "text": "\ud83c\udf0d WORLD: US carries out ninth straight night of strikes on Iran, hitting the city of Bushehr. Iran fired back at bases in Syria, Kuwait and Jordan, and says it hit two tankers in the Strait of Hormuz.\n\nOil jumped over $91/barrel on the news.",
+      "url": null
+    },
+    {
+      "posted_at": 1784535719.188184,
+      "text": "\ud83c\udf0d WORLD: Iran says not a single drop of oil or gas will pass through the Strait of Hormuz, as the US-Iran standoff enters its ninth night. Brent crude briefly topped $91 a barrel, its highest since June. \ud83d\udee2\ufe0f\u26a0\ufe0f",
+      "url": null
     }
   ],
   "telegram": {
