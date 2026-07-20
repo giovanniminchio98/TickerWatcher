@@ -362,19 +362,30 @@ def _reasoning_contradicts_post(text):
     return any(phrase in lowered for phrase in _NEGATIVE_REASONING_PHRASES)
 
 
-def _enforce_opening_tag(text):
-    """Every recap must open with ai_manager_brain.OPENER ("Hoot hoot 🦉"),
-    on its own line, followed by a blank line before the post itself --
-    same defense-in-depth pattern as _enforce_single_cashtag: the prompt
-    already requires this, but a rule stated in a prompt is a request, not
-    a guarantee, and a post silently missing its signature breaks the
-    profile's visual consistency. Prepends it if it's somehow missing
-    rather than letting the post go out unsigned."""
-    stripped = text.lstrip()
-    opener_prefix = f"{ai_manager_brain.OPENER}\n\n"
-    if stripped.startswith(opener_prefix):
-        return text
-    return f"{opener_prefix}{text}"
+def _split_off_signature(text):
+    """Returns text with any trailing ai_manager_brain.SIGNATURE (and the
+    blank line before it) stripped off, so it can be cleanly re-appended
+    regardless of whether Claude already wrote it, wrote it with different
+    surrounding whitespace, or omitted it entirely."""
+    body = text.rstrip()
+    if body.endswith(ai_manager_brain.SIGNATURE):
+        body = body[: -len(ai_manager_brain.SIGNATURE)].rstrip()
+    return body
+
+
+def _enforce_closing_signature(text):
+    """Every recap must end with ai_manager_brain.SIGNATURE ("Hoot hoot 🦉"),
+    on its own line after a blank line -- same defense-in-depth pattern as
+    _enforce_single_cashtag: the prompt already requires this, but a rule
+    stated in a prompt is a request, not a guarantee, and a post silently
+    missing its signature breaks the profile's visual consistency. Appends
+    it if it's somehow missing rather than letting the post go out
+    unsigned.
+    (2026-07-21: moved from an opening tag to a closing signature -- a
+    fixed announcement line before the post conflicted with the new
+    "genuine first-person reaction" voice, which needs to open directly as
+    Mark talking, not after a stock header.)"""
+    return f"{_split_off_signature(text)}\n\n{ai_manager_brain.SIGNATURE}"
 
 
 def _minutes_to_next_checkpoint(ctx):
@@ -472,8 +483,17 @@ def _post_one(ctx, item, prior_texts):
     if not ctx.budget.can_spend(has_link=False):
         return False, "X budget exhausted this period"
 
-    tagged_text = _enforce_opening_tag(text)
-    final_text = _enforce_single_cashtag(truncate(tagged_text, ai_manager_brain.MAX_POST_LEN))
+    # Full, untruncated body+signature -- mirrored to Telegram as-is, where
+    # there's no 260-char constraint (see channel_text below).
+    tagged_text = _enforce_closing_signature(text)
+    # For X, reserve room for the signature block up front so truncate()
+    # never has a chance to cut it off or push the post over the limit --
+    # the old opening-tag version didn't need this since truncating from
+    # the end naturally left a *prefix* tag untouched.
+    signature_block = f"\n\n{ai_manager_brain.SIGNATURE}"
+    reserved_len = ai_manager_brain.MAX_POST_LEN - len(signature_block)
+    truncated_body = truncate(_split_off_signature(text), reserved_len)
+    final_text = _enforce_single_cashtag(f"{truncated_body}{signature_block}")
 
     tweet_id = ctx.x.post(final_text)
     if not tweet_id:

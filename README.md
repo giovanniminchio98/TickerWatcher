@@ -303,13 +303,22 @@ still hourly — the internal checkpoint gate (`_CALL_CHECKPOINT_HOURS`) is
 what turns that into "only acts 3x/day," so
 no cron-job.org changes are needed.
 
-**Post shape.** A fixed signature line (`Hoot hoot 🦉`, on its own line —
-2026-07-20: replaced the old `🌍 WORLD:` tag, which stopped carrying any
-real information once every post became the same single format) followed
-by a blank line, then a punchy, headline-style take, another blank line,
-then a plain-language sentence on why it matters — same "never assume
-familiarity, define unfamiliar terms inline" rule the rest of the account
-holds to. **No images, no links on X.**
+**Post shape.** Written in Mark's own genuine first-person voice (2026-07-21)
+— a real reaction to something he just read, told the way you'd tell a
+friend or colleague, not a sterile wire-alert headline. A varied,
+never-repeated opener (`"I just read that..."`, `"Okay, this is big:"`,
+`"Wait, this actually happened:"`, etc.) leads straight into the actual
+news, then a blank line, then a plain-language sentence on why it matters
+— same "never assume familiarity, define unfamiliar terms inline" rule the
+rest of the account holds to. The reaction is calibrated to the story's
+real weight: genuine surprise for something striking, calm and measured
+for something serious or tragic — never flippant. Every post closes with
+a fixed signature line, `Hoot hoot 🦉`, on its own line after a blank line
+(2026-07-21: moved here from opening the post — a fixed announcement line
+before a genuine first-person reaction undercut the "Mark is actually
+talking to you" effect; before that, 2026-07-20, it had replaced the old
+`🌍 WORLD:` tag, which stopped carrying any real information once every
+post became the same single format). **No images, no links on X.**
 Instead, every recap gets a mandatory `second_part`: a reply posted
 immediately after the main post whose one job is explaining what it
 actually means, in clear, simple terms — never a restatement of the
