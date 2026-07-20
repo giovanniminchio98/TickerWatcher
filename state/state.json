@@ -2,7 +2,7 @@
   "ai_manager": {
     "calls_today": 3,
     "date": "2026-07-20",
-    "last_call_checkpoint": "2026-07-21-00",
+    "last_call_checkpoint": null,
     "last_call_time": 1784585174.429159
   },
   "budget": {
