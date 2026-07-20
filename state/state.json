@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-20",
-    "last_call_checkpoint": "2026-07-20-12",
-    "last_call_time": 1784541664.713932
+    "last_call_checkpoint": "2026-07-20-21",
+    "last_call_time": 1784574060.887273
   },
   "budget": {
     "daily": {
       "date": "2026-07-20",
-      "posts_used": 19,
-      "usd_used": 0.285
+      "posts_used": 25,
+      "usd_used": 0.375
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 218,
-    "usd_used": 7.71
+    "posts_used": 224,
+    "usd_used": 7.8
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.2238
+    "usd_used": 2.2609
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -455,31 +455,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784303587.150123,
-      "text": "\ud83d\udea8 JUST IN: Bitcoin dropped under $62.5K, now down 2.4% in 24 hours to about $63,155.\n\nCoinTelegraph reports this ties to Iran strikes rattling US stocks -- crypto has been trading in lockstep with equities for two days straight instead of acting like an indep\u2026",
-      "url": "https://cointelegraph.com/markets/bitcoin-price-sags-under-625k-as-iran-strikes-add-to-us-stocks-pressure?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "posted_at": 1784304064.758835,
-      "text": "\ud83d\udcf0 NEWS: HSBC just got Bank of England approval to enter its Digital Securities Sandbox.\n\nThe sandbox lets banks test real securities trading on blockchain under regulatory supervision.",
-      "url": "https://cointelegraph.com/news/hsbc-bank-of-england-approval-digital-securities-sandbox?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "posted_at": 1784310523.493846,
-      "text": "\ud83d\udcca CONTEXT: NFLX just tanked -7.4% today while the rest of the market only slipped modestly -- SPY -0.7%, QQQ -0.84%.\n\nA single-stock move that much bigger than the index usually means something company-specific (like guidance or subscriber numbers), not a mar\u2026",
-      "url": null
-    },
-    {
-      "posted_at": 1784311264.780033,
-      "text": "\ud83d\udcb0 CRYPTO: SBI Holdings, one of Japan's biggest financial groups, just got regulatory approval to acquire Singapore crypto exchange Coinhako.\n\nMAS (Singapore's central bank and financial regulator) had to sign off.",
-      "url": "https://cointelegraph.com/news/sbi-receives-mas-approval-to-acquire-singaporean-coinhako?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "posted_at": 1784311535.393782,
-      "text": "\ud83d\udcf0 NEWS: A Dutch court just declared crypto platform Knaken bankrupt after finding it couldn't repay users -- funds were missing.\n\nThe Rotterdam court said bankruptcy was the only way to ensure an orderly, fair settlement process for customers owed money.",
-      "url": "https://cointelegraph.com/news/dutch-court-knaken-crypto-platform-bankruptcy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "posted_at": 1784325663.784304,
       "text": "\ud83d\udea8 JUST IN: FTX is sending out $900 million to creditors in its fifth payment round since the exchange collapsed.\n\nFTX went bankrupt in Nov 2022, freezing user funds.",
       "url": "https://cointelegraph.com/news/ftx-distribute-millions-creditors-fifth-payment-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
@@ -693,10 +668,25 @@
       "posted_at": 1784541664.713932,
       "text": "\ud83c\udf0d WORLD: The UK gets its 7th PM in 10 years today -- Keir Starmer resigns, and Andy Burnham, fresh off winning the Labour leadership, is set to be invited by King Charles to form a government. \ud83c\uddec\ud83c\udde7\ud83d\udc51\n\nWhy this matters:",
       "url": null
+    },
+    {
+      "posted_at": 1784574060.887273,
+      "text": "\ud83c\udf0d WORLD: Andy Burnham has officially become the UK's new prime minister today, taking over from Keir Starmer as Labour hands the leadership baton to a new face. \ud83c\uddec\ud83c\udde7\ud83d\udd11\n\nWhy it matters below:",
+      "url": null
+    },
+    {
+      "posted_at": 1784574060.887273,
+      "text": "\ud83c\udf0d WORLD: Russia's strikes on merchant ships in the Black Sea are intensifying -- 10 killed in the latest attacks, part of 28 deaths near Odesa this month alone. \ud83d\udea2\ud83d\udd25\n\nThe context:",
+      "url": null
+    },
+    {
+      "posted_at": 1784574060.887273,
+      "text": "\ud83c\udf0d WORLD: Yemen's Houthi rebels just announced a 'maritime embargo' on Saudi Arabia, effective immediately, in response to a Saudi blockade of Yemeni ports and airports. \u2693\ud83d\udeab\n\nWhy it matters below:",
+      "url": null
     }
   ],
   "telegram": {
-    "last_report_date": "2026-07-19"
+    "last_report_date": "2026-07-20"
   },
   "whale": {
     "last_btc_block_height": 958176,
