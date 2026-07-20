@@ -677,16 +677,26 @@ def run(ctx):
         # deterministic overrides: even if Claude set should_post true,
         # don't trust it blindly -- catches both a Claude reasoning field
         # that plainly contradicts its own should_post (confirmed live) and
-        # a likely-duplicate topic by shared distinctive figures
-        if _reasoning_contradicts_post(post.get("reasoning")):
+        # a likely-duplicate topic by shared distinctive figures. Checked
+        # against second_part too, not just reasoning/text -- confirmed
+        # live that with second_part now mandatory (see ai_manager_brain.py),
+        # Claude can write its own internal second-guessing straight into
+        # the reply itself (e.g. a real posted reply that read "Wait --
+        # this was already covered. Skipping to avoid repeat.") instead of
+        # a genuine explanation. reasoning never goes to X, but second_part
+        # does, so it needs the exact same scrutiny.
+        second_part_text = post.get("second_part") or ""
+        if _reasoning_contradicts_post(post.get("reasoning")) or _reasoning_contradicts_post(second_part_text):
             logger.warning(
-                "ai_manager: declining post whose own reasoning contradicts should_post=true: %s",
-                post.get("reasoning", "")[:120],
+                "ai_manager: declining post whose reasoning or second_part contradicts should_post=true: %s",
+                (post.get("reasoning") or second_part_text)[:120],
             )
             declined_posts.append(post)
             continue
         prior_texts = already_posted_texts + [item["text"] for item in queued_items]
-        if _is_likely_duplicate(post["text"], prior_texts):
+        if _is_likely_duplicate(post["text"], prior_texts) or (
+            second_part_text and _is_likely_duplicate(second_part_text, prior_texts)
+        ):
             logger.warning(
                 "ai_manager: declining likely-duplicate post (shared salient figures with a recent post): %s",
                 post["text"][:80],
