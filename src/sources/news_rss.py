@@ -17,6 +17,7 @@ Feed URLs occasionally change or get retired -- a broken feed is logged and
 skipped, never a hard failure for the whole run (see main.py's per-source
 try/except).
 """
+import calendar
 import logging
 import re
 
@@ -28,6 +29,20 @@ logger = logging.getLogger("tickerwatch.news_rss")
 def _matches_keywords(text, keywords):
     text_lower = text.lower()
     return [kw for kw in keywords if kw.lower() in text_lower]
+
+
+def _entry_timestamp(entry):
+    """Epoch seconds from an RSS/Atom entry's published/updated date, or
+    None if the feed doesn't provide one -- feedparser already normalizes
+    both into a UTC time.struct_time, so calendar.timegm (not time.mktime,
+    which assumes local time) is the correct conversion."""
+    parsed = entry.get("published_parsed") or entry.get("updated_parsed")
+    if not parsed:
+        return None
+    try:
+        return calendar.timegm(parsed)
+    except Exception:
+        return None
 
 
 def fetch_matching_articles(rss_feeds, keywords, already_posted_urls, max_articles):
@@ -66,7 +81,7 @@ def fetch_matching_articles(rss_feeds, keywords, already_posted_urls, max_articl
     return matches
 
 
-def fetch_latest_articles(rss_feeds, already_posted_urls, max_per_feed=3):
+def fetch_latest_articles(rss_feeds, already_posted_urls, max_per_feed=3, since_ts=None):
     """Same fetch/parse/error-isolation shape as fetch_matching_articles, but
     with no keyword gate -- just the max_per_feed most recent entries from
     each whitelisted feed. Built for ai_manager's world-news recap: "what
@@ -74,9 +89,25 @@ def fetch_latest_articles(rss_feeds, already_posted_urls, max_per_feed=3):
     the way JUST IN alerts do (a war, an election, a disaster wouldn't match
     any term in config/keywords.json), so this pulls unconditionally and
     leaves judging what's actually important to the synthesis step instead
-    of a keyword filter. Returns dicts: {"title", "summary", "url", "source",
-    "lang"} -- lang is feed_cfg's own "lang" field (e.g. "it", "fr"),
-    defaulting to "en", so the prompt knows which items need translation."""
+    of a keyword filter.
+
+    since_ts (epoch seconds), when given, drops any entry with a known
+    publish/update time older than it -- this is the real dedup mechanism
+    for this feed type: a recap synthesizes many articles into one post
+    with no single source URL to remember (unlike fetch_matching_articles'
+    already_posted_urls, which works because each post there IS tied to one
+    URL), so without a time filter the same still-top-of-feed articles
+    could keep reappearing in the candidate pool on a quiet news day even
+    though they were already seen (and possibly already covered) last call.
+    An entry with no parseable date is kept rather than dropped -- some
+    feeds omit it, and silently losing real content is worse than
+    occasionally re-showing an old one (the caller's own duplicate/
+    RECENTLY POSTED checks are the backstop for that). already_posted_urls
+    is still checked too, as a cheap secondary guard.
+
+    Returns dicts: {"title", "summary", "url", "source", "lang"} -- lang is
+    feed_cfg's own "lang" field (e.g. "it", "fr"), defaulting to "en", so
+    the prompt knows which items need translation."""
     articles = []
     for feed_cfg in rss_feeds:
         if not feed_cfg.get("whitelisted"):
@@ -96,6 +127,10 @@ def fetch_latest_articles(rss_feeds, already_posted_urls, max_per_feed=3):
             url = entry.get("link")
             if not url or url in already_posted_urls:
                 continue
+            if since_ts is not None:
+                entry_ts = _entry_timestamp(entry)
+                if entry_ts is not None and entry_ts < since_ts:
+                    continue
             title = entry.get("title", "")
             summary = re.sub("<[^<]+?>", "", entry.get("summary", ""))  # strip HTML tags
             articles.append(

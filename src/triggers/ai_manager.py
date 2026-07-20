@@ -133,19 +133,30 @@ def _ready_for_call(ctx, cfg, state):
     return state.get("last_call_checkpoint") != checkpoint_id
 
 
-def _world_news_snapshot(ctx, limit=15):
+def _world_news_snapshot(ctx, state, limit=15):
     """PRIMARY input to the recap (see ai_manager_brain.py's prompt) --
     latest headlines from config/world_news.json's general world-news
     outlets, via news_rss.fetch_latest_articles (no keyword gate -- "what's
     the latest important news" doesn't fit a finance/crypto keyword
-    whitelist the way a JUST IN alert does). Excludes URLs already covered
-    by ANY trigger within the shared story_history window, same
-    cross-trigger dedup pattern _news_snapshot already uses."""
+    whitelist the way a JUST IN alert does).
+
+    Time-filtered to since the last successful call (state["last_call_time"])
+    -- this, not URL exclusion, is the real dedup mechanism here: a recap
+    synthesizes many articles into one post with no single source URL to
+    log (_post_recap logs url=None), so story_history's usual recent_urls
+    exclusion is a no-op for this feed type. Without the time filter, the
+    same still-top-of-feed articles could keep reappearing in the candidate
+    pool call after call on a quiet news day. First-ever call (no
+    last_call_time yet) passes since_ts=None, so nothing gets filtered out
+    by time on that bootstrap run. already_posted_urls is still passed too,
+    as a cheap secondary guard, same cross-trigger dedup pattern
+    _news_snapshot already uses."""
     world_cfg = ctx.config["world_news"]
     already_used = story_history.recent_urls(ctx.state, ctx.now.timestamp())
+    since_ts = state.get("last_call_time")
     try:
         articles = news_rss.fetch_latest_articles(
-            world_cfg["rss_feeds"], already_used, world_cfg.get("max_articles_per_feed", 3)
+            world_cfg["rss_feeds"], already_used, world_cfg.get("max_articles_per_feed", 3), since_ts=since_ts
         )
     except Exception:
         logger.exception("World news fetch failed for ai_manager")
@@ -477,7 +488,7 @@ def run(ctx):
 
     snapshot = {
         "day_context": _day_context(ctx),
-        "world_news": _world_news_snapshot(ctx),
+        "world_news": _world_news_snapshot(ctx, state),
         "news": _news_snapshot(ctx),
         "prices": _price_snapshot_lines(ctx),
         "oracle": _oracle_snapshot_lines(ctx),
