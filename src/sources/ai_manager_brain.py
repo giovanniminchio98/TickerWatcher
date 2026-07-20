@@ -44,13 +44,16 @@ tell a friend or colleague about it -- not a sterile wire-alert headline.
 Varied every time, never a fixed catchphrase, and calibrated to the
 story's actual weight (genuine surprise/interest for something striking,
 calm and measured for something serious or heavy -- never a flippant
-reaction on tragedy). Every post closes with a fixed signature line (see
-SIGNATURE below, "Hoot hoot 🦉" -- moved here 2026-07-21 from originally
-opening the post, since a fixed announcement line before a genuine
-first-person reaction undercut the "Mark is actually talking to you"
-effect; closing with it still gives a recognizable brand beat without
-costing the opening hook). No images, no links on X, by deliberate
-account-wide choice -- see second_part below.
+reaction on tragedy). Every post opens with a fixed emoji marker (see
+OWL_EMOJI below, "🦉") directly on the same line as the first word --
+like the owl itself is speaking the reaction -- rather than a separate
+announcement line or a trailing signature: both of those were tried and
+dropped the same day (an opening announcement line undercut the "Mark is
+actually talking to you" effect; a closing signature line turned out
+redundant with the mandatory second_part reply immediately after it, and
+broke the flow into that reply). An inline emoji costs nothing and keeps
+brand recognition without either problem. No images, no links on X, by
+deliberate account-wide choice -- see second_part below.
 
 second_part is still mandatory on every post in the batch (2026-07-20
 decision, carried over unchanged from the per-story design): a reply
@@ -97,12 +100,14 @@ logger = logging.getLogger("tickerwatch.ai_manager_brain")
 
 MAX_POST_LEN = 260
 
-# Fixed closing signature line -- there's only one post type/format now (a
+# Fixed opening emoji marker -- there's only one post type/format now (a
 # periodic recap), so unlike the old 6-tag vocabulary (JUST IN/BREAKING/
 # CONTEXT/CRYPTO/AI/NEWS) there's nothing for Claude to choose between.
-# A blank line, then this on its own line, as the very last thing in the
-# post (2026-07-21: moved from opening to closing -- see module docstring).
-SIGNATURE = "Hoot hoot 🦉"
+# Goes directly on the same line as the post's first word, like the owl
+# itself is speaking (2026-07-21: settled here after trying both a full
+# opening announcement line and a closing signature line -- see module
+# docstring for why both were dropped).
+OWL_EMOJI = "🦉"
 
 
 def _world_news_line(article):
@@ -161,7 +166,7 @@ def _build_prompt(snapshot):
         "never skip an item just because it isn't in English.\n\n"
         "Hard rules:\n"
         f"- HARD LIMIT, no exceptions: the post's text, and separately second_part, must be AT MOST "
-        f"{MAX_POST_LEN} characters -- counting literally everything (the closing signature line, "
+        f"{MAX_POST_LEN} characters -- counting literally everything (the opening emoji marker, "
         f"every blank line, every emoji, every space). Not {MAX_POST_LEN + 1}, not one character more. "
         "This is X's real hard technical limit, not a style preference -- a post that goes over gets "
         "cut off automatically and reads as broken, unfinished, cut mid-word. Before finalizing, "
@@ -184,8 +189,11 @@ def _build_prompt(snapshot):
         "the moment it's introduced, in a short clause -- don't assume familiarity.\n"
         "- VOICE: write as Mark, genuinely reacting to something he just read and telling a friend or "
         "colleague about it -- not a sterile wire-alert headline, not a neutral third-person report. "
-        "Open in your own real voice ('I just read that...', 'Okay, this is big:', 'Just saw this and "
-        "had to share:', 'Wait, this actually happened:', etc.) -- invent your own opener every time, "
+        f"The post's very first characters must be '{OWL_EMOJI} ' (the owl emoji, then a single space), "
+        "directly followed on that SAME line by your own real reaction -- like the owl itself is "
+        "speaking it, not a separate announcement before it (e.g. "
+        f"'{OWL_EMOJI} I just read that...', '{OWL_EMOJI} Okay, this is big:', '{OWL_EMOJI} Wait, this "
+        "actually happened:'). Invent your own opener every time, "
         "never repeat the exact same one twice in a row, and never use the same opener across multiple "
         "posts in this batch either. Calibrate the reaction to the story's real weight: genuine "
         "surprise or interest for something striking, unusual, or fascinating; calm and measured, "
@@ -206,10 +214,6 @@ def _build_prompt(snapshot):
         "name, exactly once, never more (X hard-rejects, 403, any post with MORE THAN ONE $cashtag). "
         "Most recaps, being world-news-led, won't have a central ticker at all -- that's normal, "
         "don't force one in.\n"
-        f"- The post MUST end with exactly this line, verbatim, on its own line, after a blank line "
-        f"(a real line break) following the rest of the post: '{SIGNATURE}'. It's the very last thing "
-        "in the post, after everything else including the pointer to second_part. Never invent a "
-        "different signature, never skip it, never put anything else on that final line with it.\n"
         "- QUANT ORACLE below is a real statistical signal for each tracked coin (a weighted "
         "technical/Monte-Carlo composite verdict, confidence score, and regime read), recomputed "
         "fresh this run from live price history -- not fabricated, but also not a certainty. Only "
@@ -228,8 +232,7 @@ def _build_prompt(snapshot):
         "(character limit, plain-language/no-link, the weekend stock rule below) applies to "
         "second_part exactly as much as to the main post. Part 2 of the main post (see Post shape "
         "above) should end with a short, natural pointer to it (e.g. 'here's why:', 'the context:', "
-        "'\U0001F9F5👇', varied rather than the same phrase every time) -- right before the closing "
-        f"'{SIGNATURE}' line.\n"
+        "'\U0001F9F5👇', varied rather than the same phrase every time).\n"
         "- EARNINGS and PRESS RELEASES below are real, timely angles for tracked companies -- use "
         "only if genuinely relevant to this recap, never forced in.\n"
         "- Keep a consistent voice with the account's own recent posts shown below.\n"
