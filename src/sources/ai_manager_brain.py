@@ -1,16 +1,19 @@
 """
 The single Claude call behind src/triggers/ai_manager.py: three times a day
 (06:00/12:00/21:00 Brussels -- see ai_manager.py's _CALL_CHECKPOINT_HOURS),
-Claude synthesizes ONE recap post -- a genuine "take" on the most important
-things that happened since the last recap, world news first, crypto/
-finance/AI folded in only when genuinely notable rather than as the main
-focus. Replaced the old "batch of up to posts_per_batch individual posts,
-8x/day" design entirely (2026-07-20): the account owner's own read was that
-they wouldn't reliably follow most of what that produced (mostly routine
-crypto/price "fuzz"), and there was no real world-news source feeding it at
-all. This is deliberately a single should_post/text/second_part decision
-now, not a batch -- there's no queue to drain, the post (if any) fires
-immediately every call.
+Claude decides a BATCH of 0 to max_posts_per_call posts covering the most
+important things that happened since the last recap, world news first,
+crypto/finance/AI folded in only when genuinely notable rather than as the
+main focus. Replaced the old "batch of up to posts_per_batch individual
+posts, 8x/day, queued and drained one per hourly run over the following
+hours" design entirely (2026-07-20), then refined again the same day: an
+initial single-post-only version turned out too narrow -- a genuinely busy
+period can have several distinct important stories worth their own post,
+not one squeezed into a single 260-char synthesis. Unlike the old batch
+design, though, there's still no queue: every accepted post in this call's
+batch fires immediately, one after another, in this same run -- the 3
+fixed checkpoints are the only pacing now, nothing spreads across
+subsequent hourly runs anymore.
 
 Primary input is snapshot["world_news"] (src/sources/news_rss.py's
 fetch_latest_articles against config/world_news.json -- Guardian, BBC,
@@ -35,23 +38,30 @@ The RECENTLY POSTED context (this account's own post history, shared
 across every trigger via src/story_history.py) still guards against
 covering the same real-world story again too soon.
 
-Every recap opens with a single fixed tag (see TAG below) and is written
+Every post opens with a single fixed tag (see TAG below) and is written
 in the same plain-language, no-jargon-without-a-definition, genuinely
 useful style the rest of the account already holds to. No images, no
 links on X, by deliberate account-wide choice -- see second_part below.
 
-second_part is still mandatory on every recap (2026-07-20 decision,
-carried over unchanged from the per-story design): a reply posted
-immediately after the main post, explaining what it actually means in
+second_part is still mandatory on every post in the batch (2026-07-20
+decision, carried over unchanged from the per-story design): a reply
+posted immediately after that post, explaining what it actually means in
 clear, simple terms. Same anti-leak hardening as before (confirmed live
 that Claude can otherwise paste its own internal second-guessing straight
 into published text) -- second_part must never contain meta-commentary
-about the posting decision itself.
+about the posting decision itself. This check is deliberately only ever
+applied to second_part, never to reasoning (which is never published) --
+confirmed live that reasoning can legitimately narrate a whole batch's
+selection process, including topics it considered and excluded, without
+that being any kind of red flag about the topics it actually chose.
 
-should_post: false is the correct, expected outcome whenever nothing in
-the whole period genuinely clears the bar -- this is explicitly not a
-"say something every time" design, same quality-over-quota principle the
-rest of the account already runs on.
+An empty batch (0 posts) is the correct, expected outcome whenever
+nothing in the period genuinely clears the bar -- this is explicitly not
+a "say something every time" design, same quality-over-quota principle
+the rest of the account already runs on. Equally, a busy period can
+genuinely warrant several posts -- there's no pressure to compress
+distinct important stories into one, and no pressure to pad a quiet
+period up to the max either.
 
 Same "no safe fallback" reasoning as reply_writer.py/draft_writer.py:
 without ANTHROPIC_API_KEY this returns (None, None) rather than posting
@@ -108,17 +118,24 @@ def _build_prompt(snapshot):
         f'{p["symbol"]}: {p["title"]}' for p in snapshot.get("press_releases", []) if p.get("title")
     ) or "(no recent press releases)"
     own_recent = "\n".join(f"- {t}" for t in snapshot["own_recent_posts"]) or "(no post history yet)"
+    max_posts = snapshot.get("max_posts_per_call", 4)
 
     return (
         "You are the sole decision-maker for a news-explainer X (Twitter) account. Its entire "
         "reason for existing, which outranks every other rule when they're in tension: give people "
         "a useful page -- live news, explained simply, that serves everyone. Post three times a day "
-        "(this call is one of those three). Each time, write ONE genuine 'take' on the most "
-        "important thing or things that happened since the last recap -- not a wall of separate "
-        "mini-headlines, a real synthesized read someone can get in seconds. Quality is the entire "
-        "point: it is better to post nothing this call than to post something mediocre just to have "
-        "posted something -- should_post: false is a correct, expected answer whenever nothing in "
-        "the period genuinely clears the bar, not a failure.\n\n"
+        "(this call is one of those three). Each time, decide a BATCH of 0 to "
+        f"{max_posts} posts covering the most important things that happened since the last recap -- "
+        "a broad snapshot of the latest, not forced into a single post. If there are several genuinely "
+        "distinct, important stories worth sharing, give each its own post; if there's really only one "
+        "thing worth sharing, return just one; if genuinely nothing clears the bar, return an empty "
+        "list. Quality is the entire point: it is better to post fewer (even zero) than to pad the "
+        f"batch up toward {max_posts} with something mediocre just to fill it, and equally, don't "
+        "artificially compress several distinct stories into one post just to keep the count down -- "
+        "let the actual news of the period decide how many posts this is, not a target count.\n\n"
+        "No two posts in the same batch may cover the same story or topic -- if there's more to say "
+        "about something already covered by another post in this batch, put it in that post's own "
+        "second_part instead of spending a second post slot on it.\n\n"
         "PRIORITY: WORLD NEWS below is the primary lens -- genuinely important things happening in "
         "the world (politics, conflict, disasters, major decisions, anything a broadly informed "
         "person would want to know). CRYPTO/FINANCE/AI NEWS, PRICES, and QUANT ORACLE below are "
@@ -212,10 +229,9 @@ def _build_prompt(snapshot):
         f"avoid repeating a story already covered):\n{own_recent}\n\n"
         "Respond with ONLY raw JSON (no markdown fences, no commentary), exactly matching this "
         "shape:\n"
-        '{"should_post": bool, "text": string or null, "second_part": string or null, '
-        '"reasoning": string}\n'
-        "Set text and second_part only when should_post is true and this recap is genuinely worth "
-        "publishing."
+        '{"posts": [{"text": string, "second_part": string, "reasoning": string}, ...]}\n'
+        f'"posts" may contain 0 to {max_posts} items -- only include items that are genuinely worth '
+        "publishing, each covering a distinct story."
     )
 
 
@@ -241,9 +257,10 @@ def decide(snapshot, model):
             # single-shot structured-JSON decision, not a task that benefits
             # from chain-of-thought.
             thinking={"type": "disabled"},
-            # Lower than the old batch design's 10000: output is now one
-            # post + one second_part + reasoning, not up to 3 full posts.
-            max_tokens=3000,
+            # Up to max_posts_per_call full posts (each with its own
+            # second_part + reasoning) again now that this is a batch
+            # decision, not a single post.
+            max_tokens=8000,
             messages=[{"role": "user", "content": prompt}],
         )
     except Exception as e:

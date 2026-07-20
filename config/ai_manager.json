@@ -1,5 +1,6 @@
 {
-  "_comment": "3x/day (06:00/12:00/21:00 Brussels, src/triggers/ai_manager.py's _CALL_CHECKPOINT_HOURS) world-news recap -- replaced the old batch-of-up-to-3-posts/8-checkpoint design entirely (2026-07-20). Each call decides ONE post (should_post/text/second_part), fired immediately if genuinely worth it -- no queue, no day/night pacing, since there's no batch to spread out anymore. max_calls_per_day matches the 3 checkpoints so every one can actually fire. World news (config/world_news.json) is the primary input; crypto/finance/AI (config/keywords.json, prices, the CryptoScope Oracle) are secondary, folded in only when genuinely notable -- see ai_manager_brain.py's prompt.",
+  "_comment": "3x/day (06:00/12:00/21:00 Brussels, src/triggers/ai_manager.py's _CALL_CHECKPOINT_HOURS) world-news recap. Each call decides a BATCH of 0 to max_posts_per_call posts -- a broad snapshot of the most important things since the last recap, not forced into a single post (2026-07-20: refined from an initial single-post-only version that lost real content on busy periods). Still no queue: every accepted post in a call's batch fires immediately in that same run, one after another -- nothing spreads across subsequent hourly runs, the 3 checkpoints are the only pacing. max_calls_per_day matches the 3 checkpoints so every one can actually fire. World news (config/world_news.json) is the primary input; crypto/finance/AI (config/keywords.json, prices, the CryptoScope Oracle) are secondary, folded in only when genuinely notable -- see ai_manager_brain.py's prompt.",
   "model": "claude-sonnet-5",
-  "max_calls_per_day": 3
+  "max_calls_per_day": 3,
+  "max_posts_per_call": 4
 }

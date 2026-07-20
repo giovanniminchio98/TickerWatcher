@@ -1,8 +1,9 @@
 """Post type 11 (opt-in via ANTHROPIC_API_KEY presence): a 3x/day
 (06:00/12:00/21:00 Brussels -- see _CALL_CHECKPOINT_HOURS) world-news
-recap. Each call decides ONE post: a genuine synthesized "take" on the
-most important things that happened since the last recap, world news
-first, crypto/finance/AI folded in only when genuinely notable. See
+recap. Each call decides a BATCH of 0 to max_posts_per_call posts (config/
+ai_manager.json, default 4) -- a broad snapshot of the most important
+things that happened since the last recap, world news first, crypto/
+finance/AI folded in only when genuinely notable. See
 src/sources/ai_manager_brain.py for the prompt/parsing.
 
 Replaced the old design entirely (2026-07-20): a batch of up to
@@ -11,16 +12,22 @@ clock, queued and drained one item per hourly run, weighted toward
 routine crypto/price content with no genuine world-news source feeding it
 at all. The account owner's own honest read: they wouldn't reliably
 follow most of what that produced. This is a full pivot, not a tweak --
-"3x/day, one real synthesized post each time, world news as the primary
-lens" is a different shape of account, not the same one turned down.
+"3x/day, world news as the primary lens" is a different shape of account,
+not the same one turned down. Refined again the same day: an initial
+single-post-only version turned out too narrow for a genuinely busy
+period with several distinct important stories -- forcing everything into
+one 260-char synthesis lost real content. Unlike the old batch design,
+though, there's still no queue: every accepted post in a call's batch
+fires immediately, one after another, in that same run -- nothing spreads
+across subsequent hourly runs anymore, and no two posts in the same batch
+may cover the same story (enforced both in the prompt and, for the
+duplicate-figures case, deterministically -- see run()'s prior_texts).
 
-Because it's now exactly one post per call (never a batch), there's no
-queue to drain and nothing to pace across a day/night window -- every
-successful call fires its post (if any) immediately, and the 3 fixed
-checkpoints ARE the schedule. The external cron-job.org dispatch stays
-exactly as it is (still hourly) -- _ready_for_call is what turns "hourly
-dispatch" into "only acts 3x/day," same mechanism as before, just with 3
-checkpoint hours instead of 8.
+Because there's no queue, there's nothing to pace across a day/night
+window either -- the 3 fixed checkpoints ARE the schedule. The external
+cron-job.org dispatch stays exactly as it is (still hourly) --
+_ready_for_call is what turns "hourly dispatch" into "only acts 3x/day,"
+same mechanism as before, just with 3 checkpoint hours instead of 8.
 
 Primary input is _world_news_snapshot (config/world_news.json's general
 outlets -- Guardian, BBC, Deutsche Welle, France 24, Euronews, plus
@@ -399,90 +406,91 @@ def _send_run_summary(ctx, reason, posted_this_run):
     telegram_client.send_message(f"🤖 AI Manager: {reason} · {post_label}{eta_suffix}")
 
 
-def _send_audit_message(posted_text, reasoning):
+def _send_audit_message(posted_items, declined_items):
     """Fires once per genuine Claude call -- the only review mechanism now
-    that nothing is manually approved. Shows either the actual posted text
-    or why nothing went out, plus Claude's own reasoning either way."""
-    if posted_text:
-        telegram_client.send_message(f"🤖 AI Manager recap posted:\n\n{posted_text}\n\nReasoning: {reasoning}")
+    that nothing is manually approved. Lists every post that actually went
+    out (with its reasoning) and every candidate declined, with why --
+    either Claude's own reasoning (never published) or a deterministic
+    backstop's reason."""
+    lines = ["🤖 AI Manager batch decision:"]
+    if posted_items:
+        lines.append(f"\n✅ {len(posted_items)} post(s) published:")
+        for item in posted_items:
+            lines.append(f"\n- {item['text']}\nReasoning: {item['reasoning'] or '(none given)'}")
     else:
-        telegram_client.send_message(f"🤖 AI Manager: no recap this call. Reasoning: {reasoning or '(none given)'}")
+        lines.append("\n✅ 0 posts published.")
+    if declined_items:
+        lines.append(f"\n🚫 {len(declined_items)} candidate(s) declined:")
+        for item in declined_items:
+            lines.append(f"\n- [{item['reason']}] {item['reasoning'] or '(none given)'}")
+    telegram_client.send_message("\n".join(lines))
 
 
-def _post_recap(ctx, decision):
-    """Validates and fires (or declines) a single recap decision -- returns
-    True if something was actually posted. Every check here is a
+def _post_one(ctx, item, prior_texts):
+    """Validates and fires (or declines) a single candidate post from the
+    batch. Returns (fired: bool, detail: str) -- on success detail is the
+    full published text (post + second_part, for the audit log); on decline
+    it's a short machine-readable reason. Every check here is a
     deterministic backstop on top of what the prompt already asks for (see
     _reasoning_contradicts_post/_is_likely_duplicate's own docstrings for
-    why a prompt rule alone isn't trusted blindly)."""
-    if not decision.get("should_post") or not decision.get("text"):
-        _send_audit_message(None, decision.get("reasoning", ""))
-        return False
+    why a prompt rule alone isn't trusted blindly). prior_texts covers both
+    this account's real recent post history AND every post already accepted
+    earlier in this same batch (the caller extends it after each accept),
+    so within-batch duplicates get caught the same way cross-call ones do."""
+    text = item.get("text")
+    if not text:
+        return False, "empty text"
 
-    reasoning = decision.get("reasoning", "")
-    second_part = decision.get("second_part") or ""
+    second_part = item.get("second_part") or ""
+    if not second_part:
+        return False, "missing mandatory second_part"
 
     # Only second_part is scanned here, not reasoning -- confirmed live
-    # (2026-07-20) that scanning reasoning produces false positives in this
-    # single-holistic-decision design: reasoning is never published (see
-    # ai_manager_brain.py's prompt), and Claude can legitimately narrate its
-    # own selection process in it ("the Fed story was already covered, so I
-    # focused on the UK PM transition instead") while still being genuinely
-    # confident about the ONE story it chose -- a blanket keyword scan can't
-    # tell "the topic I'm posting about was already covered" apart from "a
-    # DIFFERENT topic I considered and excluded was already covered." That
-    # distinction mattered less in the old per-post-batch design, where each
-    # post had its own individual reasoning field. second_part has no such
-    # ambiguity: it's published content with exactly one job (explain this
-    # post), so any of these phrases there is a genuine red flag -- this is
-    # the same check that caught the real leaked-self-doubt bug.
+    # (2026-07-20) that scanning reasoning produces false positives: Claude
+    # can legitimately narrate its whole batch's selection process in
+    # reasoning ("the Fed story was already covered, so I focused on the UK
+    # PM transition instead"), which is never published (see
+    # ai_manager_brain.py's prompt) and isn't a red flag about the post it
+    # actually chose. second_part has no such ambiguity -- it's published
+    # content with exactly one job (explain this post), so any of these
+    # phrases there is a genuine red flag -- this is the same check that
+    # caught the real leaked-self-doubt bug.
     if _reasoning_contradicts_post(second_part):
         logger.warning(
-            "ai_manager: declining recap whose second_part contradicts should_post=true: %s",
-            second_part[:120],
+            "ai_manager: declining post whose second_part contradicts itself: %s", second_part[:120]
         )
-        _send_audit_message(None, reasoning)
-        return False
+        return False, "second_part contradicts itself"
 
-    # Full uncapped window, not the prompt's own capped own_recent_posts --
-    # cheap local comparison, not prompt tokens, so it can afford to check
-    # everything rather than only what fit in the snapshot.
-    prior_texts = story_history.recent_texts(ctx.state, ctx.now.timestamp(), limit=None)
-    if _is_likely_duplicate(decision["text"], prior_texts) or (
-        second_part and _is_likely_duplicate(second_part, prior_texts)
-    ):
+    if _is_likely_duplicate(text, prior_texts) or _is_likely_duplicate(second_part, prior_texts):
         logger.warning(
-            "ai_manager: declining likely-duplicate recap (shared salient figures with a recent post): %s",
-            decision["text"][:80],
+            "ai_manager: declining likely-duplicate post (shared salient figures with a recent/batch post): %s",
+            text[:80],
         )
-        _send_audit_message(None, reasoning)
-        return False
+        return False, "likely duplicate"
 
     if not ctx.budget.can_spend(has_link=False):
-        _send_audit_message(None, "X budget exhausted this period")
-        return False
+        return False, "X budget exhausted this period"
 
-    tagged_text = _enforce_opening_tag(decision["text"])
-    text = _enforce_single_cashtag(truncate(tagged_text, ai_manager_brain.MAX_POST_LEN))
+    tagged_text = _enforce_opening_tag(text)
+    final_text = _enforce_single_cashtag(truncate(tagged_text, ai_manager_brain.MAX_POST_LEN))
 
-    tweet_id = ctx.x.post(text)
+    tweet_id = ctx.x.post(final_text)
     if not tweet_id:
         # ctx.x.post() itself failed -- ops_alerts already fired for this
-        telegram_client.send_message(f"⚠️ AI Manager: recap failed to send, dropped: {text}")
-        return False
+        telegram_client.send_message(f"⚠️ AI Manager: post failed to send, dropped: {final_text}")
+        return False, "X post failed"
 
-    channel_text = f"{tagged_text}\n\n{second_part}" if second_part else tagged_text
-    ctx.budget.record_spend(has_link=False, text=text, channel_text=channel_text)
-    if second_part and ctx.budget.can_spend(has_link=False):
+    channel_text = f"{tagged_text}\n\n{second_part}"
+    ctx.budget.record_spend(has_link=False, text=final_text, channel_text=channel_text)
+    if ctx.budget.can_spend(has_link=False):
         reply_text = _enforce_single_cashtag(truncate(second_part, ai_manager_brain.MAX_POST_LEN))
         reply_id = ctx.x.reply(reply_text, tweet_id)
         if reply_id:
             # already mirrored to the channel above via channel_text, skip duplicate
             ctx.budget.record_spend(has_link=False, text=second_part, mirror_to_channel=False)
 
-    story_history.add_entry(ctx.state, text=text, url=None, now_ts=ctx.now.timestamp())
-    _send_audit_message(channel_text, reasoning)
-    return True
+    story_history.add_entry(ctx.state, text=final_text, url=None, now_ts=ctx.now.timestamp())
+    return True, channel_text
 
 
 def run(ctx):
@@ -500,6 +508,7 @@ def run(ctx):
         _send_run_summary(ctx, "no new call (Claude budget capped)", False)
         return False
 
+    max_posts_per_call = cfg.get("max_posts_per_call", 4)
     snapshot = {
         "day_context": _day_context(ctx),
         "world_news": _world_news_snapshot(ctx, state),
@@ -509,6 +518,7 @@ def run(ctx):
         "earnings": _earnings_snapshot(ctx),
         "press_releases": _press_releases_snapshot(ctx),
         "own_recent_posts": story_history.recent_texts(ctx.state, ctx.now.timestamp()),
+        "max_posts_per_call": max_posts_per_call,
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
@@ -531,6 +541,25 @@ def run(ctx):
     state["last_call_time"] = ctx.now.timestamp()
     state["last_call_checkpoint"] = ctx.now.astimezone(BRUSSELS_TZ).strftime("%Y-%m-%d-%H")
 
-    fired = _post_recap(ctx, decision)
-    _send_run_summary(ctx, "new call", fired)
+    # Full uncapped window, not the prompt's own capped own_recent_posts --
+    # cheap local comparison, not prompt tokens, so it can afford to check
+    # everything rather than only what fit in the snapshot. Extended below
+    # after each accepted post, so a later item in this same batch can't
+    # repeat an earlier one in it either.
+    prior_texts = story_history.recent_texts(ctx.state, ctx.now.timestamp(), limit=None)
+    posted_items = []
+    declined_items = []
+
+    for item in (decision.get("posts") or [])[:max_posts_per_call]:
+        reasoning = item.get("reasoning", "")
+        fired_one, detail = _post_one(ctx, item, prior_texts)
+        if fired_one:
+            posted_items.append({"text": detail, "reasoning": reasoning})
+            prior_texts = prior_texts + [item.get("text", ""), item.get("second_part") or ""]
+        else:
+            declined_items.append({"reason": detail, "reasoning": reasoning})
+
+    fired = bool(posted_items)
+    _send_audit_message(posted_items, declined_items)
+    _send_run_summary(ctx, f"new call ({len(posted_items)} posted, {len(declined_items)} declined)", fired)
     return fired
