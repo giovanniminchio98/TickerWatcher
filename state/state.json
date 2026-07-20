@@ -7,10 +7,10 @@
       "TedPillows": 1,
       "WatcherGuru": 2
     },
-    "calls_today": 0,
+    "calls_today": 1,
     "date": "2026-07-20",
-    "last_call_checkpoint": "2026-07-20-00",
-    "last_call_time": 1784498463.074224,
+    "last_call_checkpoint": "2026-07-20-03",
+    "last_call_time": 1784509260.129113,
     "post_queue": [],
     "posts_since_last_extra": 2,
     "posts_since_last_second_part": 5,
@@ -90,23 +90,23 @@
       }
     },
     "window_id": "2026-07-19-night",
-    "window_posts": 0
+    "window_posts": 1
   },
   "budget": {
     "daily": {
       "date": "2026-07-20",
-      "posts_used": 2,
-      "usd_used": 0.03
+      "posts_used": 5,
+      "usd_used": 0.075
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 201,
-    "usd_used": 7.455
+    "posts_used": 204,
+    "usd_used": 7.5
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 1.974
+    "usd_used": 2.0108
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -152,7 +152,9 @@
       "https://cointelegraph.com/news/us-indicts-crypto-investor-over-alleged-20m-fraud-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://decrypt.co/373770/openai-gpt-5-6-vs-anthropic-fable-5-review",
       "https://www.coindesk.com/tech/2026/07/16/inside-zcash-s-new-node-that-targets-visa-scale-privacy-at-50-000-transactions-per-second",
-      "https://cointelegraph.com/news/federal-agencies-miss-genius-act-deadline?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/federal-agencies-miss-genius-act-deadline?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/south-korea-probed-40-cases-of-crypto-manipulation-over-2-years?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://cointelegraph.com/news/south-korean-regulator-inspection-letter-upbit-36m-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -161,7 +163,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-20"
   },
   "filler": {
@@ -263,7 +265,7 @@
     ]
   },
   "flashback": {
-    "last_posted_date": "2026-07-19"
+    "last_posted_date": "2026-07-20"
   },
   "image_budget": {
     "low_budget_alert_sent_period": null,
@@ -779,6 +781,11 @@
       "posted_at": 1784505669.413637,
       "text": "\ud83d\udea8 JUST IN: A comparison review examines differences between OpenAI's GPT-5.6 and Anthropic's Claude Fable 5 to help users select the appropriate model.\n(via Decrypt)",
       "url": "https://decrypt.co/373770/openai-gpt-5-6-vs-anthropic-fable-5-review"
+    },
+    {
+      "posted_at": 1784509260.129113,
+      "text": "\ud83d\udea8 JUST IN: Visa just launched a Stablecoin Platform letting banks and fintech firms plug dollar-pegged crypto tokens straight into Visa's payment network.",
+      "url": "https://decrypt.co/373668/visa-stablecoin-platform-banks-fintech-open-usd"
     }
   ],
   "telegram": {
