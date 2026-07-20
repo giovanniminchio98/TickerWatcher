@@ -118,10 +118,7 @@ def _day_context(ctx):
 # Deliberately clock-time-based, not elapsed-time+jitter -- same lesson
 # already learned once this session (an elapsed-time cadence drifted over
 # time and produced uneven gaps); a fixed clock is predictable instead.
-# TEMPORARY (2026-07-20): 9 added for a one-off live test right after
-# shipping the 3x/day redesign, to see a real post's format on X before
-# the next real checkpoint. Revert to (6, 12, 21) right after.
-_CALL_CHECKPOINT_HOURS = (6, 9, 12, 21)
+_CALL_CHECKPOINT_HOURS = (6, 12, 21)
 
 
 def _ready_for_call(ctx, cfg, state):
