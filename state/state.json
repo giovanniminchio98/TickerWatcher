@@ -1,20 +1,20 @@
 {
   "ai_manager": {
-    "calls_today": 4,
-    "date": "2026-07-20",
+    "calls_today": 0,
+    "date": "2026-07-21",
     "last_call_checkpoint": "2026-07-21-00",
     "last_call_time": 1784585613.628727
   },
   "budget": {
     "daily": {
-      "date": "2026-07-20",
-      "posts_used": 31,
-      "usd_used": 0.465
+      "date": "2026-07-21",
+      "posts_used": 4,
+      "usd_used": 0.06
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 230,
-    "usd_used": 7.89
+    "posts_used": 234,
+    "usd_used": 7.95
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -71,7 +71,9 @@
       "https://cointelegraph.com/news/japanese-logistics-company-eyes-jpyc-stablecoin-to-pay-drivers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://decrypt.co/373767/ecb-warns-stablecoins-drain-bank-deposits",
       "https://cointelegraph.com/news/allbridge-core-pauses-cross-chain-bridge-after-165m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://decrypt.co/373699/morning-minute-citadel-securities-invests-400m-in-crypto-com"
+      "https://decrypt.co/373699/morning-minute-citadel-securities-invests-400m-in-crypto-com",
+      "https://www.coindesk.com/policy/2026/07/20/brazil-s-securities-regulator-sets-up-task-force-with-60-day-deadline-for-tokenization-proposal",
+      "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -80,8 +82,8 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 8,
-    "posted_date": "2026-07-20"
+    "posted_count_today": 2,
+    "posted_date": "2026-07-21"
   },
   "filler": {
     "posted_count_today": 2,
@@ -194,7 +196,7 @@
   },
   "news": {
     "posted_count_today": 2,
-    "posted_date": "2026-07-20",
+    "posted_date": "2026-07-21",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -225,7 +227,9 @@
       "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments",
       "https://cointelegraph.com/news/trump-teleprompter-operator-made-100k-betting-kalshi-markets-tied-to-speeches-abc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.coindesk.com/tech/2026/07/16/inside-zcash-s-new-node-that-targets-visa-scale-privacy-at-50-000-transactions-per-second",
-      "https://decrypt.co/373770/openai-gpt-5-6-vs-anthropic-fable-5-review"
+      "https://decrypt.co/373770/openai-gpt-5-6-vs-anthropic-fable-5-review",
+      "https://www.coindesk.com/policy/2026/07/20/brazil-s-securities-regulator-sets-up-task-force-with-60-day-deadline-for-tokenization-proposal",
+      "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit"
     ]
   },
   "oracle_alerts": {
@@ -454,11 +458,6 @@
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784329269.064673,
-      "text": "\ud83d\udcb0 CRYPTO: Bolivia is moving to officially recognize USDT (a dollar-pegged crypto token) as the country runs short on actual US dollars.",
-      "url": "https://cointelegraph.com/news/crypto-biz-when-dollars-disappear-stablecoins-step-in?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
     {
       "posted_at": 1784332868.028269,
       "text": "\ud83d\udea8 JUST IN: Airbnb's chief executive reported his X account was compromised and used to share AI-generated content about tokenization.\n(via CoinDesk)",
@@ -693,6 +692,16 @@
       "posted_at": 1784585613.628727,
       "text": "\ud83e\udd89 Well that was fast -- Andy Burnham's already picking his cabinet as UK PM: Rachel Reeves is out, Healey becomes chancellor, Miliband is foreign secretary, Yvette Cooper takes health, Rayner returns as housing secretary. \ud83c\uddec\ud83c\udde7\ud83d\udd01",
       "url": null
+    },
+    {
+      "posted_at": 1784592066.581041,
+      "text": "\ud83d\udea8 JUST IN: Brazil's financial regulator established a task force with two months to develop a cryptocurrency tokenization framework.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/policy/2026/07/20/brazil-s-securities-regulator-sets-up-task-force-with-60-day-deadline-for-tokenization-proposal"
+    },
+    {
+      "posted_at": 1784592066.581041,
+      "text": "\ud83d\udea8 JUST IN: Allbridge, a cross-chain protocol, suspended operations following a $1.65 million exploit using a flash loan attack.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit"
     }
   ],
   "telegram": {
