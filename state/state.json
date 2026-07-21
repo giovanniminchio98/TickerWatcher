@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-21",
-    "last_call_checkpoint": "2026-07-21-06",
-    "last_call_time": 1784606465.522188
+    "last_call_checkpoint": "2026-07-21-12",
+    "last_call_time": 1784628068.432297
   },
   "budget": {
     "daily": {
       "date": "2026-07-21",
-      "posts_used": 9,
-      "usd_used": 0.135
+      "posts_used": 15,
+      "usd_used": 0.225
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 239,
-    "usd_used": 8.025
+    "posts_used": 245,
+    "usd_used": 8.115
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.3591
+    "usd_used": 2.3971
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -465,26 +465,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784354459.6222,
-      "text": "\ud83d\udea8 JUST IN: NFLX is down another leg with tech broadly red, but look at HOOD -- Robinhood is down 5.7% today while BTC and ETH are both green.",
-      "url": null
-    },
-    {
-      "posted_at": 1784358058.036276,
-      "text": "\ud83d\udcf0 NEWS: Senator Warren wants Trump's crypto earnings reported annually through 2026, following his $1.4B disclosure.",
-      "url": "https://cointelegraph.com/news/senator-warren-2026-reporting-donald-trump-crypto-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "posted_at": 1784361659.492307,
-      "text": "\ud83d\udcf0 NEWS: UK courts just sentenced two hackers linked to Scattered Spider, the group US prosecutors say extorted dozens of companies in a $115M crypto ransom scheme.\n\nBoth pleaded guilty.",
-      "url": "https://cointelegraph.com/news/london-police-sentence-hackers-crypto-ransom-public-transport?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "posted_at": 1784368858.173727,
-      "text": "\ud83d\udea8 JUST IN: Tech and crypto stocks are broadly red today, but $BTC is bucking the trend, up 1.5% to $63,942 while SPY and QQQ both fall nearly 1-1.5%.",
-      "url": null
-    },
-    {
       "posted_at": 1784383254.842222,
       "text": "\ud83d\udcf0 NEWS: Kaspersky just flagged a new malware framework targeting crypto investors through fake GitHub apps and social engineering.\n\nAttackers pose as legit open-source projects to trick investors into installing trojanized code that steals wallet access.",
       "url": "https://cointelegraph.com/news/kaspersky-malware-framework-crypto-investors?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
@@ -702,6 +682,21 @@
     {
       "posted_at": 1784606465.522188,
       "text": "\ud83e\udd89 Trump just hit Canada with a 50% tariff on most goods -- wine, hockey sticks, cement, even stuff previously protected under the USMCA trade deal. Carney says Canada will 'intensify' talks. \ud83c\udde8\ud83c\udde6\ud83c\uddfa\ud83c\uddf8",
+      "url": null
+    },
+    {
+      "posted_at": 1784628068.432297,
+      "text": "\ud83c\udf0d WORLD: Genuinely striking image out of Afghanistan -- flash floods just tore through Nuristan province, killing around 20 people and injuring more than 80. The city of Parun got hit hardest. \ud83c\udf27\ufe0f\ud83d\ude1f",
+      "url": null
+    },
+    {
+      "posted_at": 1784628068.432297,
+      "text": "\ud83c\udf0d WORLD: Rough day for South China Sea tensions -- China and the Philippines just traded accusations after navy personnel clashed there, right before a big ASEAN (Southeast Asian nations) summit in Manila. \ud83d\udea2\u26a0\ufe0f",
+      "url": null
+    },
+    {
+      "posted_at": 1784628068.432297,
+      "text": "\ud83c\udf0d WORLD: Didn't expect this one -- Australia's alpine resorts just smashed July heat records, up to 12C above average, right in the middle of ski season. Hotham, Falls Creek and Thredbo all set new highs. \ud83c\udfd4\ufe0f\ud83c\udf21\ufe0f",
       "url": null
     }
   ],
