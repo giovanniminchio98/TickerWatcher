@@ -1,10 +1,20 @@
-"""Post type 11 (opt-in via ANTHROPIC_API_KEY presence): a 3x/day
-(06:00/12:00/21:00 Brussels -- see _CALL_CHECKPOINT_HOURS) world-news
+"""Post type 11 (opt-in via ANTHROPIC_API_KEY presence): a 4x/day
+(02:00/06:00/12:00/21:00 Brussels -- see _CALL_CHECKPOINT_HOURS) world-news
 recap. Each call decides a BATCH of 0 to max_posts_per_call posts (config/
 ai_manager.json, default 4) -- a broad snapshot of the most important
 things that happened since the last recap, world news first, crypto/
 finance/AI folded in only when genuinely notable. See
 src/sources/ai_manager_brain.py for the prompt/parsing.
+
+The 02:00 checkpoint was added 2026-07-21, alongside disabling
+news_alerts/price_alerts/historical_flashback (all mechanical, no-context,
+off-persona posts that fired on their own hourly/threshold triggers with
+no checkpoint gate -- news_alerts in particular was the only thing still
+posting overnight, in its old wire-alert voice). Without it, 21:00-06:00
+Brussels was a 9-hour dead zone with zero coverage of anything, including
+a genuinely major story breaking overnight; one checkpoint roughly in the
+middle keeps that gap bounded without turning this into a truly 24/7
+cadence -- 0 posts is still the correct, expected outcome most nights.
 
 Replaced the old design entirely (2026-07-20): a batch of up to
 posts_per_batch individually-decided posts on a fixed 3-hour/8-checkpoint
@@ -24,10 +34,11 @@ may cover the same story (enforced both in the prompt and, for the
 duplicate-figures case, deterministically -- see run()'s prior_texts).
 
 Because there's no queue, there's nothing to pace across a day/night
-window either -- the 3 fixed checkpoints ARE the schedule. The external
+window either -- the 4 fixed checkpoints ARE the schedule. The external
 cron-job.org dispatch stays exactly as it is (still hourly) --
-_ready_for_call is what turns "hourly dispatch" into "only acts 3x/day,"
-same mechanism as before, just with 3 checkpoint hours instead of 8.
+_ready_for_call is what turns "hourly dispatch" into "only acts a few
+times a day," same mechanism as before, just with a different set of
+checkpoint hours.
 
 Primary input is _world_news_snapshot (config/world_news.json's general
 outlets -- Guardian, BBC, Deutsche Welle, France 24, Euronews, plus
@@ -94,7 +105,7 @@ logger = logging.getLogger("tickerwatch.triggers.ai_manager")
 def _roll_day(state, today_str):
     """Rolls over the Claude-call cadence counter -- calendar-day, Brussels
     time (matching _ready_for_call's checkpoint clock), since
-    max_calls_per_day is about controlling Claude spend across the 3 fixed
+    max_calls_per_day is about controlling Claude spend across the 4 fixed
     checkpoints, not a separate posting cadence anymore."""
     if state.get("date") != today_str:
         state["date"] = today_str
@@ -125,7 +136,7 @@ def _day_context(ctx):
 # Deliberately clock-time-based, not elapsed-time+jitter -- same lesson
 # already learned once this session (an elapsed-time cadence drifted over
 # time and produced uneven gaps); a fixed clock is predictable instead.
-_CALL_CHECKPOINT_HOURS = (6, 12, 21)
+_CALL_CHECKPOINT_HOURS = (2, 6, 12, 21)
 
 
 def _ready_for_call(ctx, cfg, state):

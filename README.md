@@ -46,15 +46,25 @@ on the monthly budget):
    hash/explorer link is also gone from the X post, but the Telegram
    channel copy still gets the real block-explorer link (Telegram is
    free), same pattern as news alerts' source URL.
-2. **"JUST IN" news** — RSS + keyword/source filter, paraphrased, always sourced.
-   No link, ever, on X (2026-07-20) — the main post names the outlet only
-   (e.g. "via CoinDesk"); the real source URL only ever shows up in the free
-   Telegram channel mirror. What used to be a link-reply is now a mandatory
-   plain-language explanation reply instead ("what this means," same pattern
-   as AI Manager's `second_part`) — a real cost saving now, not just a reach
-   one, since a link surcharge no longer applies here at all. Capped at
-   `keywords.max_articles_per_day` (default 2).
-3. **Price threshold/milestone alerts** — CoinGecko (crypto) + Twelve Data (stocks/ETFs)
+2. **"JUST IN" news** (disabled, 2026-07-21) — RSS + keyword/source filter,
+   paraphrased, always sourced. The rest of this description is how it
+   behaves if `news_alerts` is flipped back to `True` in `main.py`'s
+   `ENABLED`. No link, ever, on X (2026-07-20) — the main post names the
+   outlet only (e.g. "via CoinDesk"); the real source URL only ever shows up
+   in the free Telegram channel mirror. What used to be a link-reply is now
+   a mandatory plain-language explanation reply instead ("what this means,"
+   same pattern as AI Manager's `second_part`). Capped at
+   `keywords.max_articles_per_day` (default 2). Disabled because it fires on
+   every hourly run with no checkpoint gate, so it kept posting its old
+   wire-alert format at any hour — including overnight — clashing with AI
+   Manager's owl persona; AI Manager now covers crypto/finance/AI news as a
+   secondary input, in the same voice, when genuinely notable.
+3. **Price threshold/milestone alerts** (disabled, 2026-07-21) —
+   CoinGecko (crypto) + Twelve Data (stocks/ETFs). Disabled as the same
+   "mechanical, no-context, off-persona" issue as `news_alerts` above — AI
+   Manager already covers genuinely notable price moves with real
+   explanation attached. Code kept intact — flip `price_alerts` back to
+   `True` to resume.
 4. **CryptoScope Oracle verdict alerts** (disabled by default, 2026-07-19 — see
    "CryptoScope Oracle" below) — a quant signal composite (Monte-Carlo
    forecast + technical signals, ported from the crypto-scope site's engine),
@@ -64,7 +74,10 @@ on the monthly budget):
 5. **Scheduled daily post** — market snapshot only (Fear & Greed Index disabled
    by default, 2026-07-19 — `scheduled_daily.feargreed_enabled` in
    `config/thresholds.json`)
-6. **Historical flashback** — filler, max once/day, only if nothing else fired
+6. **Historical flashback** (disabled, 2026-07-21) — filler, max once/day,
+   only if nothing else fired. Same off-persona reasoning as above (a bare
+   "price N years ago vs today" callout with no explanation). Code kept
+   intact — flip `historical_flashback` back to `True` to resume.
 7. **Polls** (disabled by default, 2026-07-19) — ~1x/week engagement mechanic
 8. **Self-reply updates** — replies to the bot's *own* tweets only, never others'
 9. **Filler** (disabled by default — see "Filler" below) — absolute last
@@ -261,11 +274,11 @@ see the AI Manager prompt below. Code is left intact; flip `filler` back to
 `True` if account growth stalls and you'd rather trade quality for
 guaranteed hourly posting volume again.
 
-### AI Manager (opt-in via ANTHROPIC_API_KEY) — 3x/day world-news recap
+### AI Manager (opt-in via ANTHROPIC_API_KEY) — 4x/day world-news recap
 
 `src/triggers/ai_manager.py` is the account's main content engine, rebuilt
 (2026-07-20) around a much narrower, higher-bar design than what it used to
-be: **three fixed posts a day (06:00 / 12:00 / 21:00 Europe/Brussels)**,
+be: **four fixed posts a day (02:00 / 06:00 / 12:00 / 21:00 Europe/Brussels)**,
 each one a single genuine "take" on the most important things that
 happened since the last recap — not a stream of individual crypto/price
 posts. The account owner's own honest read on the old, higher-frequency
@@ -297,11 +310,15 @@ distinct posts (each with its own topic and its own `second_part`); a quiet
 one can just as correctly warrant zero. No two posts in the same batch may
 cover the same story. Every accepted post fires immediately, one after
 another, in that same run — there's still no queue to spread things across
-the day, since the 3 fixed checkpoints already are the schedule. The
+the day, since the 4 fixed checkpoints already are the schedule. The
 external cron dispatch (see "Scheduling" below) stays exactly as it is —
 still hourly — the internal checkpoint gate (`_CALL_CHECKPOINT_HOURS`) is
-what turns that into "only acts 3x/day," so
-no cron-job.org changes are needed.
+what turns that into "only acts 4x/day," so
+no cron-job.org changes are needed. The 02:00 checkpoint was added
+2026-07-21 to cover the overnight gap once news_alerts, price_alerts, and
+historical_flashback — the only things still posting overnight, in their
+old off-persona, no-context formats — were disabled (see `ENABLED` in
+`src/main.py`).
 
 **Post shape.** Written in Mark's own genuine first-person voice (2026-07-21)
 — a real reaction to something he just read, told the way you'd tell a
@@ -345,7 +362,7 @@ gets caught even on a high-volume day.
 
 Requires `ANTHROPIC_API_KEY` — without it, this trigger does nothing (same
 "no safe fallback" reasoning as every other Claude-backed trigger).
-`config/ai_manager.json`'s `max_calls_per_day` (3) matches the 3 fixed
+`config/ai_manager.json`'s `max_calls_per_day` (4) matches the 4 fixed
 checkpoints so every one can actually fire; a call that fails outright or
 comes back unparseable doesn't burn its checkpoint — retried at the next
 one instead, though `calls_today` still increments either way so a
@@ -366,7 +383,7 @@ persistently broken call can't retry indefinitely.
 $20 + $30 = $50: if the target total spend changes, split it the same way
 rather than just raising one cap — that's what makes "never above $X/month
 total" a structural guarantee instead of an estimate that could be wrong.
-At 3 calls/day this pipeline now uses a small fraction of either cap — see
+At 4 calls/day this pipeline now uses a small fraction of either cap — see
 "Cost math" below.
 
 Since nothing here is manually approved before it posts, every genuine call
@@ -380,7 +397,7 @@ skimming periodically even if you never intervene.
 ### Reply Manager (disabled by default — X's reply restriction isn't a per-account setting)
 
 `src/triggers/reply_manager.py` was built to run replies on a much faster
-cadence (roughly hourly) than AI Manager's slow 3x/day rhythm,
+cadence (roughly hourly) than AI Manager's slow 4x/day rhythm,
 scoped to accounts marked `reply_only: true` in `config/reply_targets.json`
 — smaller/mid accounts added specifically on the theory that X's "you must
 be mentioned or otherwise engaged by the author" reply restriction was a
@@ -554,28 +571,29 @@ if you want more headroom before that point (with filler re-enabled):
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
 actions/month (~$1-2) on top of the total above.
 
-**AI Manager's posts specifically — 3 calls/day, up to 4 posts each
-(2026-07-20 redesign).** Every post is a plain, link-free tweet at the base
-$0.015 rate, plus its mandatory `second_part` explainer reply, also $0.015
-— so each post is really 2 tweets. Theoretical worst case (every one of
-the 3 daily calls maxes out at 4 posts) is the same ceiling as the old
-per-story design:
+**AI Manager's posts specifically — 4 calls/day, up to 4 posts each
+(2026-07-20 redesign, 4th call added 2026-07-21 for overnight coverage).**
+Every post is a plain, link-free tweet at the base $0.015 rate, plus its
+mandatory `second_part` explainer reply, also $0.015 — so each post is
+really 2 tweets. Theoretical worst case (every one of the 4 daily calls
+maxes out at 4 posts):
 
-3 calls × 4 posts × 2 tweets × $0.015 ≈ $0.36/day → **~$10.80/month worst case**
+4 calls × 4 posts × 2 tweets × $0.015 ≈ $0.48/day → **~$14.40/month worst case**
 
 In practice, an empty batch (0 posts) is explicitly correct whenever
-nothing clears the bar, and there's no pressure to pad up toward the max —
-so real usage should land well under that ceiling most days, likely closer
-to 1-2 posts/call than 4. Either way it's bounded by the same $30 X cap,
-with real headroom versus the worst case. Reposts (retweet/quote, capped at
-3/day) add on top of this at the same ~$0.015/action rate if ever
-re-enabled (currently disabled — reposting is manual-only).
+nothing clears the bar — especially at the 02:00 checkpoint, where most
+nights should return zero — and there's no pressure to pad up toward the
+max, so real usage should land well under that ceiling most days, likely
+closer to 1-2 posts/call than 4. Either way it's bounded by the same $30 X
+cap, with real headroom versus the worst case. Reposts (retweet/quote,
+capped at 3/day) add on top of this at the same ~$0.015/action rate if
+ever re-enabled (currently disabled — reposting is manual-only).
 
-**Claude call cost** — 3 calls/day instead of the old ~6-7, each with a
+**Claude call cost** — 4 calls/day instead of the old ~6-7, each with a
 larger prompt (world news added) and output sized for up to `max_posts_per_call`
 full posts (same shape as the old per-call output, just fewer calls/day).
 At Sonnet 5's full post-intro pricing ($3/$15 per 1M tokens), expect
-roughly **~$5-10/month**, comfortably inside the $20 Claude cap — worth
+roughly **~$7-13/month**, comfortably inside the $20 Claude cap — worth
 keeping an eye on the Telegram budget recap for the first week or two to
 confirm real token usage lands where expected.
 
@@ -879,7 +897,7 @@ ever blocks or breaks the rest of the run.
 - **`config/budget.json`** — the monthly X API cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/claude_budget.json`** — the monthly Claude API cap, sized alongside `budget.json`'s to sum to the account-wide ceiling (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/image_budget.json`** — the monthly image-generation (DALL-E) cap, a separate provider/bill outside the X+Claude $50 structure (see [Cost math](#cost-math-and-the-budget-cap)).
-- **`config/ai_manager.json`** — AI Manager's model and `max_calls_per_day` (3, matching the fixed 06:00/12:00/21:00 Brussels checkpoints) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--3xday-world-news-recap). Every recap's `second_part` explainer reply is mandatory (enforced in the prompt, not a config knob).
+- **`config/ai_manager.json`** — AI Manager's model and `max_calls_per_day` (4, matching the fixed 02:00/06:00/12:00/21:00 Brussels checkpoints) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--4xday-world-news-recap). Every recap's `second_part` explainer reply is mandatory (enforced in the prompt, not a config knob).
 - **`config/world_news.json`** — general world-news RSS feeds (Guardian, BBC, DW, France 24, Euronews, plus non-English outlets translated inline) that feed AI Manager's recap as its primary input, separate from `config/keywords.json`'s finance/crypto feeds since these are pulled unconditionally, not keyword-gated.
 - **`config/reply_manager.json`** — Reply Manager's model, call cadence, and daily reply cap — see [Reply Manager](#reply-manager-disabled-by-default--xs-reply-restriction-isnt-a-per-account-setting).
 - **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).

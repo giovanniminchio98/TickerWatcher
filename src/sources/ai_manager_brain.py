@@ -1,7 +1,8 @@
 """
-The single Claude call behind src/triggers/ai_manager.py: three times a day
-(06:00/12:00/21:00 Brussels -- see ai_manager.py's _CALL_CHECKPOINT_HOURS),
-Claude decides a BATCH of 0 to max_posts_per_call posts covering the most
+The single Claude call behind src/triggers/ai_manager.py: four times a day
+(02:00/06:00/12:00/21:00 Brussels -- see ai_manager.py's
+_CALL_CHECKPOINT_HOURS), Claude decides a BATCH of 0 to max_posts_per_call
+posts covering the most
 important things that happened since the last recap, world news first,
 crypto/finance/AI folded in only when genuinely notable rather than as the
 main focus. Replaced the old "batch of up to posts_per_batch individual
@@ -139,8 +140,8 @@ def _build_prompt(snapshot):
     return (
         "You are the sole decision-maker for a news-explainer X (Twitter) account. Its entire "
         "reason for existing, which outranks every other rule when they're in tension: give people "
-        "a useful page -- live news, explained simply, that serves everyone. Post three times a day "
-        "(this call is one of those three). Each time, decide a BATCH of 0 to "
+        "a useful page -- live news, explained simply, that serves everyone. Post four times a day "
+        "(this call is one of those four). Each time, decide a BATCH of 0 to "
         f"{max_posts} posts covering the most important things that happened since the last recap -- "
         "a broad snapshot of the latest, not forced into a single post. If there are several genuinely "
         "distinct, important stories worth sharing, give each its own post; if there's really only one "
