@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-21",
-    "last_call_checkpoint": "2026-07-21-12",
-    "last_call_time": 1784628068.432297
+    "last_call_checkpoint": "2026-07-21-21",
+    "last_call_time": 1784660478.549785
   },
   "budget": {
     "daily": {
       "date": "2026-07-21",
-      "posts_used": 15,
-      "usd_used": 0.225
+      "posts_used": 21,
+      "usd_used": 0.315
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 245,
-    "usd_used": 8.115
+    "posts_used": 251,
+    "usd_used": 8.205
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.3971
+    "usd_used": 2.4412
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -465,21 +465,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784383254.842222,
-      "text": "\ud83d\udcf0 NEWS: Kaspersky just flagged a new malware framework targeting crypto investors through fake GitHub apps and social engineering.\n\nAttackers pose as legit open-source projects to trick investors into installing trojanized code that steals wallet access.",
-      "url": "https://cointelegraph.com/news/kaspersky-malware-framework-crypto-investors?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "posted_at": 1784397657.396901,
-      "text": "\ud83d\udcb0 CRYPTO: Massive options bets are stacking up on bitcoin hitting $72,000 by month end -- right when the Fed meets on interest rates.\n\nCall spreads are options trades betting a price will rise to a target.",
-      "url": "https://www.coindesk.com/markets/2026/07/18/massive-bitcoin-call-spreads-target-usd72-000-by-month-end-right-when-the-fed-meets"
-    },
-    {
-      "posted_at": 1784398175.807428,
-      "text": "\ud83d\udcf0 NEWS: A South Dakota crypto investor just got federally indicted over an alleged $20 million fraud.",
-      "url": "https://cointelegraph.com/news/us-indicts-crypto-investor-over-alleged-20m-fraud-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "posted_at": 1784412065.467657,
       "text": "\ud83d\udea8 JUST IN: Crypto is quietly green while stocks bleed -- $BTC +1% to $64,708, ETH +1.1%, even DOGE and ADA up slightly. Meanwhile SPY -1%, QQQ -1.5%, NVDA -2.2%, NFLX -7.3%.",
       "url": null
@@ -698,10 +683,25 @@
       "posted_at": 1784628068.432297,
       "text": "\ud83c\udf0d WORLD: Didn't expect this one -- Australia's alpine resorts just smashed July heat records, up to 12C above average, right in the middle of ski season. Hotham, Falls Creek and Thredbo all set new highs. \ud83c\udfd4\ufe0f\ud83c\udf21\ufe0f",
       "url": null
+    },
+    {
+      "posted_at": 1784660478.549785,
+      "text": "\ud83c\udf0d WORLD: Trump's tariff fight with Canada just escalated hard -- he's defending a new 50% tariff on most Canadian goods, saying Canada \"can't survive\" without a deal. Carney says he'll intensify talks with the US.",
+      "url": null
+    },
+    {
+      "posted_at": 1784660478.549785,
+      "text": "\ud83c\udf0d WORLD: This one's quietly serious -- Ukraine's president Zelensky is facing growing protests at home, with demonstrators giving him until Friday to reinstate his fired defence minister and remove the military chief.",
+      "url": null
+    },
+    {
+      "posted_at": 1784660478.549785,
+      "text": "\ud83c\udf0d WORLD: Didn't expect this detail -- a Spanish hotel chain, Meli\u00e1, says it's pulling out of Cuba completely, shutting all 34 of its properties there because of US sanctions pressure.",
+      "url": null
     }
   ],
   "telegram": {
-    "last_report_date": "2026-07-20"
+    "last_report_date": "2026-07-21"
   },
   "whale": {
     "last_btc_block_height": 958176,
