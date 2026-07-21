@@ -87,7 +87,13 @@ ENABLED = {
     # covers genuinely notable market moves with real explanation attached.
     # Code kept intact -- flip back to True to resume.
     "whale_alerts": False,
-    "news_alerts": True,
+    # disabled (2026-07-21): the only trigger that fires every hourly run
+    # with no checkpoint gate, so it kept posting its old "🚨 JUST IN:"
+    # wire-alert format at any hour -- including overnight -- clashing with
+    # ai_manager's owl persona. ai_manager already covers crypto/finance/AI
+    # news as a secondary input, in the same voice, when genuinely notable.
+    # Code kept intact -- flip back to True to resume.
+    "news_alerts": False,
     "price_alerts": True,
     # disabled for now (2026-07-19): dropped to trim the account down to
     # the posts that are actually working, pending a possible revisit
