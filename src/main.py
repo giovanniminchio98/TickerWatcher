@@ -94,7 +94,11 @@ ENABLED = {
     # news as a secondary input, in the same voice, when genuinely notable.
     # Code kept intact -- flip back to True to resume.
     "news_alerts": False,
-    "price_alerts": True,
+    # disabled (2026-07-21): a bare threshold/milestone crossing with no
+    # context (same "mechanical, no-context alert" issue as whale_alerts) --
+    # ai_manager already covers genuinely notable price moves with real
+    # explanation attached. Code kept intact -- flip back to True to resume.
+    "price_alerts": False,
     # disabled for now (2026-07-19): dropped to trim the account down to
     # the posts that are actually working, pending a possible revisit
     # later. Code kept intact -- flip back to True to resume.
@@ -104,7 +108,10 @@ ENABLED = {
     # kind of content with real context attached. Code kept intact --
     # flip back to True to resume.
     "scheduled_daily": False,
-    "historical_flashback": True,
+    # disabled (2026-07-21): a bare "price N years ago vs today" callout,
+    # same no-context/off-persona issue as price_alerts. Code kept intact --
+    # flip back to True to resume.
+    "historical_flashback": False,
     # disabled for now (2026-07-19): dropped to trim the account down to
     # the posts that are actually working. Code kept intact -- flip back
     # to True to resume.
