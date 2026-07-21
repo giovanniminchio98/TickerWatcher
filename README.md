@@ -323,20 +323,24 @@ old off-persona, no-context formats — were disabled (see `ENABLED` in
 **Post shape.** Written in Mark's own genuine first-person voice (2026-07-21)
 — a real reaction to something he just read, told the way you'd tell a
 friend or colleague, not a sterile wire-alert headline. Every post opens
-with `🦉 ` directly on the same line as a varied, never-repeated reaction
-(`"🦉 I just read that..."`, `"🦉 Okay, this is big:"`, `"🦉 Wait, this
-actually happened:"`, etc.) — like the owl itself is speaking it — leading
+with `🌍 WORLD:` directly on the same line as a varied, never-repeated
+reaction (`"🌍 WORLD: I just read that..."`, `"🌍 WORLD: Okay, this is
+big:"`, `"🌍 WORLD: Wait, this actually happened:"`, etc.), leading
 straight into the actual news, then a blank line, then a plain-language
-sentence on why it matters — same "never assume familiarity, define
-unfamiliar terms inline" rule the rest of the account holds to. The
-reaction is calibrated to the story's real weight: genuine surprise for
-something striking, calm and measured for something serious or tragic —
-never flippant. Settled on this inline emoji after trying two other
-places for the owl branding, both dropped the same day: an opening
-announcement line (undercut the "Mark is actually talking to you" effect)
-and a closing signature line (turned out redundant with the mandatory
-`second_part` reply right after it, and broke the flow into that reply).
-**No images, no links on X.**
+sentence on why it matters that ends with a short pointer to the reply
+below (`"here's why:"`, `"the context:"`, `"reasoning below:"`, etc.) —
+never optional, both parts of the post must be present every time. Same
+"never assume familiarity, define unfamiliar terms inline" rule the rest
+of the account holds to. The reaction is calibrated to the story's real
+weight: genuine surprise for something striking, calm and measured for
+something serious or tragic — never flippant. `🌍 WORLD:` (2026-07-21: back
+after a detour through an inline owl-emoji marker, then briefly a closing
+"Hoot hoot 🦉" signature line, then an opening one — the account owner's
+own call that the world tag reads better) is kept inline rather than as
+its own announcement line + blank line (its original pre-first-person-voice
+format) specifically so it doesn't undercut the "Mark is actually talking
+to you" effect the way a standalone announcement line did. **No images,
+no links on X.**
 Instead, every recap gets a mandatory `second_part`: a reply posted
 immediately after the main post whose one job is explaining what it
 actually means, in clear, simple terms — never a restatement of the

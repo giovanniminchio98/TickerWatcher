@@ -373,21 +373,19 @@ def _reasoning_contradicts_post(text):
     return any(phrase in lowered for phrase in _NEGATIVE_REASONING_PHRASES)
 
 
-def _enforce_owl_prefix(text):
-    """Every recap must open with ai_manager_brain.OWL_EMOJI directly on the
-    same line as the first word (e.g. "🦉 I just read that..."), not a
-    separate announcement line -- same defense-in-depth pattern as
+def _enforce_world_tag(text):
+    """Every recap must open with ai_manager_brain.WORLD_TAG directly on the
+    same line as the first word (e.g. "🌍 WORLD: I just read that..."), not
+    a separate announcement line -- same defense-in-depth pattern as
     _enforce_single_cashtag: the prompt already requires this, but a rule
     stated in a prompt is a request, not a guarantee, and a post silently
-    missing its marker breaks the profile's visual consistency. Prepends
-    it if it's somehow missing rather than letting the post go out
-    unmarked.
-    (2026-07-21: settled here after trying both a full opening announcement
-    line and a closing signature line -- see ai_manager_brain.py's module
-    docstring for why both were dropped; an inline same-line emoji costs
-    nothing and avoids both problems.)"""
+    missing its tag breaks the profile's visual consistency. Prepends it if
+    it's somehow missing rather than letting the post go out unmarked.
+    (2026-07-21: brought back to replace the inline owl-emoji marker this
+    function used to enforce -- see ai_manager_brain.py's module docstring
+    for the full placement history/reasoning.)"""
     stripped = text.lstrip()
-    prefix = f"{ai_manager_brain.OWL_EMOJI} "
+    prefix = f"{ai_manager_brain.WORLD_TAG} "
     if stripped.startswith(prefix):
         return text
     return f"{prefix}{stripped}"
@@ -488,7 +486,7 @@ def _post_one(ctx, item, prior_texts):
     if not ctx.budget.can_spend(has_link=False):
         return False, "X budget exhausted this period"
 
-    tagged_text = _enforce_owl_prefix(text)
+    tagged_text = _enforce_world_tag(text)
     final_text = _enforce_single_cashtag(truncate(tagged_text, ai_manager_brain.MAX_POST_LEN))
 
     tweet_id = ctx.x.post(final_text)

@@ -45,16 +45,19 @@ tell a friend or colleague about it -- not a sterile wire-alert headline.
 Varied every time, never a fixed catchphrase, and calibrated to the
 story's actual weight (genuine surprise/interest for something striking,
 calm and measured for something serious or heavy -- never a flippant
-reaction on tragedy). Every post opens with a fixed emoji marker (see
-OWL_EMOJI below, "🦉") directly on the same line as the first word --
-like the owl itself is speaking the reaction -- rather than a separate
-announcement line or a trailing signature: both of those were tried and
-dropped the same day (an opening announcement line undercut the "Mark is
-actually talking to you" effect; a closing signature line turned out
-redundant with the mandatory second_part reply immediately after it, and
-broke the flow into that reply). An inline emoji costs nothing and keeps
-brand recognition without either problem. No images, no links on X, by
-deliberate account-wide choice -- see second_part below.
+reaction on tragedy). Every post opens with a fixed tag (see WORLD_TAG
+below, "🌍 WORLD:") directly on the same line as the first word of the
+reaction -- brought back 2026-07-21 (the account owner's own call: it
+reads better than the inline owl-emoji marker it replaces here). Kept
+inline rather than as its own announcement line + blank line (the original
+pre-2026-07-20 format) specifically to preserve the "Mark is actually
+talking to you" effect the first-person voice redesign was built around --
+a standalone announcement line before the reaction undercut that, which is
+also why an even earlier closing-signature placement (a trailing line,
+redundant with the mandatory second_part reply immediately after it) was
+also dropped. An inline tag costs nothing and keeps brand recognition
+without either problem. No images, no links on X, by deliberate
+account-wide choice -- see second_part below.
 
 second_part is still mandatory on every post in the batch (2026-07-20
 decision, carried over unchanged from the per-story design): a reply
@@ -101,14 +104,13 @@ logger = logging.getLogger("tickerwatch.ai_manager_brain")
 
 MAX_POST_LEN = 260
 
-# Fixed opening emoji marker -- there's only one post type/format now (a
-# periodic recap), so unlike the old 6-tag vocabulary (JUST IN/BREAKING/
-# CONTEXT/CRYPTO/AI/NEWS) there's nothing for Claude to choose between.
-# Goes directly on the same line as the post's first word, like the owl
-# itself is speaking (2026-07-21: settled here after trying both a full
-# opening announcement line and a closing signature line -- see module
-# docstring for why both were dropped).
-OWL_EMOJI = "🦉"
+# Fixed opening tag -- there's only one post type/format now (a periodic
+# recap), so unlike the old 6-tag vocabulary (JUST IN/BREAKING/CONTEXT/
+# CRYPTO/AI/NEWS) there's nothing for Claude to choose between. Goes
+# directly on the same line as the post's first word, right before the
+# reaction (2026-07-21: brought back to replace the inline owl-emoji
+# marker -- see module docstring for the placement history/reasoning).
+WORLD_TAG = "🌍 WORLD:"
 
 
 def _world_news_line(article):
@@ -190,10 +192,10 @@ def _build_prompt(snapshot):
         "the moment it's introduced, in a short clause -- don't assume familiarity.\n"
         "- VOICE: write as Mark, genuinely reacting to something he just read and telling a friend or "
         "colleague about it -- not a sterile wire-alert headline, not a neutral third-person report. "
-        f"The post's very first characters must be '{OWL_EMOJI} ' (the owl emoji, then a single space), "
-        "directly followed on that SAME line by your own real reaction -- like the owl itself is "
-        "speaking it, not a separate announcement before it (e.g. "
-        f"'{OWL_EMOJI} I just read that...', '{OWL_EMOJI} Okay, this is big:', '{OWL_EMOJI} Wait, this "
+        f"The post's very first characters must be '{WORLD_TAG} ' (verbatim, exactly this text and "
+        "punctuation), directly followed on that SAME line by your own real reaction -- not a separate "
+        "announcement before it, not on its own line (e.g. "
+        f"'{WORLD_TAG} I just read that...', '{WORLD_TAG} Okay, this is big:', '{WORLD_TAG} Wait, this "
         "actually happened:'). Invent your own opener every time, "
         "never repeat the exact same one twice in a row, and never use the same opener across multiple "
         "posts in this batch either. Calibrate the reaction to the story's real weight: genuine "
