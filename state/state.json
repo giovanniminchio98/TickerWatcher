@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-21",
-      "posts_used": 4,
-      "usd_used": 0.06
+      "posts_used": 5,
+      "usd_used": 0.075
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 234,
-    "usd_used": 7.95
+    "posts_used": 235,
+    "usd_used": 7.965
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -73,7 +73,9 @@
       "https://cointelegraph.com/news/allbridge-core-pauses-cross-chain-bridge-after-165m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://decrypt.co/373699/morning-minute-citadel-securities-invests-400m-in-crypto-com",
       "https://www.coindesk.com/policy/2026/07/20/brazil-s-securities-regulator-sets-up-task-force-with-60-day-deadline-for-tokenization-proposal",
-      "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit"
+      "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit",
+      "https://www.coindesk.com/markets/2026/07/20/u-s-regulatory-developments-and-earnings-ecb-rate-decision-crypto-week-ahead",
+      "https://www.coindesk.com/business/2026/07/20/amazon-japan-supplier-az-com-maruwa-to-adopt-yen-stablecoin-jpyc-for-payments"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -82,7 +84,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-21"
   },
   "filler": {
@@ -184,7 +186,7 @@
     ]
   },
   "flashback": {
-    "last_posted_date": "2026-07-20"
+    "last_posted_date": "2026-07-21"
   },
   "image_budget": {
     "low_budget_alert_sent_period": null,
