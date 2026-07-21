@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 0,
+    "calls_today": 1,
     "date": "2026-07-21",
-    "last_call_checkpoint": "2026-07-21-00",
-    "last_call_time": 1784585613.628727
+    "last_call_checkpoint": "2026-07-21-06",
+    "last_call_time": 1784606465.522188
   },
   "budget": {
     "daily": {
       "date": "2026-07-21",
-      "posts_used": 5,
-      "usd_used": 0.075
+      "posts_used": 9,
+      "usd_used": 0.135
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 235,
-    "usd_used": 7.965
+    "posts_used": 239,
+    "usd_used": 8.025
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.3239
+    "usd_used": 2.3591
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -465,21 +465,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784332868.028269,
-      "text": "\ud83d\udea8 JUST IN: Airbnb's chief executive reported his X account was compromised and used to share AI-generated content about tokenization.\n(via CoinDesk)",
-      "url": "https://www.coindesk.com/web3/2026/07/17/airbnb-ceo-says-x-account-was-hacked-attacker-posted-ai-slop-thread-on-tokenization"
-    },
-    {
-      "posted_at": 1784332868.028269,
-      "text": "\ud83d\udea8 JUST IN: Galaxy Digital is launching DeFi vaults designed to offer yield opportunities on stablecoins for institutional investors.\n(via CoinDesk)",
-      "url": "https://www.coindesk.com/tech/2026/07/16/galaxy-targets-institutional-stablecoin-yield-with-new-defi-vaults"
-    },
-    {
-      "posted_at": 1784340056.358155,
-      "text": "\ud83d\udcb0 CRYPTO: The ECB's Piero Cipollone just warned that stablecoins (crypto tokens pegged to $1) could pull deposits out of regular banks.",
-      "url": "https://cointelegraph.com/news/stablecoin-growth-bank-deposits-ecbs-cipollone?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "posted_at": 1784354459.6222,
       "text": "\ud83d\udea8 JUST IN: NFLX is down another leg with tech broadly red, but look at HOOD -- Robinhood is down 5.7% today while BTC and ETH are both green.",
       "url": null
@@ -708,6 +693,16 @@
       "posted_at": 1784592066.581041,
       "text": "\ud83d\udea8 JUST IN: Allbridge, a cross-chain protocol, suspended operations following a $1.65 million exploit using a flash loan attack.\n(via CoinDesk)",
       "url": "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit"
+    },
+    {
+      "posted_at": 1784606465.522188,
+      "text": "\ud83e\udd89 Whoa, at least 27 people are dead and 83 still missing after a passenger ferry capsized off Guyana. An investigation just launched. \ud83d\udea2\ud83d\ude14",
+      "url": null
+    },
+    {
+      "posted_at": 1784606465.522188,
+      "text": "\ud83e\udd89 Trump just hit Canada with a 50% tariff on most goods -- wine, hockey sticks, cement, even stuff previously protected under the USMCA trade deal. Carney says Canada will 'intensify' talks. \ud83c\udde8\ud83c\udde6\ud83c\uddfa\ud83c\uddf8",
+      "url": null
     }
   ],
   "telegram": {
