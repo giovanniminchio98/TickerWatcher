@@ -489,6 +489,26 @@ def _post_one(ctx, item, prior_texts):
     tagged_text = _enforce_world_tag(text)
     final_text = _enforce_single_cashtag(truncate(tagged_text, ai_manager_brain.MAX_POST_LEN))
 
+    # truncate() is shared with other (currently disabled) triggers whose
+    # post shape is a single headline+explanation paragraph, where falling
+    # back to "just the first paragraph" when nothing fits is a reasonable
+    # last resort. ai_manager's shape is different -- chunk A and chunk B
+    # (see ai_manager_brain.py's prompt) are BOTH mandatory, so a
+    # truncation that strips chunk B out entirely doesn't produce a
+    # shorter-but-complete post, it produces a broken one (confirmed live:
+    # a 337-char post got silently cut down to just its opening reaction,
+    # dropping the "why it matters" sentence and its pointer to second_part
+    # entirely). Declining and trying again next checkpoint is strictly
+    # better than shipping that -- 0 posts is already a normal, accepted
+    # outcome for this trigger.
+    if len(tagged_text) > ai_manager_brain.MAX_POST_LEN and "\n\n" not in final_text:
+        logger.warning(
+            "ai_manager: declining post -- %d chars (limit %d) and truncation would drop the "
+            "mandatory second sentence/pointer entirely: %s",
+            len(tagged_text), ai_manager_brain.MAX_POST_LEN, tagged_text[:80],
+        )
+        return False, "text over budget, truncation would drop mandatory content"
+
     tweet_id = ctx.x.post(final_text)
     if not tweet_id:
         # ctx.x.post() itself failed -- ops_alerts already fired for this
