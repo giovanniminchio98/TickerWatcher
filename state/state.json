@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 35,
-      "usd_used": 0.525
+      "posts_used": 41,
+      "usd_used": 0.615
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 286,
-    "usd_used": 8.73
+    "posts_used": 292,
+    "usd_used": 8.82
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 9,
+    "posted_count_today": 12,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -252,7 +252,10 @@
       "https://www.coindesk.com/web3/2026/07/22/secondfi-to-shut-down-after-usd2-4-million-ada-wallet-theft",
       "https://www.coindesk.com/markets/2026/07/22/bitcoin-retreats-from-one-month-high-as-oil-tops-usd85-inflation-concerns-resurface",
       "https://www.coindesk.com/policy/2026/07/21/crypto-clarity-act-still-at-mercy-of-ethics-section-as-democrats-balk-at-trump-deal",
-      "https://www.coindesk.com/policy/2026/07/21/movement-labs-files-for-chapter-11-months-after-token-scandal-and-strategic-overhaul"
+      "https://www.coindesk.com/policy/2026/07/21/movement-labs-files-for-chapter-11-months-after-token-scandal-and-strategic-overhaul",
+      "https://www.cnbc.com/2026/07/21/jpmorgan-chase-ceo-jamie-dimon-market-risk.html",
+      "https://www.marketwatch.com/story/oil-prices-climb-to-six-week-high-as-hopes-of-de-escalation-in-iran-diminish-b5fb0942?mod=mw_rss_topstories",
+      "https://www.bbc.co.uk/news/articles/c36de9n4pxpo?at_medium=RSS&at_campaign=rss"
     ]
   },
   "oracle_alerts": {
@@ -481,11 +484,6 @@
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784469682.149901,
-      "text": "\ud83d\udcca CONTEXT: Robinhood (HOOD), Coinbase (COIN), and bitcoin miners MARA and RIOT all fell harder than the broader market Friday -- HOOD -5.7%, MARA -6.4%, COIN -2.1%, versus SPY's -1%.",
-      "url": null
-    },
     {
       "posted_at": 1784476859.065344,
       "text": "\ud83d\udcb0 CRYPTO: South Korea's regulator is moving toward sanctions against Dunamu, the parent company of Upbit, one of the country's largest crypto exchanges.",
@@ -720,6 +718,21 @@
       "posted_at": 1784728862.577419,
       "text": "\ud83d\udea8 JUST IN: Movement Labs has filed for Chapter 11 bankruptcy following a recent token-related scandal.\n(via CoinDesk)\nContext below:",
       "url": "https://www.coindesk.com/policy/2026/07/21/movement-labs-files-for-chapter-11-months-after-token-scandal-and-strategic-overhaul"
+    },
+    {
+      "posted_at": 1784732464.281867,
+      "text": "\ud83d\udea8 JUST IN: JPMorgan Chase's CEO believes current market prices don't adequately reflect existing risks and he would avoid buying stocks and bonds at present levels.\n(via CNBC Markets)\nContext below:",
+      "url": "https://www.cnbc.com/2026/07/21/jpmorgan-chase-ceo-jamie-dimon-market-risk.html"
+    },
+    {
+      "posted_at": 1784732464.281867,
+      "text": "\ud83d\udea8 JUST IN: Oil prices reached their highest level in six weeks as U.S.-Iran military tensions escalated with continued strikes and threats.\n(via MarketWatch Top Stories)\nThe details:",
+      "url": "https://www.marketwatch.com/story/oil-prices-climb-to-six-week-high-as-hopes-of-de-escalation-in-iran-diminish-b5fb0942?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784732464.281867,
+      "text": "\ud83d\udea8 JUST IN: Ukrainian drones targeted Wildberries logistics facilities in southern Russia for a second time.\n(via BBC News)\nMore on this below:",
+      "url": "https://www.bbc.co.uk/news/articles/c36de9n4pxpo?at_medium=RSS&at_campaign=rss"
     }
   ],
   "telegram": {
