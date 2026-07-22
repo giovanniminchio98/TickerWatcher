@@ -64,8 +64,8 @@
     { "name": "The Verge AI", "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", "whitelisted": true },
     { "name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/", "whitelisted": true }
   ],
-  "_comment_max_articles_per_run": "Dropped from 3 to 1 (2026-07-22) -- at 3/run, the 24/day cap could be exhausted in as few as 8 hourly runs, leaving the rest of the day silent even with real matching news still coming in. At 1/run (just the first match found, for simplicity), the same 24/day ceiling now spreads across all 24 hourly runs instead of front-loading -- total worst-case Claude/X usage per day is unchanged, only the distribution is. The inter-article delay in news_alerts.py (_INTER_ARTICLE_DELAY_SECONDS) is now moot in practice since there's at most one article per run, but left in place in case this is ever raised again.",
-  "max_articles_per_run": 1,
-  "_comment_max_articles_per_day": "Raised from 2 to 24 (2026-07-22, alongside re-enabling this trigger while ai_manager is paused) so the daily cap isn't what limits posting -- with news_alerts back to firing on every hourly run, 2/day exhausted the budget almost immediately and left most hours posting nothing. 24 lets roughly one post per hourly run through when a genuinely matching article exists; actual news flow, not this cap, is the real limiter now.",
-  "max_articles_per_day": 24
+  "_comment_pacing": "No hard daily stop (2026-07-22) -- posted_count_today crossing throttle_after_daily_posts doesn't block further posting for the rest of the day, it switches the per-run cap down to throttled_max_articles_per_run instead, so a genuinely busy news day keeps a steady trickle through the evening rather than going silent once an arbitrary count is hit. Below the threshold, up to max_articles_per_run articles can go out in a single run if that many genuinely match (see news_alerts.py's inter-article delay for why several in one run still don't land seconds apart). The real safety net against runaway spend is ctx.budget's shared, absolute monthly cap -- these numbers are pacing knobs, not cost controls.",
+  "max_articles_per_run": 3,
+  "throttle_after_daily_posts": 24,
+  "throttled_max_articles_per_run": 1
 }

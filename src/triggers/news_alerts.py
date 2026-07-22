@@ -67,10 +67,19 @@ def run(ctx):
         state["posted_date"] = today_str
         state["posted_count_today"] = 0
 
-    max_per_day = kw_cfg.get("max_articles_per_day", 3)
-    remaining_today = max_per_day - state.get("posted_count_today", 0)
-    if remaining_today <= 0:
-        return False
+    # No hard daily stop (2026-07-22) -- posted_count_today crossing
+    # throttle_after_daily_posts no longer blocks posting for the rest of
+    # the day, it just throttles how many go out per run from then on
+    # (down to throttled_max_articles_per_run, typically 1) so a genuinely
+    # busy news day still gets a steady trickle of posts through the
+    # evening instead of going silent once an arbitrary count is hit. The
+    # real safety net against runaway spend is ctx.budget's shared,
+    # absolute monthly cap -- this was always a pacing knob, not a cost
+    # control.
+    if state.get("posted_count_today", 0) >= kw_cfg.get("throttle_after_daily_posts", 24):
+        max_per_run = kw_cfg.get("throttled_max_articles_per_run", 1)
+    else:
+        max_per_run = kw_cfg.get("max_articles_per_run", 3)
 
     already_posted = set(state["posted_urls"]) | story_history.recent_urls(ctx.state, ctx.now.timestamp())
     try:
@@ -78,7 +87,7 @@ def run(ctx):
             kw_cfg["rss_feeds"],
             kw_cfg["keywords"],
             already_posted,
-            min(kw_cfg.get("max_articles_per_run", 3), remaining_today),
+            max_per_run,
         )
     except Exception:
         logger.exception("News fetch failed")
@@ -86,8 +95,6 @@ def run(ctx):
 
     fired = False
     for article in articles:
-        if state["posted_count_today"] >= max_per_day:
-            break
         if not ctx.budget.can_spend(has_link=False):
             break
         if fired:
