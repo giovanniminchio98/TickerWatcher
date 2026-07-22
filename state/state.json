@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 41,
-      "usd_used": 0.615
+      "posts_used": 47,
+      "usd_used": 0.705
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 292,
-    "usd_used": 8.82
+    "posts_used": 298,
+    "usd_used": 8.91
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 12,
+    "posted_count_today": 15,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -255,7 +255,10 @@
       "https://www.coindesk.com/policy/2026/07/21/movement-labs-files-for-chapter-11-months-after-token-scandal-and-strategic-overhaul",
       "https://www.cnbc.com/2026/07/21/jpmorgan-chase-ceo-jamie-dimon-market-risk.html",
       "https://www.marketwatch.com/story/oil-prices-climb-to-six-week-high-as-hopes-of-de-escalation-in-iran-diminish-b5fb0942?mod=mw_rss_topstories",
-      "https://www.bbc.co.uk/news/articles/c36de9n4pxpo?at_medium=RSS&at_campaign=rss"
+      "https://www.bbc.co.uk/news/articles/c36de9n4pxpo?at_medium=RSS&at_campaign=rss",
+      "https://www.cnbc.com/2026/07/20/capital-one-bet-big-on-discover-now-it-must-prove-the-gamble-was-worth-it-.html",
+      "https://www.marketwatch.com/story/i-will-claim-social-security-early-why-do-so-few-people-talk-about-the-elephant-in-the-room-64820675?mod=mw_rss_topstories",
+      "https://www.bbc.co.uk/news/articles/cyvl35z3917o?at_medium=RSS&at_campaign=rss"
     ]
   },
   "oracle_alerts": {
@@ -484,11 +487,6 @@
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784476859.065344,
-      "text": "\ud83d\udcb0 CRYPTO: South Korea's regulator is moving toward sanctions against Dunamu, the parent company of Upbit, one of the country's largest crypto exchanges.",
-      "url": "https://cointelegraph.com/news/south-korean-regulator-inspection-letter-upbit-36m-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
     {
       "posted_at": 1784480456.523564,
       "text": "\ud83e\udd16 AI: Mira Murati, former OpenAI CTO (chief technology officer), just released her first model since leaving -- called Inkling -- and made it fully open source.",
@@ -733,6 +731,21 @@
       "posted_at": 1784732464.281867,
       "text": "\ud83d\udea8 JUST IN: Ukrainian drones targeted Wildberries logistics facilities in southern Russia for a second time.\n(via BBC News)\nMore on this below:",
       "url": "https://www.bbc.co.uk/news/articles/c36de9n4pxpo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "posted_at": 1784736076.26969,
+      "text": "\ud83d\udea8 JUST IN: Capital One's acquisition of Discover will be evaluated when the company reports second-quarter earnings results.\n(via CNBC Markets)\nMore on this below:",
+      "url": "https://www.cnbc.com/2026/07/20/capital-one-bet-big-on-discover-now-it-must-prove-the-gamble-was-worth-it-.html"
+    },
+    {
+      "posted_at": 1784736076.26969,
+      "text": "\ud83d\udea8 JUST IN: A financial perspective argues claiming Social Security early offers advantages that standard break-even calculations don't fully capture.\n(via MarketWatch Top Stories)\nThe details:",
+      "url": "https://www.marketwatch.com/story/i-will-claim-social-security-early-why-do-so-few-people-talk-about-the-elephant-in-the-room-64820675?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784736076.26969,
+      "text": "\ud83d\udea8 JUST IN: Ukraine's president removed the top military commander following public outcry over the defense minister's removal.\n(via BBC News)\nContext below:",
+      "url": "https://www.bbc.co.uk/news/articles/cyvl35z3917o?at_medium=RSS&at_campaign=rss"
     }
   ],
   "telegram": {
