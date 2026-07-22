@@ -45,8 +45,17 @@ def _entry_timestamp(entry):
         return None
 
 
-def fetch_matching_articles(rss_feeds, keywords, already_posted_urls, max_articles):
-    """Returns up to max_articles dicts: {"title", "summary", "url", "source", "matched_keywords"}"""
+def fetch_matching_articles(rss_feeds, keywords, already_posted_urls, max_articles, max_per_feed=1):
+    """Returns up to max_articles dicts: {"title", "summary", "url", "source", "matched_keywords"}.
+
+    max_per_feed caps how many matches a single feed can contribute before
+    moving on to the next one (2026-07-22, default 1) -- without this, a
+    single prolific, keyword-dense feed early in rss_feeds' order (CoinDesk,
+    confirmed live) can satisfy max_articles by itself before the loop ever
+    reaches any other feed in the list, even though every other feed parses
+    and matches fine. This forces the loop to keep moving through the feed
+    list for variety instead of letting one source crowd out every other
+    one just by being first and prolific."""
     matches = []
     for feed_cfg in rss_feeds:
         if not feed_cfg.get("whitelisted"):
@@ -59,7 +68,10 @@ def fetch_matching_articles(rss_feeds, keywords, already_posted_urls, max_articl
         if parsed.bozo and not parsed.entries:
             logger.warning("RSS feed %s returned no usable entries", feed_cfg["name"])
             continue
+        feed_matches = 0
         for entry in parsed.entries:
+            if feed_matches >= max_per_feed:
+                break
             url = entry.get("link")
             if not url or url in already_posted_urls:
                 continue
@@ -76,6 +88,7 @@ def fetch_matching_articles(rss_feeds, keywords, already_posted_urls, max_articl
                         "matched_keywords": hit_keywords,
                     }
                 )
+                feed_matches += 1
             if len(matches) >= max_articles:
                 return matches
     return matches
