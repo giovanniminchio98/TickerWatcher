@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 1,
+    "calls_today": 2,
     "date": "2026-07-22",
-    "last_call_checkpoint": "2026-07-22-02",
-    "last_call_time": 1784678461.844994
+    "last_call_checkpoint": "2026-07-22-06",
+    "last_call_time": 1784692857.810121
   },
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 8,
-      "usd_used": 0.12
+      "posts_used": 12,
+      "usd_used": 0.18
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 259,
-    "usd_used": 8.325
+    "posts_used": 263,
+    "usd_used": 8.385
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.4861
+    "usd_used": 2.5266
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -473,36 +473,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784419274.788931,
-      "text": "\ud83d\udea8 JUST IN: Trump is focusing on Brazil's payments infrastructure as dollar stablecoins gain market share in the country's transaction systems.\n(via CoinDesk)",
-      "url": "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments"
-    },
-    {
-      "posted_at": 1784419274.788931,
-      "text": "\ud83d\udea8 JUST IN: Federal regulators are investigating whether a Trump teleprompter operator used insider knowledge to make $100,000 in profits through event-based prediction markets.\n(via CoinTelegraph)",
-      "url": "https://cointelegraph.com/news/trump-teleprompter-operator-made-100k-betting-kalshi-markets-tied-to-speeches-abc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "posted_at": 1784419274.788931,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\ud83d\udd34 $BTC Oracle: Lean Bearish (44/100, 24% confidence)\n\ud83d\udfe2 $64,800 (+1.42% 24h)\nPersistent / trending \u00b7 low vol \u00b7 biased sideways \u00b7 56% odds up next 40h \u00b7 statistical read, not advice",
-      "url": null
-    },
-    {
-      "posted_at": 1784422860.129569,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $ETH Oracle: Neutral (48/100, 35% confidence)\n\ud83d\udfe2 $1,860 (+1.14% 24h)\nPersistent / trending \u00b7 moderate vol \u00b7 biased sideways \u00b7 60% odds up next 40h\nstatistical read, not advice",
-      "url": null
-    },
-    {
-      "posted_at": 1784426459.481993,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\ud83d\udd34 $SOL Oracle: Lean Bearish (46/100, 18% confidence)\n\ud83d\udfe2 $75.67 (+0.60% 24h)\nRandom walk \u00b7 low vol \u00b7 biased sideways \u00b7 42% odds up next 40h\nstatistical read, not advice",
-      "url": null
-    },
-    {
-      "posted_at": 1784430062.585621,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\ud83d\udd34 $XRP Oracle: Lean Bearish (46/100, 18% confidence)\n\ud83d\udfe2 $1.10 (+0.60% 24h)\nPersistent / trending \u00b7 low vol \u00b7 biased sideways \u00b7 46% odds up next 40h\nstatistical read, not advice",
-      "url": null
-    },
-    {
       "posted_at": 1784433659.298847,
       "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $ADA Oracle: Neutral (53/100, 23% confidence)\n\ud83d\udd34 $0.1668 (-0.67% 24h)\nPersistent / trending \u00b7 moderate vol \u00b7 biased sideways \u00b7 48% odds up next 40h\nstatistical read, not advice",
       "url": null
@@ -705,6 +675,16 @@
     {
       "posted_at": 1784678461.844994,
       "text": "\ud83c\udf0d WORLD: Interesting one out of France -- it just became the first European country to ban social media for anyone under 15, passed by both its Senate and National Assembly.\n\nOnly the second country in the world to do this, after Australia. Here's the context:",
+      "url": null
+    },
+    {
+      "posted_at": 1784692857.810121,
+      "text": "\ud83c\udf0d WORLD: Sobering number out of the Iran conflict -- Hegseth says the war has now cost the US $37.5 billion, and it's the 11th straight night of American strikes with no diplomacy in sight.\n\nTrump says the US has 'no interest' in talks right now.",
+      "url": null
+    },
+    {
+      "posted_at": 1784692857.810121,
+      "text": "\ud83c\udf0d WORLD: Watching this one closely -- a fast-moving wildfire in southern France burned through 1,700 hectares in just a few hours, forcing hundreds to evacuate.\n\nNearly 1,000 firefighters and dozens of aircraft are on it. The context:",
       "url": null
     }
   ],
