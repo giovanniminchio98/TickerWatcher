@@ -35,6 +35,7 @@ read, matching the "chart snippet + terse JUST IN line" style other crypto
 news accounts use. Only available on the Claude paraphrase path -- the
 mechanical fallback has no sentiment signal, so no image gets attached then."""
 import logging
+import time
 
 from src import story_history
 from src.formatting import truncate
@@ -42,6 +43,19 @@ from src.media import get_trend_media_id
 from src.sources import news_rss, paraphrase
 
 logger = logging.getLogger("tickerwatch.triggers.news")
+
+# Gap between successive articles' main posts within the same run (not
+# between a post and its own reply, which stays immediate -- that pairing
+# already reads as normal, expected structure). Several unrelated headlines
+# landing seconds apart reads as an obvious bot dump; spacing them out is
+# cheap insurance for looking more like a person actually posting, and
+# possibly for reach too (X's own ranking is dwell-time/engagement based,
+# and multiple posts within the same minute don't get time to be seen
+# individually before the next one buries it). main.py's per-trigger
+# watchdog timeout is overridden for this trigger (see _TRIGGER_TIMEOUTS)
+# to leave room for these gaps -- the default 120s wouldn't survive even
+# one.
+_INTER_ARTICLE_DELAY_SECONDS = 120
 
 
 def run(ctx):
@@ -76,6 +90,8 @@ def run(ctx):
             break
         if not ctx.budget.can_spend(has_link=False):
             break
+        if fired:
+            time.sleep(_INTER_ARTICLE_DELAY_SECONDS)
         try:
             summary, sentiment, explanation = paraphrase.paraphrase_with_sentiment(
                 article["title"], article["summary"]

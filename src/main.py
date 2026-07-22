@@ -174,9 +174,14 @@ ENABLED = {
 # twelvedata.py's get_quotes_batch docstring) takes ~5 minutes by design,
 # which is *why* the job timeout itself was raised to 15 minutes in the
 # first place. Every other trigger has no such known-legitimate slow path
-# and stays on the tight default.
+# and stays on the tight default -- except news_alerts (2026-07-22), which
+# now deliberately sleeps _INTER_ARTICLE_DELAY_SECONDS (120s) between each
+# article's main post within a run (see news_alerts.py) so several
+# unrelated headlines don't land seconds apart; up to max_articles_per_run
+# - 1 gaps of that length would blow through the 120s default well before
+# real work even finishes.
 _TRIGGER_TIMEOUT_SECONDS = 120
-_TRIGGER_TIMEOUTS = {"ai_manager": 600}
+_TRIGGER_TIMEOUTS = {"ai_manager": 600, "news_alerts": 500}
 
 
 class _TriggerTimeout(Exception):

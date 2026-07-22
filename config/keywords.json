@@ -28,6 +28,7 @@
   ],
   "_comment_google_news": "Google News RSS search feeds (news.google.com/rss/search?q=...) -- no API key, no account, publicly documented URL format, used the same way as any other RSS feed below. Added for AI and broader markets/finance coverage the outlet-specific feeds above don't reach on their own -- hence the added AI/finance keywords above, so articles from these topic searches can actually pass the keyword filter. Same 'broken feed logged and skipped, never a hard failure' handling as every other feed (see news_rss.py).",
   "_comment_ai_feeds": "Before adding TechCrunch/The Verge/VentureBeat, AI coverage relied only on the generic 'Google News: AI' keyword search -- these three add dedicated AI-outlet feeds (product launches, funding, research) on top of that. Same fail-safe handling: a dead/wrong feed URL is caught per-feed (news_rss.py), logged, and skipped -- never a hard failure for the whole run.",
+  "_comment_general_news_feeds": "BBC News/The Guardian/Euronews added (2026-07-22) as general-news sources alongside the crypto/finance/AI outlets above -- same URLs already vetted for config/world_news.json's unconditional world-news feed, reused here since they're known-good. Unlike world_news.json, these ARE keyword-gated same as every other feed in this file -- a BBC or Guardian article only triggers a post if it matches config/keywords.json's keyword list.",
   "rss_feeds": [
     { "name": "CoinDesk", "url": "https://www.coindesk.com/arc/outboundfeeds/rss/", "whitelisted": true },
     { "name": "CoinTelegraph", "url": "https://cointelegraph.com/rss", "whitelisted": true },
@@ -36,6 +37,9 @@
     { "name": "CryptoSlate", "url": "https://cryptoslate.com/feed/", "whitelisted": true },
     { "name": "CNBC Markets", "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "whitelisted": true },
     { "name": "MarketWatch Top Stories", "url": "https://feeds.marketwatch.com/marketwatch/topstories/", "whitelisted": true },
+    { "name": "BBC News", "url": "https://feeds.bbci.co.uk/news/world/rss.xml", "whitelisted": true },
+    { "name": "The Guardian", "url": "https://www.theguardian.com/world/rss", "whitelisted": true },
+    { "name": "Euronews", "url": "https://www.euronews.com/rss", "whitelisted": true },
     { "name": "Google News: AI", "url": "https://news.google.com/rss/search?q=artificial%20intelligence%20when:1d&hl=en-US&gl=US&ceid=US:en", "whitelisted": true },
     { "name": "Google News: Crypto", "url": "https://news.google.com/rss/search?q=cryptocurrency%20when:1d&hl=en-US&gl=US&ceid=US:en", "whitelisted": true },
     { "name": "Google News: Markets", "url": "https://news.google.com/rss/search?q=stock%20market%20when:1d&hl=en-US&gl=US&ceid=US:en", "whitelisted": true },
