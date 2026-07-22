@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 65,
-      "usd_used": 0.975
+      "posts_used": 67,
+      "usd_used": 1.005
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 316,
-    "usd_used": 9.18
+    "posts_used": 318,
+    "usd_used": 9.21
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 24,
+    "posted_count_today": 25,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -267,7 +267,8 @@
       "https://www.theguardian.com/world/2026/jul/21/health-worker-being-monitored-for-ebola-in-london-hospital-after-working-in-drc",
       "https://www.cnbc.com/2026/07/17/indias-biggest-ipo-this-year-rakes-in-bids-worth-31-billion-powered-by-institutional-frenzy.html",
       "https://www.marketwatch.com/story/the-chip-sectors-recent-calm-is-masking-a-turbulent-outlook-in-the-options-market-2ffc098a?mod=mw_rss_topstories",
-      "https://www.theguardian.com/world/2026/jul/19/sao-tome-and-principe-presidential-election"
+      "https://www.theguardian.com/world/2026/jul/19/sao-tome-and-principe-presidential-election",
+      "https://www.cnbc.com/2026/07/16/dallas-fed-president-logan-calls-for-modestly-higher-interest-rates.html"
     ]
   },
   "oracle_alerts": {
@@ -790,6 +791,11 @@
       "posted_at": 1784746863.737686,
       "text": "\ud83d\udea8 JUST IN: Voters in S\u00e3o Tom\u00e9 and Pr\u00edncipe are electing a president as incumbent Vila Nova seeks reelection as an independent candidate.\n(via The Guardian)\nExplanation below:",
       "url": "https://www.theguardian.com/world/2026/jul/19/sao-tome-and-principe-presidential-election"
+    },
+    {
+      "posted_at": 1784750468.273264,
+      "text": "\ud83d\udea8 JUST IN: A Federal Reserve official stated that recent inflation improvements are insufficient justification for lowering interest rates.\n(via CNBC Markets)\nExplanation below:",
+      "url": "https://www.cnbc.com/2026/07/16/dallas-fed-president-logan-calls-for-modestly-higher-interest-rates.html"
     }
   ],
   "telegram": {
