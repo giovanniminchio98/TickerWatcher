@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 2,
+    "calls_today": 3,
     "date": "2026-07-22",
-    "last_call_checkpoint": "2026-07-22-06",
-    "last_call_time": 1784692857.810121
+    "last_call_checkpoint": "2026-07-22-12",
+    "last_call_time": 1784714462.719718
   },
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 12,
-      "usd_used": 0.18
+      "posts_used": 18,
+      "usd_used": 0.27
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 263,
-    "usd_used": 8.385
+    "posts_used": 269,
+    "usd_used": 8.475
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.5266
+    "usd_used": 2.5688
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -473,26 +473,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784433659.298847,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $ADA Oracle: Neutral (53/100, 23% confidence)\n\ud83d\udd34 $0.1668 (-0.67% 24h)\nPersistent / trending \u00b7 moderate vol \u00b7 biased sideways \u00b7 48% odds up next 40h\nstatistical read, not advice",
-      "url": null
-    },
-    {
-      "posted_at": 1784437261.694487,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $DOGE Levels: Neutral (48/100, 29% confidence)\n$0.0723 (-0.19% 24h)\n\ud83d\udd34 Resistance: $0.0724 / $0.0735 / $0.0744\n\ud83d\udfe2 Support: $0.0723 / $0.0714\nstatistical read, not advice",
-      "url": null
-    },
-    {
-      "posted_at": 1784440861.626252,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $LINK Forecast: Neutral (52/100, 25% confidence)\n$8.34 \u00b7 next 40h forecast:\n13% chance to touch +5%, 4% chance to touch -5%\n90% range: $8.02 \u2013 $8.83\nstatistical read, not advice",
-      "url": null
-    },
-    {
-      "posted_at": 1784448061.442174,
-      "text": "\ud83d\udcb0 CRYPTO \ud83d\udd2e:\n\u26aa $USDT Levels: Neutral (50/100, 21% confidence)\n$0.9993 (-0.00% 24h)\n\ud83d\udd34 Resistance: $0.9993\n\ud83d\udfe2 Support: $0.9992\nstatistical read, not advice",
-      "url": null
-    },
-    {
       "posted_at": 1784456385.597501,
       "text": "\ud83d\udea8 JUST IN: Citadel Securities (a major Wall Street market maker) just put $400M into Crypto.com, valuing it at $20B.",
       "url": "https://decrypt.co/373693/crypto-com-hits-20b-valuation-after-400m-citadel-securities-investment"
@@ -685,6 +665,21 @@
     {
       "posted_at": 1784692857.810121,
       "text": "\ud83c\udf0d WORLD: Watching this one closely -- a fast-moving wildfire in southern France burned through 1,700 hectares in just a few hours, forcing hundreds to evacuate.\n\nNearly 1,000 firefighters and dozens of aircraft are on it. The context:",
+      "url": null
+    },
+    {
+      "posted_at": 1784714462.719718,
+      "text": "\ud83c\udf0d WORLD: Zelensky just fired his top general too -- Oleksandr Syrskyi is out, days after protests erupted over the defence minister's removal.\n\nThis is the second big military leadership change in a week, mid-war, driven by street pressure. The context:",
+      "url": null
+    },
+    {
+      "posted_at": 1784714462.719718,
+      "text": "\ud83c\udf0d WORLD: Didn't expect a food-safety case to end in a possible prison sentence -- prosecutors in South Korea want a year in jail for a Michelin-starred chef who served ants in a dessert.",
+      "url": null
+    },
+    {
+      "posted_at": 1784714462.719718,
+      "text": "\ud83c\udf0d WORLD: Big one for parents to know about -- France's parliament has now formally passed its ban on social media for kids under 15, taking effect after summer break.",
       "url": null
     }
   ],
