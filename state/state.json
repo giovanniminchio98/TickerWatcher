@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 31,
-      "usd_used": 0.465
+      "posts_used": 35,
+      "usd_used": 0.525
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 282,
-    "usd_used": 8.67
+    "posts_used": 286,
+    "usd_used": 8.73
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 7,
+    "posted_count_today": 9,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -250,7 +250,9 @@
       "https://www.coindesk.com/business/2026/07/22/midnight-token-rebounds-after-wanchain-bridge-hack-hoskinson-calls-for-industry-overhaul",
       "https://www.coindesk.com/daybook-us/2026/07/22/here-s-why-bitcoin-bulls-should-take-a-closer-look-at-interest-rates",
       "https://www.coindesk.com/web3/2026/07/22/secondfi-to-shut-down-after-usd2-4-million-ada-wallet-theft",
-      "https://www.coindesk.com/markets/2026/07/22/bitcoin-retreats-from-one-month-high-as-oil-tops-usd85-inflation-concerns-resurface"
+      "https://www.coindesk.com/markets/2026/07/22/bitcoin-retreats-from-one-month-high-as-oil-tops-usd85-inflation-concerns-resurface",
+      "https://www.coindesk.com/policy/2026/07/21/crypto-clarity-act-still-at-mercy-of-ethics-section-as-democrats-balk-at-trump-deal",
+      "https://www.coindesk.com/policy/2026/07/21/movement-labs-files-for-chapter-11-months-after-token-scandal-and-strategic-overhaul"
     ]
   },
   "oracle_alerts": {
@@ -708,6 +710,16 @@
       "posted_at": 1784725268.953763,
       "text": "\ud83d\udea8 JUST IN: Bitcoin fell from recent peaks while oil surged above $85, reigniting worries about inflation.\n(via CoinDesk)",
       "url": "https://www.coindesk.com/markets/2026/07/22/bitcoin-retreats-from-one-month-high-as-oil-tops-usd85-inflation-concerns-resurface"
+    },
+    {
+      "posted_at": 1784728862.577419,
+      "text": "\ud83d\udea8 JUST IN: The Crypto Clarity Act faces delays as Democrats resist a compromise proposal involving the ethics section.\n(via CoinDesk)\nThe details:",
+      "url": "https://www.coindesk.com/policy/2026/07/21/crypto-clarity-act-still-at-mercy-of-ethics-section-as-democrats-balk-at-trump-deal"
+    },
+    {
+      "posted_at": 1784728862.577419,
+      "text": "\ud83d\udea8 JUST IN: Movement Labs has filed for Chapter 11 bankruptcy following a recent token-related scandal.\n(via CoinDesk)\nContext below:",
+      "url": "https://www.coindesk.com/policy/2026/07/21/movement-labs-files-for-chapter-11-months-after-token-scandal-and-strategic-overhaul"
     }
   ],
   "telegram": {
