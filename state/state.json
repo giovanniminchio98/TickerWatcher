@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 47,
-      "usd_used": 0.705
+      "posts_used": 53,
+      "usd_used": 0.795
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 298,
-    "usd_used": 8.91
+    "posts_used": 304,
+    "usd_used": 9.0
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 15,
+    "posted_count_today": 18,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -258,7 +258,10 @@
       "https://www.bbc.co.uk/news/articles/c36de9n4pxpo?at_medium=RSS&at_campaign=rss",
       "https://www.cnbc.com/2026/07/20/capital-one-bet-big-on-discover-now-it-must-prove-the-gamble-was-worth-it-.html",
       "https://www.marketwatch.com/story/i-will-claim-social-security-early-why-do-so-few-people-talk-about-the-elephant-in-the-room-64820675?mod=mw_rss_topstories",
-      "https://www.bbc.co.uk/news/articles/cyvl35z3917o?at_medium=RSS&at_campaign=rss"
+      "https://www.bbc.co.uk/news/articles/cyvl35z3917o?at_medium=RSS&at_campaign=rss",
+      "https://www.cnbc.com/2026/07/20/kalshi-traders-think-coinbases-trading-volume-will-fall-again.html",
+      "https://www.marketwatch.com/story/amd-is-investing-5-billion-into-anthropic-as-it-seeks-to-cut-into-nvidias-dominance-b882654d?mod=mw_rss_topstories",
+      "https://www.bbc.co.uk/news/videos/clyej920j5po?at_medium=RSS&at_campaign=rss"
     ]
   },
   "oracle_alerts": {
@@ -487,11 +490,6 @@
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784480456.523564,
-      "text": "\ud83e\udd16 AI: Mira Murati, former OpenAI CTO (chief technology officer), just released her first model since leaving -- called Inkling -- and made it fully open source.",
-      "url": "https://decrypt.co/373671/mira-murati-inkling-ai-model-openai-open-source"
-    },
     {
       "posted_at": 1784487659.175162,
       "text": "\ud83d\udcca CONTEXT: XRP barely moved after the recent CPI (inflation data) rally while bitcoin took a breather -- up just 0.09% in 24h versus BTC's broader swings.",
@@ -746,6 +744,21 @@
       "posted_at": 1784736076.26969,
       "text": "\ud83d\udea8 JUST IN: Ukraine's president removed the top military commander following public outcry over the defense minister's removal.\n(via BBC News)\nContext below:",
       "url": "https://www.bbc.co.uk/news/articles/cyvl35z3917o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "posted_at": 1784739658.972765,
+      "text": "\ud83d\udea8 JUST IN: Prediction markets suggest Coinbase's Q2 earnings will reveal trading volume declined for a third straight quarter.\n(via CNBC Markets)\nThe details:",
+      "url": "https://www.cnbc.com/2026/07/20/kalshi-traders-think-coinbases-trading-volume-will-fall-again.html"
+    },
+    {
+      "posted_at": 1784739658.972765,
+      "text": "\ud83d\udea8 JUST IN: AMD will invest up to $5 billion in Anthropic and establish a chip supply partnership with the AI company.\n(via MarketWatch Top Stories)\nThe details:",
+      "url": "https://www.marketwatch.com/story/amd-is-investing-5-billion-into-anthropic-as-it-seeks-to-cut-into-nvidias-dominance-b882654d?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784739658.972765,
+      "text": "\ud83d\udea8 JUST IN: A Texas police officer rescued a man from a burning vehicle moments before it was fully consumed by flames, captured on bodycam and dashcam footage.\n(via BBC News)\nThe details:",
+      "url": "https://www.bbc.co.uk/news/videos/clyej920j5po?at_medium=RSS&at_campaign=rss"
     }
   ],
   "telegram": {
