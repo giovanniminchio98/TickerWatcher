@@ -87,30 +87,28 @@ ENABLED = {
     # covers genuinely notable market moves with real explanation attached.
     # Code kept intact -- flip back to True to resume.
     "whale_alerts": False,
-    # disabled (2026-07-21): the only trigger that fires every hourly run
-    # with no checkpoint gate, so it kept posting its old "🚨 JUST IN:"
-    # wire-alert format at any hour -- including overnight -- clashing with
-    # ai_manager's owl persona. ai_manager already covers crypto/finance/AI
-    # news as a secondary input, in the same voice, when genuinely notable.
-    # Code kept intact -- flip back to True to resume.
-    "news_alerts": False,
-    # disabled (2026-07-21): a bare threshold/milestone crossing with no
-    # context (same "mechanical, no-context alert" issue as whale_alerts) --
-    # ai_manager already covers genuinely notable price moves with real
-    # explanation attached. Code kept intact -- flip back to True to resume.
-    "price_alerts": False,
-    # disabled for now (2026-07-19): dropped to trim the account down to
-    # the posts that are actually working, pending a possible revisit
-    # later. Code kept intact -- flip back to True to resume.
+    # re-enabled (2026-07-22): ai_manager is temporarily paused (see below)
+    # after it repeated the same two stories across consecutive batches
+    # (its own dedup missed a personnel/political story with no shared
+    # dollar figure/percentage to match on). news_alerts and price_alerts
+    # were disabled specifically because ai_manager covered this ground in
+    # its voice -- with ai_manager off, that reasoning doesn't apply, so
+    # these go back to being the account's news/finance coverage. Not
+    # crypto-scoped (unlike whale_alerts/oracle_alerts/historical_flashback
+    # below, which stay off).
+    "news_alerts": True,
+    "price_alerts": True,
+    # still off -- CryptoScope quant-signal alerts, explicitly kept
+    # crypto-scoped and disabled. Code kept intact -- flip back to True to
+    # resume.
     "oracle_alerts": False,
-    # disabled for now (2026-07-19): a bare daily price listing (market
-    # snapshot) with no explanation -- ai_manager already covers this
-    # kind of content with real context attached. Code kept intact --
-    # flip back to True to resume.
-    "scheduled_daily": False,
-    # disabled (2026-07-21): a bare "price N years ago vs today" callout,
-    # same no-context/off-persona issue as price_alerts. Code kept intact --
-    # flip back to True to resume.
+    # re-enabled (2026-07-22): same reasoning as news_alerts/price_alerts
+    # above -- a market snapshot, not crypto-scoped, disabled only because
+    # ai_manager (now paused) covered this ground.
+    "scheduled_daily": True,
+    # still off -- crypto-only (see its own docstring), explicitly kept
+    # crypto-scoped and disabled alongside oracle_alerts/whale_alerts above.
+    # Code kept intact -- flip back to True to resume.
     "historical_flashback": False,
     # disabled for now (2026-07-19): dropped to trim the account down to
     # the posts that are actually working. Code kept intact -- flip back
@@ -128,7 +126,16 @@ ENABLED = {
     # equally. Code kept intact -- flip back to True if that ever changes.
     "comment_engagement": False,
     "content_drafts": True,
-    "ai_manager": True,
+    # paused (2026-07-22): repeated the same two stories (Zelensky firing
+    # his army chief, France's under-15 social media ban) across two
+    # consecutive batches 6 hours apart, worded differently enough that
+    # neither the salient-figures dedup check nor the prompt's own
+    # "already covered" context caught it -- both stories are
+    # personnel/political/legal with no shared dollar figure or percentage
+    # to match on. news_alerts/price_alerts/scheduled_daily re-enabled
+    # above to cover news/finance in the meantime. Code kept intact --
+    # flip back to True to resume once the dedup gap is fixed.
+    "ai_manager": False,
     # disabled by default: X's "you must be mentioned or otherwise engaged
     # by the author" reply restriction hit every account we tried,
     # including the smaller reply_only ones added specifically on the

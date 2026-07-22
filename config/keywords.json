@@ -44,5 +44,6 @@
     { "name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/", "whitelisted": true }
   ],
   "max_articles_per_run": 3,
-  "max_articles_per_day": 2
+  "_comment_max_articles_per_day": "Raised from 2 to 24 (2026-07-22, alongside re-enabling this trigger while ai_manager is paused) so the daily cap isn't what limits posting -- with news_alerts back to firing on every hourly run, 2/day exhausted the budget almost immediately and left most hours posting nothing. 24 lets roughly one post per hourly run through when a genuinely matching article exists; actual news flow, not this cap, is the real limiter now.",
+  "max_articles_per_day": 24
 }
