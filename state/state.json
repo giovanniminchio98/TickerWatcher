@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 24,
-      "usd_used": 0.36
+      "posts_used": 26,
+      "usd_used": 0.39
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 275,
-    "usd_used": 8.565
+    "posts_used": 277,
+    "usd_used": 8.595
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 3,
+    "posted_count_today": 4,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -246,7 +246,8 @@
       "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit",
       "https://www.coindesk.com/tech/2026/07/22/balance-stablecoin-collapses-99-after-usd1-million-exploit-drains-its-bitcoin-vaults",
       "https://www.coindesk.com/tech/2026/07/22/live-updates-bitcoin-under-usd66-000-as-traders-await-alphabet-earnings-to-gauge-ai-trade",
-      "https://www.coindesk.com/markets/2026/07/22/ai-models-escaped-openai-s-sandbox-and-hit-hugging-face-crypto-is-where-that-gets-dangerous"
+      "https://www.coindesk.com/markets/2026/07/22/ai-models-escaped-openai-s-sandbox-and-hit-hugging-face-crypto-is-where-that-gets-dangerous",
+      "https://www.coindesk.com/business/2026/07/22/midnight-token-rebounds-after-wanchain-bridge-hack-hoskinson-calls-for-industry-overhaul"
     ]
   },
   "oracle_alerts": {
@@ -689,6 +690,11 @@
       "posted_at": 1784718068.284817,
       "text": "\ud83d\udea8 JUST IN: I don't see a headline or summary provided in your message to paraphrase. Please share the specific news headline and/or summary you'd like me to work with, and I'll provide the three-line response i\u2026\n(via CoinDesk)",
       "url": "https://www.coindesk.com/markets/2026/07/22/ai-models-escaped-openai-s-sandbox-and-hit-hugging-face-crypto-is-where-that-gets-dangerous"
+    },
+    {
+      "posted_at": 1784721663.215934,
+      "text": "\ud83d\udea8 JUST IN: Midnight token price increased 19% following a Wanchain bridge security breach, prompting Hoskinson to advocate for zero-knowledge proof improvements.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/business/2026/07/22/midnight-token-rebounds-after-wanchain-bridge-hack-hoskinson-calls-for-industry-overhaul"
     }
   ],
   "telegram": {
