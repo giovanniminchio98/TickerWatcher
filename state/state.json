@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 53,
-      "usd_used": 0.795
+      "posts_used": 59,
+      "usd_used": 0.885
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 304,
-    "usd_used": 9.0
+    "posts_used": 310,
+    "usd_used": 9.09
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 18,
+    "posted_count_today": 21,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -261,7 +261,10 @@
       "https://www.bbc.co.uk/news/articles/cyvl35z3917o?at_medium=RSS&at_campaign=rss",
       "https://www.cnbc.com/2026/07/20/kalshi-traders-think-coinbases-trading-volume-will-fall-again.html",
       "https://www.marketwatch.com/story/amd-is-investing-5-billion-into-anthropic-as-it-seeks-to-cut-into-nvidias-dominance-b882654d?mod=mw_rss_topstories",
-      "https://www.bbc.co.uk/news/videos/clyej920j5po?at_medium=RSS&at_campaign=rss"
+      "https://www.bbc.co.uk/news/videos/clyej920j5po?at_medium=RSS&at_campaign=rss",
+      "https://www.cnbc.com/2026/07/18/warshgpt-federal-reserve-communications-task-force-warsh.html",
+      "https://www.marketwatch.com/story/intel-earnings-will-pit-red-hot-ai-demand-against-a-sluggish-pc-market-6b9984fe?mod=mw_rss_topstories",
+      "https://www.theguardian.com/world/2026/jul/21/health-worker-being-monitored-for-ebola-in-london-hospital-after-working-in-drc"
     ]
   },
   "oracle_alerts": {
@@ -759,6 +762,21 @@
       "posted_at": 1784739658.972765,
       "text": "\ud83d\udea8 JUST IN: A Texas police officer rescued a man from a burning vehicle moments before it was fully consumed by flames, captured on bodycam and dashcam footage.\n(via BBC News)\nThe details:",
       "url": "https://www.bbc.co.uk/news/videos/clyej920j5po?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "posted_at": 1784743264.640176,
+      "text": "\ud83d\udea8 JUST IN: Investment firms are preparing strategies to operate with reduced public guidance from the Federal Reserve, with some turning to artificial intelligence.\n(via CNBC Markets)\nThe details:",
+      "url": "https://www.cnbc.com/2026/07/18/warshgpt-federal-reserve-communications-task-force-warsh.html"
+    },
+    {
+      "posted_at": 1784743264.640176,
+      "text": "\ud83d\udea8 JUST IN: Intel's earnings report will show strong AI demand alongside weak personal computer sales.\n(via MarketWatch Top Stories)\nMore on this below:",
+      "url": "https://www.marketwatch.com/story/intel-earnings-will-pit-red-hot-ai-demand-against-a-sluggish-pc-market-6b9984fe?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784743264.640176,
+      "text": "\ud83d\udea8 JUST IN: A UK health worker evacuated from DRC amid an Ebola outbreak is under observation at a London hospital following potential virus exposure.\n(via The Guardian)\nExplanation below:",
+      "url": "https://www.theguardian.com/world/2026/jul/21/health-worker-being-monitored-for-ebola-in-london-hospital-after-working-in-drc"
     }
   ],
   "telegram": {
