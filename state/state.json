@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 26,
-      "usd_used": 0.39
+      "posts_used": 31,
+      "usd_used": 0.465
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 277,
-    "usd_used": 8.595
+    "posts_used": 282,
+    "usd_used": 8.67
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 4,
+    "posted_count_today": 7,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -247,7 +247,10 @@
       "https://www.coindesk.com/tech/2026/07/22/balance-stablecoin-collapses-99-after-usd1-million-exploit-drains-its-bitcoin-vaults",
       "https://www.coindesk.com/tech/2026/07/22/live-updates-bitcoin-under-usd66-000-as-traders-await-alphabet-earnings-to-gauge-ai-trade",
       "https://www.coindesk.com/markets/2026/07/22/ai-models-escaped-openai-s-sandbox-and-hit-hugging-face-crypto-is-where-that-gets-dangerous",
-      "https://www.coindesk.com/business/2026/07/22/midnight-token-rebounds-after-wanchain-bridge-hack-hoskinson-calls-for-industry-overhaul"
+      "https://www.coindesk.com/business/2026/07/22/midnight-token-rebounds-after-wanchain-bridge-hack-hoskinson-calls-for-industry-overhaul",
+      "https://www.coindesk.com/daybook-us/2026/07/22/here-s-why-bitcoin-bulls-should-take-a-closer-look-at-interest-rates",
+      "https://www.coindesk.com/web3/2026/07/22/secondfi-to-shut-down-after-usd2-4-million-ada-wallet-theft",
+      "https://www.coindesk.com/markets/2026/07/22/bitcoin-retreats-from-one-month-high-as-oil-tops-usd85-inflation-concerns-resurface"
     ]
   },
   "oracle_alerts": {
@@ -477,11 +480,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784466059.727584,
-      "text": "\ud83d\udcf0 NEWS: US regulators just missed their own deadline to finalize the GENIUS Act's stablecoin rules.\n\nThe GENIUS Act set the rulebook for dollar-pegged crypto tokens like USDT.",
-      "url": "https://cointelegraph.com/news/federal-agencies-miss-genius-act-deadline?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "posted_at": 1784469682.149901,
       "text": "\ud83d\udcca CONTEXT: Robinhood (HOOD), Coinbase (COIN), and bitcoin miners MARA and RIOT all fell harder than the broader market Friday -- HOOD -5.7%, MARA -6.4%, COIN -2.1%, versus SPY's -1%.",
       "url": null
@@ -695,6 +693,21 @@
       "posted_at": 1784721663.215934,
       "text": "\ud83d\udea8 JUST IN: Midnight token price increased 19% following a Wanchain bridge security breach, prompting Hoskinson to advocate for zero-knowledge proof improvements.\n(via CoinDesk)",
       "url": "https://www.coindesk.com/business/2026/07/22/midnight-token-rebounds-after-wanchain-bridge-hack-hoskinson-calls-for-industry-overhaul"
+    },
+    {
+      "posted_at": 1784725268.953763,
+      "text": "\ud83d\udea8 JUST IN: Here's why bitcoin bulls should take a closer look at interest rates\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/daybook-us/2026/07/22/here-s-why-bitcoin-bulls-should-take-a-closer-look-at-interest-rates"
+    },
+    {
+      "posted_at": 1784725268.953763,
+      "text": "\ud83d\udea8 JUST IN: SecondFi is closing following a theft of $2.4 million in ADA cryptocurrency from its wallet.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/web3/2026/07/22/secondfi-to-shut-down-after-usd2-4-million-ada-wallet-theft"
+    },
+    {
+      "posted_at": 1784725268.953763,
+      "text": "\ud83d\udea8 JUST IN: Bitcoin fell from recent peaks while oil surged above $85, reigniting worries about inflation.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/markets/2026/07/22/bitcoin-retreats-from-one-month-high-as-oil-tops-usd85-inflation-concerns-resurface"
     }
   ],
   "telegram": {
