@@ -84,6 +84,14 @@ def run(ctx):
             logger.exception("Paraphrase failed for %s", article["url"])
             continue
 
+        # Belt-and-suspenders alongside paraphrase.py's own format check --
+        # covers the mechanical fallback path too, which just condenses
+        # article["title"] and would post a bare "🚨 JUST IN: (via X)" if
+        # that title was itself empty/whitespace (a malformed RSS entry).
+        if not summary or not summary.strip():
+            logger.warning("Skipping article with empty paraphrase result: %s", article["url"])
+            continue
+
         text = truncate(f"🚨 JUST IN: {summary}\n(via {article['source']})")
         media_id = get_trend_media_id(ctx, sentiment)
         tweet_id = ctx.x.post(text, media_id=media_id)

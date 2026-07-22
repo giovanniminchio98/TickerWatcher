@@ -69,16 +69,26 @@ def _llm_paraphrase_with_sentiment(title, summary):
         "explanation sentence. No quotes, no labels, nothing else."
     )
     resp = client.messages.create(
-        model="claude-haiku-4-5-20251001",
+        model="claude-haiku-4-5",
         max_tokens=200,
         messages=[{"role": "user", "content": prompt}],
     )
     raw = extract_text(resp)
     lines = [l.strip() for l in raw.splitlines() if l.strip()]
-    text = lines[0] if lines else raw
-    sentiment = lines[1].lower() if len(lines) > 1 else None
-    if sentiment not in VALID_SENTIMENTS:
-        sentiment = None
+    # The prompt demands exactly this 3-line shape every time, so a missing
+    # or invalid sentiment word on line 2 means the whole response didn't
+    # follow it -- not just that one field. Confirmed live: given an
+    # article with an effectively empty title/summary, Claude responded
+    # with a plain-English request for the actual headline instead of a
+    # paraphrase, and that got treated as a valid line 1 and posted
+    # verbatim to X ("I don't see a headline or summary provided...").
+    # Raising here routes back through paraphrase_with_sentiment's
+    # existing except-and-fall-back-to-mechanical-condense path instead of
+    # trusting content that never had the shape a real paraphrase would.
+    if len(lines) < 2 or lines[1].lower() not in VALID_SENTIMENTS:
+        raise ValueError(f"paraphrase response didn't follow the expected 3-line format: {raw[:200]!r}")
+    text = lines[0]
+    sentiment = lines[1].lower()
     explanation = lines[2] if len(lines) > 2 else None
     if len(text) > MAX_PARAPHRASE_LEN:
         text = text[: MAX_PARAPHRASE_LEN - 1].rstrip() + "…"
