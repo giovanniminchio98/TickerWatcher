@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 18,
-      "usd_used": 0.27
+      "posts_used": 24,
+      "usd_used": 0.36
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 269,
-    "usd_used": 8.475
+    "posts_used": 275,
+    "usd_used": 8.565
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,8 +209,8 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 2,
-    "posted_date": "2026-07-21",
+    "posted_count_today": 3,
+    "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -243,7 +243,10 @@
       "https://www.coindesk.com/tech/2026/07/16/inside-zcash-s-new-node-that-targets-visa-scale-privacy-at-50-000-transactions-per-second",
       "https://decrypt.co/373770/openai-gpt-5-6-vs-anthropic-fable-5-review",
       "https://www.coindesk.com/policy/2026/07/20/brazil-s-securities-regulator-sets-up-task-force-with-60-day-deadline-for-tokenization-proposal",
-      "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit"
+      "https://www.coindesk.com/business/2026/07/20/cross-chain-protocol-allbridge-halts-after-usd1-65-million-flash-loan-exploit",
+      "https://www.coindesk.com/tech/2026/07/22/balance-stablecoin-collapses-99-after-usd1-million-exploit-drains-its-bitcoin-vaults",
+      "https://www.coindesk.com/tech/2026/07/22/live-updates-bitcoin-under-usd66-000-as-traders-await-alphabet-earnings-to-gauge-ai-trade",
+      "https://www.coindesk.com/markets/2026/07/22/ai-models-escaped-openai-s-sandbox-and-hit-hugging-face-crypto-is-where-that-gets-dangerous"
     ]
   },
   "oracle_alerts": {
@@ -465,23 +468,13 @@
     "last_run_date": null
   },
   "scheduled_daily": {
-    "last_posted_date": "2026-07-19",
-    "rotate_index": 7
+    "last_posted_date": "2026-07-22",
+    "rotate_index": 8
   },
   "self_reply": {
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784456385.597501,
-      "text": "\ud83d\udea8 JUST IN: Citadel Securities (a major Wall Street market maker) just put $400M into Crypto.com, valuing it at $20B.",
-      "url": "https://decrypt.co/373693/crypto-com-hits-20b-valuation-after-400m-citadel-securities-investment"
-    },
-    {
-      "posted_at": 1784458861.570409,
-      "text": "\ud83e\udd16 AI: A leaked source code repo reportedly shows AI music tool Suno trained on thousands of hours of audio pulled from Deezer, YouTube, and Pond5.",
-      "url": "https://decrypt.co/373682/leaks-reveal-suno-fed-thousands-hours-deezer-youtube-pond5-data-ai"
-    },
     {
       "posted_at": 1784466059.727584,
       "text": "\ud83d\udcf0 NEWS: US regulators just missed their own deadline to finalize the GENIUS Act's stablecoin rules.\n\nThe GENIUS Act set the rulebook for dollar-pegged crypto tokens like USDT.",
@@ -681,6 +674,21 @@
       "posted_at": 1784714462.719718,
       "text": "\ud83c\udf0d WORLD: Big one for parents to know about -- France's parliament has now formally passed its ban on social media for kids under 15, taking effect after summer break.",
       "url": null
+    },
+    {
+      "posted_at": 1784718068.284817,
+      "text": "\ud83d\udea8 JUST IN: Balance stablecoin lost nearly all its value following a $1 million theft from its bitcoin reserves.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/tech/2026/07/22/balance-stablecoin-collapses-99-after-usd1-million-exploit-drains-its-bitcoin-vaults"
+    },
+    {
+      "posted_at": 1784718068.284817,
+      "text": "\ud83d\udea8 JUST IN: Bitcoin has fallen below $66,000 while market participants wait for Alphabet's earnings report to assess artificial intelligence sector momentum.\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/tech/2026/07/22/live-updates-bitcoin-under-usd66-000-as-traders-await-alphabet-earnings-to-gauge-ai-trade"
+    },
+    {
+      "posted_at": 1784718068.284817,
+      "text": "\ud83d\udea8 JUST IN: I don't see a headline or summary provided in your message to paraphrase. Please share the specific news headline and/or summary you'd like me to work with, and I'll provide the three-line response i\u2026\n(via CoinDesk)",
+      "url": "https://www.coindesk.com/markets/2026/07/22/ai-models-escaped-openai-s-sandbox-and-hit-hugging-face-crypto-is-where-that-gets-dangerous"
     }
   ],
   "telegram": {
