@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 59,
-      "usd_used": 0.885
+      "posts_used": 65,
+      "usd_used": 0.975
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 310,
-    "usd_used": 9.09
+    "posts_used": 316,
+    "usd_used": 9.18
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 21,
+    "posted_count_today": 24,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -264,7 +264,10 @@
       "https://www.bbc.co.uk/news/videos/clyej920j5po?at_medium=RSS&at_campaign=rss",
       "https://www.cnbc.com/2026/07/18/warshgpt-federal-reserve-communications-task-force-warsh.html",
       "https://www.marketwatch.com/story/intel-earnings-will-pit-red-hot-ai-demand-against-a-sluggish-pc-market-6b9984fe?mod=mw_rss_topstories",
-      "https://www.theguardian.com/world/2026/jul/21/health-worker-being-monitored-for-ebola-in-london-hospital-after-working-in-drc"
+      "https://www.theguardian.com/world/2026/jul/21/health-worker-being-monitored-for-ebola-in-london-hospital-after-working-in-drc",
+      "https://www.cnbc.com/2026/07/17/indias-biggest-ipo-this-year-rakes-in-bids-worth-31-billion-powered-by-institutional-frenzy.html",
+      "https://www.marketwatch.com/story/the-chip-sectors-recent-calm-is-masking-a-turbulent-outlook-in-the-options-market-2ffc098a?mod=mw_rss_topstories",
+      "https://www.theguardian.com/world/2026/jul/19/sao-tome-and-principe-presidential-election"
     ]
   },
   "oracle_alerts": {
@@ -493,11 +496,6 @@
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784487659.175162,
-      "text": "\ud83d\udcca CONTEXT: XRP barely moved after the recent CPI (inflation data) rally while bitcoin took a breather -- up just 0.09% in 24h versus BTC's broader swings.",
-      "url": "https://decrypt.co/373649/xrp-price-cant-keep-up-bitcoin-takes-breather"
-    },
     {
       "posted_at": 1784505669.413637,
       "text": "\ud83d\udea8 JUST IN: Zcash developed a new node designed to achieve privacy capabilities while processing transactions at speeds comparable to Visa's 50,000 per second capacity.\n(via CoinDesk)",
@@ -777,10 +775,25 @@
       "posted_at": 1784743264.640176,
       "text": "\ud83d\udea8 JUST IN: A UK health worker evacuated from DRC amid an Ebola outbreak is under observation at a London hospital following potential virus exposure.\n(via The Guardian)\nExplanation below:",
       "url": "https://www.theguardian.com/world/2026/jul/21/health-worker-being-monitored-for-ebola-in-london-hospital-after-working-in-drc"
+    },
+    {
+      "posted_at": 1784746863.737686,
+      "text": "\ud83d\udea8 JUST IN: India's largest asset manager's initial public offering attracted $31 billion in bids, primarily from institutional investors.\n(via CNBC Markets)\nThe details:",
+      "url": "https://www.cnbc.com/2026/07/17/indias-biggest-ipo-this-year-rakes-in-bids-worth-31-billion-powered-by-institutional-frenzy.html"
+    },
+    {
+      "posted_at": 1784746863.737686,
+      "text": "\ud83d\udea8 JUST IN: Chip sector options show elevated volatility despite calm stock prices, suggesting potential further declines ahead.\n(via MarketWatch Top Stories)\nWhy it matters:",
+      "url": "https://www.marketwatch.com/story/the-chip-sectors-recent-calm-is-masking-a-turbulent-outlook-in-the-options-market-2ffc098a?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784746863.737686,
+      "text": "\ud83d\udea8 JUST IN: Voters in S\u00e3o Tom\u00e9 and Pr\u00edncipe are electing a president as incumbent Vila Nova seeks reelection as an independent candidate.\n(via The Guardian)\nExplanation below:",
+      "url": "https://www.theguardian.com/world/2026/jul/19/sao-tome-and-principe-presidential-election"
     }
   ],
   "telegram": {
-    "last_report_date": "2026-07-21"
+    "last_report_date": "2026-07-22"
   },
   "whale": {
     "last_btc_block_height": 958176,
