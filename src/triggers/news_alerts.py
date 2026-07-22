@@ -4,9 +4,13 @@ sources/news_rss.py for why CryptoPanic/NewsAPI aren't viable free options).
 No link, ever, on X -- same account-wide rule as ai_manager.py: X's algorithm
 has suppressed reach on linked posts hard since March 2026 (near-zero reach
 for non-Premium accounts), and a link reply still cost real budget besides.
-The main post names the outlet (no URL) as its citation instead. Still
-bounded by keywords.max_articles_per_day, the main cost lever now that whale
-alerts dropped their link entirely too.
+The main post names the outlet (no URL) as its citation instead. Paced by
+keywords.json's max_articles_per_run/throttle_after_daily_posts/
+throttled_max_articles_per_run (2026-07-22: no hard daily stop anymore --
+crossing the daily count throttles the per-run pace down instead of
+blocking outright, so a busy news day still gets a steady trickle rather
+than going silent; ctx.budget's shared monthly cap is the real backstop
+against runaway spend).
 
 Every post also gets a mandatory plain-language explanation posted as a
 reply right underneath it (src/sources/paraphrase.py's third output line) --
@@ -14,10 +18,16 @@ same "explain the news, not just headline it" pattern as ai_manager's
 mandatory second_part, and same reasoning for why it's a reply instead of
 crammed into the main post: the main line stays a terse, skimmable headline,
 the reply is where the actual "what this means" value is. No link there
-either -- just text, same as everywhere else on this account now. Only
-available on the Claude paraphrase path; the mechanical fallback (no
-ANTHROPIC_API_KEY) has no explanation to give, so that post goes out
-without a reply rather than with an empty or fabricated one.
+either -- just text, same as everywhere else on this account now.
+
+The explanation is mandatory to post AT ALL now (2026-07-22) -- no
+explanation, no post, main headline included. Confirmed live that a bare
+headline can be genuinely meaningless without it (a "here's why bitcoin
+bulls should take a closer look at interest rates" headline that never
+got its "why" explained, since the reply carrying that never went out).
+This mostly affects the mechanical fallback path (no ANTHROPIC_API_KEY,
+or the LLM call failed) which never has an explanation to give -- that
+path now produces no post at all rather than a contextless one.
 
 The Telegram channel copy always gets the real article URL -- Telegram is
 free, so there's no reason to ever hold that link back there, same
@@ -113,6 +123,19 @@ def run(ctx):
         # that title was itself empty/whitespace (a malformed RSS entry).
         if not summary or not summary.strip():
             logger.warning("Skipping article with empty paraphrase result: %s", article["url"])
+            continue
+
+        # explanation is now mandatory to post at all (2026-07-22) -- a
+        # headline alone can be meaningless without it (confirmed live: a
+        # bitcoin/interest-rates headline that only teased "here's why"
+        # with no reply ever explaining why). Covers both the mechanical
+        # fallback path (no ANTHROPIC_API_KEY, or the LLM call failed --
+        # always returns explanation=None) and the rarer case of an
+        # LLM response that validly parsed but only had 2 lines, no third.
+        # Previously this only skipped the reply and still posted the
+        # bare headline regardless.
+        if not explanation or not explanation.strip():
+            logger.warning("Skipping article with no explanation to pair with it: %s", article["url"])
             continue
 
         text = truncate(f"🚨 JUST IN: {summary}\n(via {article['source']})")
