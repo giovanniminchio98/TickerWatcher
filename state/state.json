@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-22",
-      "posts_used": 69,
-      "usd_used": 1.035
+      "posts_used": 71,
+      "usd_used": 1.065
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 320,
-    "usd_used": 9.24
+    "posts_used": 322,
+    "usd_used": 9.27
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -209,7 +209,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 26,
+    "posted_count_today": 27,
     "posted_date": "2026-07-22",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -269,7 +269,8 @@
       "https://www.marketwatch.com/story/the-chip-sectors-recent-calm-is-masking-a-turbulent-outlook-in-the-options-market-2ffc098a?mod=mw_rss_topstories",
       "https://www.theguardian.com/world/2026/jul/19/sao-tome-and-principe-presidential-election",
       "https://www.cnbc.com/2026/07/16/dallas-fed-president-logan-calls-for-modestly-higher-interest-rates.html",
-      "https://www.cnbc.com/2026/07/22/john-paulson-says-we-are-in-early-stages-of-a-long-term-bull-market-for-gold.html"
+      "https://www.cnbc.com/2026/07/22/john-paulson-says-we-are-in-early-stages-of-a-long-term-bull-market-for-gold.html",
+      "https://www.cnbc.com/2026/07/16/short-sellers-load-up-against-spacex-as-stock-retreats-back-to-ipo-price.html"
     ]
   },
   "oracle_alerts": {
@@ -802,6 +803,11 @@
       "posted_at": 1784754065.226521,
       "text": "\ud83d\udea8 JUST IN: Paulson notes central banks and private investors are increasingly accumulating gold, signaling early stages of a prolonged bull market.\n(via CNBC Markets)\nWhy it matters:",
       "url": "https://www.cnbc.com/2026/07/22/john-paulson-says-we-are-in-early-stages-of-a-long-term-bull-market-for-gold.html"
+    },
+    {
+      "posted_at": 1784757664.382655,
+      "text": "\ud83d\udea8 JUST IN: Short sellers have increased bets against SpaceX as its stock price fell below its initial offering level, with 185 million shares now sold short.\n(via CNBC Markets)\nThe details:",
+      "url": "https://www.cnbc.com/2026/07/16/short-sellers-load-up-against-spacex-as-stock-retreats-back-to-ipo-price.html"
     }
   ],
   "telegram": {
