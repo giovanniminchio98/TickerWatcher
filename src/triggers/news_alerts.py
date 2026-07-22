@@ -45,14 +45,31 @@ read, matching the "chart snippet + terse JUST IN line" style other crypto
 news accounts use. Only available on the Claude paraphrase path -- the
 mechanical fallback has no sentiment signal, so no image gets attached then."""
 import logging
+import random
 import time
 
 from src import story_history
-from src.formatting import truncate
+from src.formatting import MAX_TWEET_LEN, truncate
 from src.media import get_trend_media_id
 from src.sources import news_rss, paraphrase
 
 logger = logging.getLogger("tickerwatch.triggers.news")
+
+# A varied pointer line telling readers the reply underneath is the
+# mandatory explanation, on-topic, not some other user's unrelated reply --
+# same reasoning as ai_manager's pointer-to-second_part sentence, just
+# adapted to this trigger's terse headline+source format instead of a full
+# sentence. Randomly chosen (2026-07-22) so it doesn't read as the same
+# fixed line every time; only appended if it actually fits without
+# truncating away real content (headline or source) to make room -- see
+# run()'s use below.
+_REPLY_POINTERS = (
+    "Explanation below:",
+    "Why it matters:",
+    "Context below:",
+    "More on this below:",
+    "The details:",
+)
 
 # Gap between successive articles' main posts within the same run (not
 # between a post and its own reply, which stays immediate -- that pairing
@@ -138,7 +155,12 @@ def run(ctx):
             logger.warning("Skipping article with no explanation to pair with it: %s", article["url"])
             continue
 
-        text = truncate(f"🚨 JUST IN: {summary}\n(via {article['source']})")
+        base_text = f"🚨 JUST IN: {summary}\n(via {article['source']})"
+        pointer = random.choice(_REPLY_POINTERS)
+        with_pointer = f"{base_text}\n{pointer}"
+        # Only add it if it genuinely fits as a bonus -- never truncate
+        # away real headline/source content just to make room for it.
+        text = truncate(with_pointer if len(with_pointer) <= MAX_TWEET_LEN else base_text)
         media_id = get_trend_media_id(ctx, sentiment)
         tweet_id = ctx.x.post(text, media_id=media_id)
         if not tweet_id:
