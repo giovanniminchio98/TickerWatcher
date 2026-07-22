@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 3,
-    "date": "2026-07-21",
-    "last_call_checkpoint": "2026-07-21-21",
-    "last_call_time": 1784660478.549785
+    "calls_today": 1,
+    "date": "2026-07-22",
+    "last_call_checkpoint": "2026-07-22-02",
+    "last_call_time": 1784678461.844994
   },
   "budget": {
     "daily": {
-      "date": "2026-07-21",
-      "posts_used": 21,
-      "usd_used": 0.315
+      "date": "2026-07-22",
+      "posts_used": 8,
+      "usd_used": 0.12
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 251,
-    "usd_used": 8.205
+    "posts_used": 259,
+    "usd_used": 8.325
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.4412
+    "usd_used": 2.4861
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -79,7 +79,9 @@
       "https://cointelegraph.com/news/sec-sues-mining-automatic-and-founder-over-alleged-22m-crypto-mining-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/hut-8-iren-deals-lift-ai-focused-bitcoin-mining-stocks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/nigeria-order-crypto-regulatory-framework?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/vietnam-crypto-traders-unlicensed-platforms-fines?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/vietnam-crypto-traders-unlicensed-platforms-fines?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://www.coindesk.com/policy/2026/07/21/crypto-clarity-act-still-at-mercy-of-ethics-section-as-democrats-balk-at-trump-deal",
+      "https://www.coindesk.com/policy/2026/07/21/movement-labs-files-for-chapter-11-months-after-token-scandal-and-strategic-overhaul"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -88,8 +90,8 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 8,
-    "posted_date": "2026-07-21"
+    "posted_count_today": 2,
+    "posted_date": "2026-07-22"
   },
   "filler": {
     "posted_count_today": 2,
@@ -465,26 +467,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784412065.467657,
-      "text": "\ud83d\udea8 JUST IN: Crypto is quietly green while stocks bleed -- $BTC +1% to $64,708, ETH +1.1%, even DOGE and ADA up slightly. Meanwhile SPY -1%, QQQ -1.5%, NVDA -2.2%, NFLX -7.3%.",
-      "url": null
-    },
-    {
-      "posted_at": 1784412722.172499,
-      "text": "\ud83d\udcb0 CRYPTO: \ud83d\udd34 $BTC Oracle: Lean Bearish (42/100, 26% confidence)\n\ud83d\udfe2 $64,806 (+1.16% 24h)\nPersistent / trending \u00b7 low vol \u00b7 biased down \u00b7 56% odds up next 40h \u00b7 statistical read, not advice",
-      "url": null
-    },
-    {
-      "posted_at": 1784412722.172499,
-      "text": "\ud83d\udcf0 NEWS: The ECB just laid out a 3-part warning on how stablecoins (crypto tokens pegged to $1) could hurt regular banks -- competing for deposits, payments, and even credit.",
-      "url": "https://decrypt.co/373767/ecb-warns-stablecoins-drain-bank-deposits"
-    },
-    {
-      "posted_at": 1784413662.826628,
-      "text": "\ud83d\udcb0 CRYPTO: OKX Europe now lets users swap USDT for USDC directly, giving Europeans an easy exit from Tether's stablecoin.",
-      "url": "https://cointelegraph.com/news/okx-europe-lets-users-convert-usdt-to-mica-compliant-usdc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "posted_at": 1784419274.788931,
       "text": "\ud83d\udea8 JUST IN: Trump is focusing on Brazil's payments infrastructure as dollar stablecoins gain market share in the country's transaction systems.\n(via CoinDesk)",
       "url": "https://www.coindesk.com/business/2026/07/18/trump-targets-brazil-s-payments-system-while-dollar-stablecoins-quietly-dominate-country-s-payments"
@@ -697,6 +679,26 @@
     {
       "posted_at": 1784660478.549785,
       "text": "\ud83c\udf0d WORLD: Didn't expect this detail -- a Spanish hotel chain, Meli\u00e1, says it's pulling out of Cuba completely, shutting all 34 of its properties there because of US sanctions pressure.",
+      "url": null
+    },
+    {
+      "posted_at": 1784678461.844994,
+      "text": "\ud83c\udf0d WORLD: Zelensky just made a major move -- he's fired Ukraine's top army commander Oleksandr Syrskyi after days of public protests over the defence minister's ouster.\n\nThis is the military leadership shakeup protesters demanded, and it's happening mid-war.",
+      "url": null
+    },
+    {
+      "posted_at": 1784678461.844994,
+      "text": "\ud83c\udf0d WORLD: The Iran conflict keeps escalating and it's getting expensive and dangerous fast -- Hegseth says the war has cost the US $37.5 billion so far, and Trump says strikes on Iran aren't 'finished.'\n\nTrump's now naming a specific next target too.",
+      "url": null
+    },
+    {
+      "posted_at": 1784678461.844994,
+      "text": "\ud83c\udf0d WORLD: Spain's got a serious wildfire on its hands -- a major blaze north of Madrid has forced about 1,200 people out and already burned over 30,000 hectares.\n\nOfficials are calling it one of the most complex fires the country's faced in years.",
+      "url": null
+    },
+    {
+      "posted_at": 1784678461.844994,
+      "text": "\ud83c\udf0d WORLD: Interesting one out of France -- it just became the first European country to ban social media for anyone under 15, passed by both its Senate and National Assembly.\n\nOnly the second country in the world to do this, after Australia. Here's the context:",
       "url": null
     }
   ],
