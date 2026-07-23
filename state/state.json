@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-23",
-      "posts_used": 19,
-      "usd_used": 0.285
+      "posts_used": 25,
+      "usd_used": 0.375
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 343,
-    "usd_used": 9.585
+    "posts_used": 349,
+    "usd_used": 9.675
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -93,7 +93,9 @@
       "https://www.cnbc.com/2026/07/21/jpmorgan-chase-ceo-jamie-dimon-market-risk.html",
       "https://www.marketwatch.com/story/the-bull-market-faces-higher-likelihood-of-a-fed-rate-hike-as-iran-crisis-intensifies-58f268e8?mod=mw_rss_topstories",
       "https://www.cnbc.com/2026/07/20/capital-one-bet-big-on-discover-now-it-must-prove-the-gamble-was-worth-it-.html",
-      "https://www.marketwatch.com/story/servicenows-stock-gains-as-earnings-show-momentum-in-cybersecurity-86e7a038?mod=mw_rss_topstories"
+      "https://www.marketwatch.com/story/servicenows-stock-gains-as-earnings-show-momentum-in-cybersecurity-86e7a038?mod=mw_rss_topstories",
+      "https://www.cnbc.com/2026/07/20/kalshi-traders-think-coinbases-trading-volume-will-fall-again.html",
+      "https://www.marketwatch.com/story/ibm-just-cut-its-outlook-why-its-stock-is-bouncing-anyway-9d36e22a?mod=mw_rss_topstories"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -102,7 +104,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 6,
+    "posted_count_today": 8,
     "posted_date": "2026-07-23"
   },
   "filler": {
@@ -215,7 +217,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 9,
+    "posted_count_today": 12,
     "posted_date": "2026-07-23",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -286,7 +288,10 @@
       "https://www.bbc.co.uk/news/articles/ce8kvm84lxmo?at_medium=RSS&at_campaign=rss",
       "https://www.cnbc.com/2026/07/15/buffett-says-trumps-pick-of-kevin-warsh-for-fed-chair-was-good-choice.html",
       "https://www.marketwatch.com/story/servicenows-stock-gains-as-earnings-show-momentum-in-cybersecurity-86e7a038?mod=mw_rss_topstories",
-      "https://www.theguardian.com/world/2026/jul/22/nicaragua-daniel-ortega-congress-work-plan-suspend-elections"
+      "https://www.theguardian.com/world/2026/jul/22/nicaragua-daniel-ortega-congress-work-plan-suspend-elections",
+      "https://www.cnbc.com/2026/07/14/goldman-sachs-and-jpmorgan-chase-are-emerging-as-ai-winners.html",
+      "https://www.marketwatch.com/story/ibm-just-cut-its-outlook-why-its-stock-is-bouncing-anyway-9d36e22a?mod=mw_rss_topstories",
+      "https://www.theguardian.com/us-news/live/2026/jul/21/donald-trump-tariffs-canada-mark-carney-lebanon-republicans-gop-spending-bill-latest-news-updates"
     ]
   },
   "oracle_alerts": {
@@ -859,6 +864,21 @@
       "posted_at": 1784772061.349865,
       "text": "\ud83d\udea8 JUST IN: Nicaragua's congress announced plans to suspend elections following President Ortega's directive to eliminate the electoral process.\n(via The Guardian)\nThe details:",
       "url": "https://www.theguardian.com/world/2026/jul/22/nicaragua-daniel-ortega-congress-work-plan-suspend-elections"
+    },
+    {
+      "posted_at": 1784775657.895474,
+      "text": "\ud83d\udea8 JUST IN: Goldman Sachs and JPMorgan Chase reported record revenue driven by increased trading and investment banking activity tied to AI-related demand.\n(via CNBC Markets)\nContext below:",
+      "url": "https://www.cnbc.com/2026/07/14/goldman-sachs-and-jpmorgan-chase-are-emerging-as-ai-winners.html"
+    },
+    {
+      "posted_at": 1784775657.895474,
+      "text": "\ud83d\udea8 JUST IN: IBM reduced its financial projections following a previous profit warning, though the decrease was smaller than market expectations.\n(via MarketWatch Top Stories)\nMore on this below:",
+      "url": "https://www.marketwatch.com/story/ibm-just-cut-its-outlook-why-its-stock-is-bouncing-anyway-9d36e22a?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784775657.895474,
+      "text": "\ud83d\udea8 JUST IN: Trump plans to impose tariffs on generic drugs beginning in 2028.\n(via The Guardian)\nMore on this below:",
+      "url": "https://www.theguardian.com/us-news/live/2026/jul/21/donald-trump-tariffs-canada-mark-carney-lebanon-republicans-gop-spending-bill-latest-news-updates"
     }
   ],
   "telegram": {
