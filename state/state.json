@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-23",
-      "posts_used": 7,
-      "usd_used": 0.105
+      "posts_used": 13,
+      "usd_used": 0.195
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 331,
-    "usd_used": 9.405
+    "posts_used": 337,
+    "usd_used": 9.495
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -89,7 +89,9 @@
       "https://cointelegraph.com/news/openai-models-hacked-hugging-face-to-cheat-on-a-test?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/bis-study-says-stablecoins-bypass-capital-controls-more-easily-than-bank-deposits?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://www.cnbc.com/2026/07/22/john-paulson-says-we-are-in-early-stages-of-a-long-term-bull-market-for-gold.html",
-      "https://www.marketwatch.com/story/i-have-children-from-my-first-marriage-should-my-second-husband-inherit-my-house-if-i-die-d9bd8687?mod=mw_rss_topstories"
+      "https://www.marketwatch.com/story/i-have-children-from-my-first-marriage-should-my-second-husband-inherit-my-house-if-i-die-d9bd8687?mod=mw_rss_topstories",
+      "https://www.cnbc.com/2026/07/21/jpmorgan-chase-ceo-jamie-dimon-market-risk.html",
+      "https://www.marketwatch.com/story/the-bull-market-faces-higher-likelihood-of-a-fed-rate-hike-as-iran-crisis-intensifies-58f268e8?mod=mw_rss_topstories"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -98,7 +100,7 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 2,
+    "posted_count_today": 4,
     "posted_date": "2026-07-23"
   },
   "filler": {
@@ -211,7 +213,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 3,
+    "posted_count_today": 6,
     "posted_date": "2026-07-23",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -276,7 +278,10 @@
       "https://www.cnbc.com/2026/07/15/anthropic-ipo-banks-investor-meetings.html",
       "https://www.cnbc.com/2026/07/15/watch-fed-chairman-kevin-warsh-testify-live-before-senate-banking-committee.html",
       "https://www.marketwatch.com/story/i-have-children-from-my-first-marriage-should-my-second-husband-inherit-my-house-if-i-die-d9bd8687?mod=mw_rss_topstories",
-      "https://www.theguardian.com/us-news/2026/jul/21/gordie-howe-bridge-opening-celebration-canceled"
+      "https://www.theguardian.com/us-news/2026/jul/21/gordie-howe-bridge-opening-celebration-canceled",
+      "https://www.cnbc.com/2026/07/15/new-york-fed-president-williams-says-inflation-has-peaked-rates-well-positioned.html",
+      "https://www.marketwatch.com/story/the-bull-market-faces-higher-likelihood-of-a-fed-rate-hike-as-iran-crisis-intensifies-58f268e8?mod=mw_rss_topstories",
+      "https://www.bbc.co.uk/news/articles/ce8kvm84lxmo?at_medium=RSS&at_campaign=rss"
     ]
   },
   "oracle_alerts": {
@@ -505,11 +510,6 @@
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784509260.129113,
-      "text": "\ud83d\udea8 JUST IN: Visa just launched a Stablecoin Platform letting banks and fintech firms plug dollar-pegged crypto tokens straight into Visa's payment network.",
-      "url": "https://decrypt.co/373668/visa-stablecoin-platform-banks-fintech-open-usd"
-    },
     {
       "posted_at": 1784520058.947512,
       "text": "\ud83d\udea8 JUST IN: Citadel Securities just put $400M into Crypto.com -- and in the same news cycle, Base (Coinbase's blockchain network) handed its app over to Cobie, a well-known crypto podcaster and trader. \ud83d\udd04\ud83e\udd1d",
@@ -824,6 +824,21 @@
       "posted_at": 1784764873.915482,
       "text": "\ud83d\udea8 JUST IN: Canada postponed the Gordie Howe International Bridge opening ceremony with the US following Trump's announcement of 50% tariffs on Canadian goods.\n(via The Guardian)\nExplanation below:",
       "url": "https://www.theguardian.com/us-news/2026/jul/21/gordie-howe-bridge-opening-celebration-canceled"
+    },
+    {
+      "posted_at": 1784768461.926735,
+      "text": "\ud83d\udea8 JUST IN: New York Federal Reserve President Williams stated inflation has peaked and current interest rates are appropriately calibrated.\n(via CNBC Markets)\nWhy it matters:",
+      "url": "https://www.cnbc.com/2026/07/15/new-york-fed-president-williams-says-inflation-has-peaked-rates-well-positioned.html"
+    },
+    {
+      "posted_at": 1784768461.926735,
+      "text": "\ud83d\udea8 JUST IN: Treasury yields are climbing toward their highest points since February as oil prices increase amid escalating Iran tensions.\n(via MarketWatch Top Stories)\nContext below:",
+      "url": "https://www.marketwatch.com/story/the-bull-market-faces-higher-likelihood-of-a-fed-rate-hike-as-iran-crisis-intensifies-58f268e8?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784768461.926735,
+      "text": "\ud83d\udea8 JUST IN: Trump has identified Canada's dairy supply management system as a key justification for imposing new tariffs on Canadian goods.\n(via BBC News)\nExplanation below:",
+      "url": "https://www.bbc.co.uk/news/articles/ce8kvm84lxmo?at_medium=RSS&at_campaign=rss"
     }
   ],
   "telegram": {
