@@ -132,7 +132,7 @@ def _day_context(ctx):
 # real posting moments a day rather than a high-frequency drip. Deliberately
 # clock-time-based, not elapsed-time+jitter -- an elapsed-time cadence
 # drifted over time and produced uneven gaps; a fixed clock is predictable.
-_CALL_CHECKPOINT_HOURS = (2, 6, 10, 12, 21)  # TEMP: 10 added for a live test, revert after
+_CALL_CHECKPOINT_HOURS = (2, 6, 12, 21)
 
 
 def _ready_for_call(ctx, cfg, state):
@@ -426,30 +426,81 @@ def _assemble_main_tweet(hook, category):
 
 
 def _assemble_reply_card(item):
-    lines = [f"• {b}" for b in (item.get("why_it_matters") or [])[:3]]
-    bullish = item.get("tickers_bullish") or []
-    if bullish:
-        lines.append("🐂 Bullish: " + ", ".join(f"${t}" for t in bullish[:3]))
-    bearish = item.get("tickers_bearish") or []
-    if bearish:
-        lines.append("🐻 Bearish: " + ", ".join(f"${t}" for t in bearish[:3]))
+    """Builds the reply card greedily within budget IN CODE, not the
+    prompt -- confirmed live (2026-07-23) that per-field character caps
+    stated in the prompt don't reliably keep the ASSEMBLED total under X's
+    real tweet limit: a card with 3 bullets + tickers + impact/confidence/
+    horizon + a bottom-line closer regularly overflowed 260 chars, and
+    truncate()'s last-resort ellipsis fallback (no paragraph break to fall
+    back to in this bullet-list shape) silently chopped it mid-sentence,
+    dropping the mandatory bottom line entirely -- the exact class of bug
+    already fixed once for the old design's chunk-A/chunk-B post shape.
+    bottom_line is built in first and never dropped; bullets/tickers/stats
+    are added only while there's still room, in priority order, so a card
+    that runs long degrades by quietly dropping its least essential lines
+    instead of getting chopped mid-thought. Since Claude writes bullets in
+    the order it thinks matters most (see the prompt), the first one is
+    the one most likely to survive."""
+    bottom_line = (item.get("bottom_line") or "").strip()
+    bottom = f"🎯 {bottom_line}"
+
+    candidates = [f"• {b}" for b in (item.get("why_it_matters") or [])[:3]]
+
+    tickers = [f"🐂${t}" for t in (item.get("tickers_bullish") or [])[:2]]
+    tickers += [f"🐻${t}" for t in (item.get("tickers_bearish") or [])[:2]]
+    if tickers:
+        candidates.append(" ".join(tickers))
+
+    stats = []
     if item.get("impact_score") is not None:
-        lines.append(f"📊 Impact: {item['impact_score']}/10")
+        stats.append(f"📊{item['impact_score']}/10")
     if item.get("confidence"):
-        lines.append(f"🔍 Confidence: {item['confidence']}")
+        stats.append(f"🔍{item['confidence']}")
     if item.get("time_horizon"):
-        lines.append(f"⏳ Horizon: {item['time_horizon']}")
-    lines.append(f"🎯 Bottom line: {(item.get('bottom_line') or '').strip()}")
+        stats.append(f"⏳{item['time_horizon']}")
+    if stats:
+        candidates.append(" · ".join(stats))
+
+    budget = ai_manager_brain.MAX_POST_LEN
+    lines = []
+    used = len(bottom)
+    for line in candidates:
+        added = len(line) + 1  # +1 for its own newline
+        if used + added > budget:
+            continue
+        lines.append(line)
+        used += added
+    lines.append(bottom)
     return "\n".join(lines)
 
 
 def _assemble_digest_tweet(item, idx, total):
+    """Same "never silently chop the load-bearing part" principle as
+    _assemble_reply_card: the numbered headline is what makes this line
+    legible as part of a thread, so it's kept whole except as an absolute
+    last resort. The "why it matters" clause and ticker suffix degrade
+    first if there's no room -- dropped, then truncated at a sentence
+    boundary, rather than the whole line getting an ugly mid-word
+    ellipsis cut (confirmed live this shape can overflow 260 chars too,
+    same root cause as the reply card)."""
     emoji = ai_manager_brain.CATEGORY_EMOJI.get(item.get("category"), ai_manager_brain.CATEGORY_EMOJI["Macro"])
-    tickers = item.get("tickers") or []
-    ticker_suffix = (" " + " ".join(f"${t}" for t in tickers[:2])) if tickers else ""
     headline = (item.get("headline") or "").strip()
     why = (item.get("why_it_matters") or "").strip()
-    return f"{emoji} {idx}/{total}: {headline}\n{why}{ticker_suffix}"
+    tickers = item.get("tickers") or []
+    ticker_suffix = (" " + " ".join(f"${t}" for t in tickers[:2])) if tickers else ""
+
+    prefix = f"{emoji} {idx}/{total}: {headline}"
+    budget = ai_manager_brain.MAX_POST_LEN
+    if len(prefix) >= budget:
+        return prefix[: budget - 1].rstrip() + "…"
+
+    remaining = budget - len(prefix) - 1  # -1 for the newline before line 2
+    second_line = f"{why}{ticker_suffix}"
+    if len(second_line) > remaining:
+        second_line = truncate(second_line, remaining) if remaining >= 20 else ""
+    if not second_line:
+        return prefix
+    return f"{prefix}\n{second_line}"
 
 
 def _resolve_candidate(candidates, source_index):

@@ -54,7 +54,7 @@ class TestAssembly(unittest.TestCase):
     def test_reply_card_always_ends_with_bottom_line(self):
         item = {"why_it_matters": ["a", "b"], "bottom_line": "This matters a lot."}
         card = ai_manager._assemble_reply_card(item)
-        self.assertIn("🎯 Bottom line: This matters a lot.", card)
+        self.assertIn("🎯 This matters a lot.", card)
 
     def test_reply_card_includes_optional_fields_when_present(self):
         item = {
@@ -67,17 +67,64 @@ class TestAssembly(unittest.TestCase):
             "bottom_line": "Bottom.",
         }
         card = ai_manager._assemble_reply_card(item)
-        self.assertIn("🐂 Bullish: $NVDA", card)
-        self.assertIn("🐻 Bearish: $RIOT", card)
-        self.assertIn("📊 Impact: 8/10", card)
-        self.assertIn("🔍 Confidence: High", card)
-        self.assertIn("⏳ Horizon: 3-12 months", card)
+        self.assertIn("🐂$NVDA", card)
+        self.assertIn("🐻$RIOT", card)
+        self.assertIn("📊8/10", card)
+        self.assertIn("🔍High", card)
+        self.assertIn("⏳3-12 months", card)
+
+    def test_reply_card_never_exceeds_budget_and_keeps_bottom_line(self):
+        # Confirmed live (2026-07-23): a card with 3 long bullets + both
+        # ticker directions + all three stats + a bottom line regularly
+        # overflowed 260 chars, and truncate()'s ellipsis fallback silently
+        # dropped the bottom line entirely. The assembly must now guarantee
+        # this never happens, by construction, regardless of how verbose
+        # Claude's fields are.
+        item = {
+            "why_it_matters": [
+                "A" * 105,
+                "B" * 105,
+                "C" * 105,
+            ],
+            "tickers_bullish": ["NVDA", "AMD"],
+            "tickers_bearish": ["INTC", "RIOT"],
+            "impact_score": 9,
+            "confidence": "High",
+            "time_horizon": "6-18 months",
+            "bottom_line": "D" * 140,
+        }
+        card = ai_manager._assemble_reply_card(item)
+        self.assertLessEqual(len(card), ai_manager_brain.MAX_POST_LEN)
+        self.assertTrue(card.endswith(f"🎯 {'D' * 140}"))
+        self.assertFalse(card.rstrip().endswith("…"))
+
+    def test_reply_card_drops_lower_priority_lines_under_pressure(self):
+        # The first bullet is the one Claude is told to make count most --
+        # it should survive even when later lines get dropped for space.
+        item = {
+            "why_it_matters": ["Most important point here", "X" * 200],
+            "bottom_line": "Y" * 200,
+        }
+        card = ai_manager._assemble_reply_card(item)
+        self.assertIn("• Most important point here", card)
+        self.assertLessEqual(len(card), ai_manager_brain.MAX_POST_LEN)
 
     def test_digest_tweet_format(self):
         item = {"category": "Crypto", "headline": "Big move", "why_it_matters": "Because reasons", "tickers": ["BTC"]}
         text = ai_manager._assemble_digest_tweet(item, 2, 5)
         self.assertTrue(text.startswith(f"{ai_manager_brain.CATEGORY_EMOJI['Crypto']} 2/5: Big move"))
         self.assertIn("$BTC", text)
+
+    def test_digest_tweet_never_exceeds_budget_and_keeps_headline(self):
+        item = {
+            "category": "AI",
+            "headline": "H" * 150,
+            "why_it_matters": "W" * 150,
+            "tickers": ["NVDA", "AMD"],
+        }
+        text = ai_manager._assemble_digest_tweet(item, 1, 8)
+        self.assertLessEqual(len(text), ai_manager_brain.MAX_POST_LEN)
+        self.assertIn("H" * 150, text)  # headline is never truncated except as an absolute last resort
 
 
 class TestDuplicateDetection(unittest.TestCase):
