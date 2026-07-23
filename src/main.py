@@ -198,7 +198,15 @@ _TRIGGER_TIMEOUT_SECONDS = 120
 # reply() calls on top of the existing ~5-minute stocks_broad fetch that
 # justified 600s originally -- still comfortably under the 15-minute job
 # ceiling.
-_TRIGGER_TIMEOUTS = {"ai_manager": 700, "news_alerts": 500}
+# market_snapshot_telegram (2026-07-23): same ~5-minute get_quotes_batch
+# pacing as ai_manager's own stocks_broad fetch (30 symbols, 6 chunks, 60s
+# between), just for a different trigger -- needs the same kind of
+# headroom over the 120s default. On the 4 checkpoint hours both this and
+# ai_manager run in the same job (~10 min combined for just these two
+# fetches) -- still fits under the 15-minute ceiling alongside the
+# ~80-90s baseline for everything else, but worth watching if that ever
+# gets tight.
+_TRIGGER_TIMEOUTS = {"ai_manager": 700, "news_alerts": 500, "market_snapshot_telegram": 400}
 
 
 class _TriggerTimeout(Exception):

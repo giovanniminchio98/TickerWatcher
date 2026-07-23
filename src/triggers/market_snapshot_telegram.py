@@ -13,10 +13,23 @@ the public-ish Telegram channel, covering the biggest movers among the
 tracked symbols regardless of whether the move is large -- this is a
 proof-of-concept meant to produce real, visible output right away so the
 format can be evaluated and tuned, rather than possibly staying silent for
-hours waiting on a threshold. Tune config/thresholds.json's
-market_snapshot.symbols/max_posts_per_run once the format is dialed in --
-easy candidates: add a real notability gate, widen beyond the 3 default
-symbols, or fold in crypto too.
+hours waiting on a threshold.
+
+Symbols default to watchlist.stocks_broad (2026-07-23: widened from an
+initial 3-symbol POC to the same 30-symbol universe ai_manager already
+uses -- "the scope added once in this repo" per the account owner) --
+fetched via twelvedata.get_quotes_batch, NOT a per-symbol loop: that
+function's own chunking (5 symbols/request) and 60s pause between chunks
+is the only thing keeping this under Twelve Data's free-tier 8-requests/
+minute limit. 30 symbols costs ~5 minutes of runtime per hourly run (6
+chunks, 5 pauses) -- see main.py's _TRIGGER_TIMEOUTS override for this
+trigger. Going substantially higher (50-100 symbols) would cost 9-19
+minutes and risks colliding with the whole job's 15-minute ceiling,
+especially on the 4 checkpoint hours where ai_manager's own 30-symbol
+fetch runs in the same job -- if more coverage is wanted later, either
+round-robin a larger list across runs or confirm Twelve Data's endpoint
+can actually take a larger single-request symbol count before widening
+QUOTE_CHUNK_SIZE itself.
 
 Seasonal notes (config/seasonality.json) are general, well-known
 historical calendar tendencies (Santa Claus rally, Sell in May, day-of-
@@ -59,18 +72,23 @@ def _seasonal_note(ctx, seasonality_cfg):
 
 def run(ctx):
     cfg = ctx.config["thresholds"]["market_snapshot"]
-    symbols = cfg.get("symbols") or [s["symbol"] for s in ctx.config["watchlist"].get("stocks", [])]
+    watchlist = ctx.config["watchlist"]
+    symbols = cfg.get("symbols") or [
+        s["symbol"] for s in (watchlist.get("stocks_broad") or watchlist.get("stocks", []))
+    ]
     max_posts_per_run = cfg.get("max_posts_per_run", 2)
 
-    quotes = []
-    for symbol in symbols:
-        try:
-            q = twelvedata.get_quote(symbol)
-        except Exception:
-            logger.exception("market_snapshot_telegram: Twelve Data quote failed for %s", symbol)
-            continue
-        if q and q.get("price") is not None:
-            quotes.append((symbol, q["price"], q.get("percent_change")))
+    # get_quotes_batch (not a per-symbol loop): its own chunking/60s-pause
+    # pacing is what keeps this under Twelve Data's free-tier per-minute
+    # limit at 30 symbols -- never raises, a symbol just won't be in the
+    # returned dict if its chunk failed.
+    quotes_by_symbol = twelvedata.get_quotes_batch(symbols)
+    quotes = [
+        (symbol, q["price"], q.get("percent_change"))
+        for symbol, q in quotes_by_symbol.items()
+        if q.get("price") is not None
+    ]
+    logger.info("market_snapshot_telegram: got %d/%d quotes", len(quotes), len(symbols))
 
     if not quotes:
         return False

@@ -54,8 +54,7 @@
     "max_drafts_per_day": 8
   },
   "market_snapshot": {
-    "_comment": "Telegram-only POC (2026-07-23) while X posting stays off -- see src/triggers/market_snapshot_telegram.py. Unconditional by design (not gated on a notable move, unlike price_alerts/content_drafts) so real output is visible every run to evaluate and tune the format, rather than possibly staying silent for hours. symbols defaults to watchlist.stocks (SPY/QQQ/AAPL) to stay fast/cheap on Twelve Data's free tier.",
-    "symbols": ["SPY", "QQQ", "AAPL"],
+    "_comment": "Telegram-only POC (2026-07-23) while X posting stays off -- see src/triggers/market_snapshot_telegram.py. Unconditional by design (not gated on a notable move, unlike price_alerts/content_drafts) so real output is visible every run to evaluate and tune the format, rather than possibly staying silent for hours. 'symbols' left unset (2026-07-23: widened from an initial 3-symbol POC) so it falls back to watchlist.stocks_broad -- the same 30-symbol universe ai_manager already uses ('the scope added once in this repo'). Set symbols explicitly here to override that default. Fetched via twelvedata.get_quotes_batch's paced chunking, ~5 minutes for 30 symbols -- see main.py's _TRIGGER_TIMEOUTS override for this trigger before widening this further.",
     "max_posts_per_run": 2
   }
 }

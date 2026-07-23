@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 from src.triggers import market_snapshot_telegram as mst
 
 
-def _make_ctx(thresholds_cfg=None, seasonality_cfg=None, watchlist_stocks=None):
+def _make_ctx(thresholds_cfg=None, seasonality_cfg=None, watchlist=None):
     ctx = MagicMock()
     ctx.config = {
         "thresholds": {
@@ -18,7 +18,8 @@ def _make_ctx(thresholds_cfg=None, seasonality_cfg=None, watchlist_stocks=None):
             or {"symbols": ["SPY", "QQQ", "AAPL"], "max_posts_per_run": 2}
         },
         "seasonality": seasonality_cfg if seasonality_cfg is not None else {},
-        "watchlist": {"stocks": watchlist_stocks or [{"symbol": "SPY"}, {"symbol": "QQQ"}]},
+        "watchlist": watchlist
+        or {"stocks_broad": [{"symbol": "SPY"}, {"symbol": "QQQ"}], "stocks": [{"symbol": "SPY"}]},
     }
     ctx.now = datetime(2026, 7, 23, 12, 0, tzinfo=timezone.utc)  # a Thursday
     return ctx
@@ -63,14 +64,13 @@ class TestSeasonalNote(unittest.TestCase):
 
 class TestRun(unittest.TestCase):
     @patch("src.triggers.market_snapshot_telegram.telegram_client.send_channel_message", return_value=True)
-    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quote")
-    def test_sends_biggest_movers_first_capped_at_max_posts(self, mock_get_quote, mock_send):
-        quotes = {
+    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quotes_batch")
+    def test_sends_biggest_movers_first_capped_at_max_posts(self, mock_batch, mock_send):
+        mock_batch.return_value = {
             "SPY": {"price": 600.0, "percent_change": 0.2},
             "QQQ": {"price": 500.0, "percent_change": -2.5},
             "AAPL": {"price": 200.0, "percent_change": 1.1},
         }
-        mock_get_quote.side_effect = lambda symbol: quotes[symbol]
         ctx = _make_ctx()
 
         fired = mst.run(ctx)
@@ -85,9 +85,9 @@ class TestRun(unittest.TestCase):
         self.assertFalse(any("SPY:" in t for t in sent_texts))
 
     @patch("src.triggers.market_snapshot_telegram.telegram_client.send_channel_message", return_value=True)
-    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quote")
-    def test_message_includes_emoji_price_and_seasonal_note(self, mock_get_quote, mock_send):
-        mock_get_quote.return_value = {"price": 123.45, "percent_change": 2.0}
+    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quotes_batch")
+    def test_message_includes_emoji_price_and_seasonal_note(self, mock_batch, mock_send):
+        mock_batch.return_value = {"SPY": {"price": 123.45, "percent_change": 2.0}}
         ctx = _make_ctx(
             thresholds_cfg={"symbols": ["SPY"], "max_posts_per_run": 2},
             seasonality_cfg={"months": {"7": "July note."}, "weekdays": {"Thursday": "Thu note."}},
@@ -103,14 +103,11 @@ class TestRun(unittest.TestCase):
         self.assertIn("Thu note.", text)
 
     @patch("src.triggers.market_snapshot_telegram.telegram_client.send_channel_message", return_value=True)
-    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quote")
-    def test_skips_symbol_on_fetch_failure(self, mock_get_quote, mock_send):
-        def side_effect(symbol):
-            if symbol == "SPY":
-                raise Exception("boom")
-            return {"price": 500.0, "percent_change": 1.5}
-
-        mock_get_quote.side_effect = side_effect
+    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quotes_batch")
+    def test_missing_symbol_in_batch_result_is_skipped(self, mock_batch, mock_send):
+        # get_quotes_batch never raises -- a symbol whose chunk failed is
+        # simply absent from the returned dict, not an exception to catch.
+        mock_batch.return_value = {"QQQ": {"price": 500.0, "percent_change": 1.5}}
         ctx = _make_ctx(thresholds_cfg={"symbols": ["SPY", "QQQ"], "max_posts_per_run": 2})
 
         fired = mst.run(ctx)
@@ -120,22 +117,35 @@ class TestRun(unittest.TestCase):
         self.assertIn("QQQ", mock_send.call_args[0][0])
 
     @patch("src.triggers.market_snapshot_telegram.telegram_client.send_channel_message")
-    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quote", return_value=None)
-    def test_returns_false_when_no_quotes_available(self, mock_get_quote, mock_send):
+    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quotes_batch", return_value={})
+    def test_returns_false_when_no_quotes_available(self, mock_batch, mock_send):
         ctx = _make_ctx()
         fired = mst.run(ctx)
         self.assertFalse(fired)
         mock_send.assert_not_called()
 
     @patch("src.triggers.market_snapshot_telegram.telegram_client.send_channel_message", return_value=True)
-    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quote")
-    def test_never_touches_x_or_budget(self, mock_get_quote, mock_send):
-        mock_get_quote.return_value = {"price": 500.0, "percent_change": 1.5}
+    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quotes_batch")
+    def test_never_touches_x_or_budget(self, mock_batch, mock_send):
+        mock_batch.return_value = {"SPY": {"price": 500.0, "percent_change": 1.5}}
         ctx = _make_ctx()
         mst.run(ctx)
         ctx.x.post.assert_not_called()
         ctx.x.reply.assert_not_called()
         ctx.budget.record_spend.assert_not_called()
+
+    @patch("src.triggers.market_snapshot_telegram.telegram_client.send_channel_message", return_value=True)
+    @patch("src.triggers.market_snapshot_telegram.twelvedata.get_quotes_batch")
+    def test_falls_back_to_stocks_broad_when_no_symbols_configured(self, mock_batch, mock_send):
+        mock_batch.return_value = {"NVDA": {"price": 900.0, "percent_change": 3.0}}
+        ctx = _make_ctx(
+            thresholds_cfg={"max_posts_per_run": 2},  # no "symbols" override
+            watchlist={"stocks_broad": [{"symbol": "NVDA"}, {"symbol": "TSLA"}], "stocks": [{"symbol": "SPY"}]},
+        )
+
+        mst.run(ctx)
+
+        mock_batch.assert_called_once_with(["NVDA", "TSLA"])
 
 
 if __name__ == "__main__":

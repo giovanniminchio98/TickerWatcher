@@ -478,20 +478,31 @@ account owner manually curates X posts for a while (external cron
 stopped). Every hourly run, sends up to `thresholds.market_snapshot.max_posts_per_run`
 (default 2) standalone messages (never a reply/thread) to the public-ish
 Telegram channel: real, live price + % change for the biggest movers among
-`thresholds.market_snapshot.symbols` (default `SPY`/`QQQ`/`AAPL`), tagged
-🟢/🟡/🔴/⚪ by move size, paired with a general seasonal-pattern note
+`thresholds.market_snapshot.symbols` — left unset by default so it falls
+back to `watchlist.stocks_broad`, the same 30-symbol universe (`NVDA`,
+`TSLA`, `COIN`, `JPM`, etc.) `ai_manager` already uses — tagged 🟢/🟡/🔴/⚪
+by move size, paired with a general seasonal-pattern note
 (`config/seasonality.json` — well-known calendar tendencies like the
 "Santa Claus rally" or "Sell in May", by current month and weekday; general
 historical context, never a prediction for that specific stock). No
 Claude cost — this is pure live data + a canned historical note, no LLM
 call involved.
 
+**Fetched via `twelvedata.get_quotes_batch`'s paced chunking** (5
+symbols/request, 60s pause between chunks — the same mechanism/limit
+`ai_manager`'s own stock snapshot already respects), not a per-symbol
+loop — at 30 symbols that's ~5 minutes/run, hence this trigger's own
+`_TRIGGER_TIMEOUTS` override in `main.py` (400s). Going substantially
+wider (50-100 symbols) would cost 9-19 minutes and risks colliding with
+the whole job's 15-minute ceiling, especially on the 4 checkpoint hours
+where `ai_manager`'s own 30-symbol fetch runs in the same job — round-robin
+a larger list across runs instead if broader coverage is wanted later.
+
 Deliberately **unconditional**, not gated on a notable move (unlike
 `price_alerts`/`content_drafts`) — this is a proof-of-concept meant to
 produce real, visible output every run so the format can actually be
 evaluated and tuned, rather than possibly staying silent for hours. Add a
-real notability gate, widen the symbol list, or fold in crypto once the
-format is dialed in.
+real notability gate or fold in crypto once the format is dialed in.
 
 This trigger never imports `ctx.x`/`ctx.budget` at all — there is no code
 path here that can post to X, by construction, independent of `ENABLED`.
