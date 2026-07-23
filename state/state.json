@@ -1,28 +1,26 @@
 {
   "ai_manager": {
-    "calls_today": 2,
-    "checkpoint_attempts": {
-      "2026-07-23-12": 1
-    },
+    "calls_today": 3,
+    "checkpoint_attempts": {},
     "date": "2026-07-23",
-    "last_call_checkpoint": "2026-07-23-10",
-    "last_call_time": 1784796138.496464
+    "last_call_checkpoint": "2026-07-23-12",
+    "last_call_time": 1784804939.601183
   },
   "budget": {
     "daily": {
       "date": "2026-07-23",
-      "posts_used": 61,
-      "usd_used": 0.915
+      "posts_used": 69,
+      "usd_used": 1.035
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 385,
-    "usd_used": 10.215
+    "posts_used": 393,
+    "usd_used": 10.335
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.9316
+    "usd_used": 3.1065
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -537,21 +535,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784541664.713932,
-      "text": "\ud83c\udf0d WORLD: US strikes on Iran expand into a new phase -- a third US soldier has now died (in Iraq), and American forces hit Bushehr, home to Iran's only working nuclear power plant. \ud83d\udca5\u2622\ufe0f\n\nWhy it matters below:",
-      "url": null
-    },
-    {
-      "posted_at": 1784541664.713932,
-      "text": "\ud83c\udf0d WORLD: Ukraine fired roughly 400 drones at Moscow overnight, after a weekend where Russia hit Kyiv with ballistic missiles and Ukraine struck warehouses outside Moscow. \ud83d\ude80\ud83d\udd25\n\nWhat this signals:",
-      "url": null
-    },
-    {
-      "posted_at": 1784541664.713932,
-      "text": "\ud83c\udf0d WORLD: The UK gets its 7th PM in 10 years today -- Keir Starmer resigns, and Andy Burnham, fresh off winning the Labour leadership, is set to be invited by King Charles to form a government. \ud83c\uddec\ud83c\udde7\ud83d\udc51\n\nWhy this matters:",
-      "url": null
-    },
-    {
       "posted_at": 1784574060.887273,
       "text": "\ud83c\udf0d WORLD: Andy Burnham has officially become the UK's new prime minister today, taking over from Keir Starmer as Labour hands the leadership baton to a new face. \ud83c\uddec\ud83c\udde7\ud83d\udd11\n\nWhy it matters below:",
       "url": null
@@ -982,6 +965,42 @@
       "source_title": "\u2018Optimistic signals\u2019 meet a $68,000 wall as bitcoin\u2019s recovery faces its next test: analysts",
       "text": "\ud83d\udfe3 5/5: Bitcoin holds above $65,800 as spot ETFs log sixth straight day of inflows, eyeing $68K resistance\nSustained ETF inflows suggest institutional demand is stabilizing after a rough outflow stretch $BTC",
       "url": "https://www.theblock.co/post/409398/optimistic-signals-meet-68000-wall-bitcoin-recovery-faces-next-test-analysts?utm_source=rss&utm_medium=rss"
+    },
+    {
+      "posted_at": 1784804939.601183,
+      "source_title": "Oil prices near $100 a barrel after US attacks Iran and Houthis hit tankers in Red Sea \u2013 business live",
+      "text": "\u26ab Oil is knocking on $100/barrel as Houthi attacks on tankers and the Bab el-Mandeb chokepoint escalate alongside US-Iran strikes -- this is now a two-chokepoint oil shock, not a headline blip.\n\n\ud83d\udccc The full picture \ud83d\udc47",
+      "url": "https://www.theguardian.com/business/live/2026/jul/23/andy-burnham-business-rates-pubs-clubs-live-music-vape-shops-european-central-bank-ecb-interest-rates-latest-news-updates"
+    },
+    {
+      "posted_at": 1784804939.601183,
+      "source_title": "Benchmark lowers Coinbase earnings estimates but says Clarity Act could eclipse weak second quarter",
+      "text": "\ud83d\udfe3 1/5: Benchmark cuts Coinbase Q2 earnings estimates but says the CLARITY Act could matter more than the weak quarter\nTrading volumes stabilized in June, but the market-structure bill is the bigger swing factor for COIN's outlook $COIN",
+      "url": "https://www.theblock.co/post/409390/benchmark-lowers-coinbase-earnings-estimates-clarity-act-eclipse-weak-quarter?utm_source=rss&utm_medium=rss"
+    },
+    {
+      "posted_at": 1784804939.601183,
+      "source_title": "Treasury threatens sanctions after White House claims Moonshot distilled Anthropic\u2019s Fable",
+      "text": "\ud83d\udfe2 2/5: Treasury threatens sanctions after White House accuses Moonshot AI of distilling Anthropic's models to build its K3 model\nEscalates the US-China AI fight over model distillation and could bring new export-control action",
+      "url": "https://techcrunch.com/2026/07/22/treasury-threatens-sanctions-after-white-house-claims-moonshot-distilled-anthropics-fable/"
+    },
+    {
+      "posted_at": 1784804939.601183,
+      "source_title": "Arbitrum Perp DEX AFX Trade Drained of $24M, Offers Hacker 30% to Return It",
+      "text": "\ud83d\udfe3 3/5: Arbitrum-based AFX Trade drained of $24M in a custody bridge exploit; hacker offered a 30% bounty to return funds\nAnother bridge hack underscores recurring DeFi custody weaknesses, though this is a new/bigger incident than the previously covered $31.6M\u2026",
+      "url": "https://decrypt.co/374133/arbitrum-perp-dex-afx-trade-drained-of-24m-offers-hacker-30-to-return-it"
+    },
+    {
+      "posted_at": 1784804939.601183,
+      "source_title": "US Stock Market Today: S&P 500 Futures Slip As Rate And Jobs Worries Grow - simplywall.st",
+      "text": "\ud83d\udfe0 4/5: S&P 500 futures slip as rising Treasury yields and Mideast oil jitters weigh on sentiment\nConfirms broad market pressure tying together oil spike, rate worries, and AI capex concerns $SPY QQQ",
+      "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxOeEQ5MTBXT1hacnR1QVQ0bHRjaExHdUpad3cwQUdiQ001dElhUUJ3TVdSMEN2SW1Sc2RxY1dBeFdzS3k2QUNUcmlzcXlGWHBaQnpaR3BMMjZzYS03NzY3cWdSWWJHeGJVUmZEQzJLSmFvWTkzd3V6TmJUVlUwYUxyUTJVeHFBUDJQQ3Q3TlNxUjlXN3Y5N2RsMjFhOV95dWs2N3AzbEIzaUtTUjI1RE1VOGFDVWJ0S1RmdERRZXJkN3ZSN1FRLTB5ZnJOZlRmdk80STVKNnNFS2ZLT3JibUo4UVd0bG5VQTM5bkpaNdIB8gFBVV95cUxPcGlWeXl2dVFfN3M0Qy1pazRCMWs2RW5jWE5DU1dVNWtLTUFBd3lfeHVKWk85UUxDOEtna1BKRzR3bUFyTDZuWHFYUWIwUnJ0Q1dqODRWNEZYRXdRSWpGUEJPVll6YjVGc21GTlQ3TDBOUFZtSkdUbWdNcHFxTkpxVDJsRHotYmxNVjVPVk41bWRDclpSeHhxSVM5OExvX2NVWjV1VVJMZFhzTllvV2l5MnNKRVpUSWpIMy1jemJZRmYwVjllMGJWWWF0VTJ4ZUtCeG9UN2F4elh5RVh6S3dSOG91bHI4b3JNbkI3Z1RHampwdw?oc=5"
+    },
+    {
+      "posted_at": 1784804939.601183,
+      "source_title": "Bitcoin\u2019s $69,000 test could expose its whale-led rebound as a fragile Fed gamble",
+      "text": "\ud83d\udfe3 5/5: Bitcoin trades near $66K, below the $69K level Glassnode flags as short-term holders' average cost basis, ahead of next week's Fed meeting\nA break below this level historically signals capitulation risk; Fed meeting on July 28-29 is the next catalyst $\u2026",
+      "url": "https://cryptoslate.com/bitcoins-69000-test-could-expose-its-whale-led-rebound-as-a-fragile-fed-gamble/"
     }
   ],
   "telegram": {
