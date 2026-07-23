@@ -296,6 +296,67 @@ class TestEnforceThreadMarker(unittest.TestCase):
         self.assertLessEqual(len(text), ai_manager_brain.MAX_POST_LEN)
 
 
+class TestCheckpointRetry(unittest.TestCase):
+    """Regression tests for the hourly-retry mechanism added 2026-07-23:
+    confirmed live that a noon checkpoint call failing on an empty/
+    unparseable Claude response left a ~9-hour hole with no retry until
+    21:00 -- a failed slot should now retry on every subsequent hourly
+    dispatch instead."""
+
+    def _cfg(self, max_attempts=4):
+        return {"max_calls_per_day": 16, "max_attempts_per_checkpoint": max_attempts}
+
+    def test_current_checkpoint_id_groups_hours_into_the_same_slot(self):
+        from zoneinfo import ZoneInfo
+
+        brussels = ZoneInfo("Europe/Brussels")
+        at_checkpoint = datetime(2026, 7, 23, 6, 0, tzinfo=brussels)
+        an_hour_later = datetime(2026, 7, 23, 9, 0, tzinfo=brussels)
+        just_before_next = datetime(2026, 7, 23, 11, 59, tzinfo=brussels)
+        self.assertEqual(
+            ai_manager._current_checkpoint_id(at_checkpoint),
+            ai_manager._current_checkpoint_id(an_hour_later),
+        )
+        self.assertEqual(
+            ai_manager._current_checkpoint_id(an_hour_later),
+            ai_manager._current_checkpoint_id(just_before_next),
+        )
+
+    def test_does_not_fire_between_checkpoints_with_no_prior_failure(self):
+        state = {"calls_today": 0, "last_call_checkpoint": None, "checkpoint_attempts": {}}
+        ctx = _make_ctx(now=datetime(2026, 7, 23, 8, 0, tzinfo=timezone.utc))  # 10:00 Brussels
+        self.assertFalse(ai_manager._ready_for_call(ctx, self._cfg(), state))
+
+    def test_retries_between_checkpoints_after_a_recorded_failure(self):
+        # Slot "06" already failed once -- 10:00 Brussels (still slot "06")
+        # should now be allowed to retry immediately, not wait until 12:00.
+        state = {
+            "calls_today": 1,
+            "last_call_checkpoint": None,
+            "checkpoint_attempts": {"2026-07-23-06": 1},
+        }
+        ctx = _make_ctx(now=datetime(2026, 7, 23, 8, 0, tzinfo=timezone.utc))  # 10:00 Brussels
+        self.assertTrue(ai_manager._ready_for_call(ctx, self._cfg(), state))
+
+    def test_stops_retrying_once_max_attempts_reached(self):
+        state = {
+            "calls_today": 4,
+            "last_call_checkpoint": None,
+            "checkpoint_attempts": {"2026-07-23-06": 4},
+        }
+        ctx = _make_ctx(now=datetime(2026, 7, 23, 8, 0, tzinfo=timezone.utc))  # 10:00 Brussels
+        self.assertFalse(ai_manager._ready_for_call(ctx, self._cfg(max_attempts=4), state))
+
+    def test_does_not_refire_once_slot_already_succeeded(self):
+        state = {
+            "calls_today": 1,
+            "last_call_checkpoint": "2026-07-23-06",
+            "checkpoint_attempts": {},
+        }
+        ctx = _make_ctx(now=datetime(2026, 7, 23, 8, 0, tzinfo=timezone.utc))  # still slot "06"
+        self.assertFalse(ai_manager._ready_for_call(ctx, self._cfg(), state))
+
+
 class TestRunIntegration(unittest.TestCase):
     def _base_config(self):
         return {
@@ -387,6 +448,53 @@ class TestRunIntegration(unittest.TestCase):
         self.assertFalse(fired)
         self.assertEqual(ctx.state["ai_manager"]["calls_today"], 0)
         ctx.x.post.assert_not_called()
+
+    @patch("src.triggers.ai_manager.twelvedata.get_press_releases", return_value=[])
+    @patch("src.triggers.ai_manager.twelvedata.get_earnings_calendar", return_value=[])
+    @patch("src.triggers.ai_manager.twelvedata.get_quotes_batch", return_value={})
+    @patch("src.triggers.ai_manager.news_rss.fetch_matching_articles", return_value=[])
+    @patch("src.triggers.ai_manager.ai_manager_brain.decide", return_value=(None, MagicMock()))
+    def test_failed_call_records_attempt_and_stays_open_for_retry(
+        self, mock_decide, mock_fetch, mock_quotes, mock_earnings, mock_press
+    ):
+        # Confirmed live: an empty/unparseable Claude response at the noon
+        # checkpoint. It should record a failed attempt for that slot and
+        # NOT set last_call_checkpoint, so the slot stays open for a retry.
+        ctx = _make_ctx(config=self._base_config())  # 06:00 Brussels checkpoint
+        fired = ai_manager.run(ctx)
+        self.assertFalse(fired)
+        self.assertIsNone(ctx.state["ai_manager"]["last_call_checkpoint"])
+        self.assertEqual(ctx.state["ai_manager"]["checkpoint_attempts"]["2026-07-23-06"], 1)
+        self.assertEqual(ctx.state["ai_manager"]["calls_today"], 1)
+
+    @patch("src.triggers.ai_manager.twelvedata.get_press_releases", return_value=[])
+    @patch("src.triggers.ai_manager.twelvedata.get_earnings_calendar", return_value=[])
+    @patch("src.triggers.ai_manager.twelvedata.get_quotes_batch", return_value={})
+    @patch("src.triggers.ai_manager.news_rss.fetch_matching_articles", return_value=[])
+    @patch("src.triggers.ai_manager.ai_manager_brain.decide")
+    def test_retry_succeeds_an_hour_later_and_clears_the_failure_count(
+        self, mock_decide, mock_fetch, mock_quotes, mock_earnings, mock_press
+    ):
+        state = {
+            "ai_manager": {
+                "last_call_time": None,
+                "last_call_checkpoint": None,
+                "date": "2026-07-23",
+                "calls_today": 1,
+                "checkpoint_attempts": {"2026-07-23-06": 1},
+            },
+            "story_history": [],
+        }
+        mock_decide.return_value = ({"posts": [], "digest": {"items": []}}, MagicMock())
+        ctx = _make_ctx(
+            config=self._base_config(),
+            state=state,
+            now=datetime(2026, 7, 23, 7, 0, tzinfo=timezone.utc),  # 09:00 Brussels, still slot "06"
+        )
+        ai_manager.run(ctx)
+        self.assertEqual(ctx.state["ai_manager"]["last_call_checkpoint"], "2026-07-23-06")
+        self.assertNotIn("2026-07-23-06", ctx.state["ai_manager"]["checkpoint_attempts"])
+        self.assertEqual(ctx.state["ai_manager"]["calls_today"], 2)
 
 
 if __name__ == "__main__":

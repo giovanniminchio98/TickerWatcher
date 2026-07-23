@@ -366,14 +366,22 @@ to echo a string verbatim can still alter it — an index is unambiguous.
 
 Requires `ANTHROPIC_API_KEY` — without it, this trigger does nothing (same
 "no safe fallback" reasoning as every other Claude-backed trigger).
-`config/ai_manager.json`'s `max_calls_per_day` (4) matches the 4 fixed
-checkpoints so every one can actually fire; a call that fails outright or
-comes back unparseable doesn't burn its checkpoint — retried at the next
-one instead, though `calls_today` still increments either way so a
-persistently broken call can't retry indefinitely. The external cron
-dispatch (see "Scheduling" below) stays exactly as it is — still hourly —
-the internal checkpoint gate (`_CALL_CHECKPOINT_HOURS`) is what turns that
-into "only acts 4x/day."
+
+**A failed call retries on the very next hourly dispatch, not just the
+next fixed checkpoint** (added 2026-07-23, after a real checkpoint came
+back with an empty/unparseable Claude response — a known, occasional model
+quirk — and left a multi-hour hole with zero coverage until the next
+3-9-hour-away checkpoint). Each checkpoint hour "owns" every hour up to the
+next one (e.g. 06:00's slot covers 06:00–11:59); a failed attempt doesn't
+mark that slot as used, so the very next hourly run retries it again, up
+to `max_attempts_per_checkpoint` (4) total tries, before giving up until
+the next real checkpoint. `max_calls_per_day` (16) is sized generously
+around that (4 checkpoints × up to 4 attempts each) — the real backstop
+against runaway spend is still `ctx.claude_budget`'s absolute monthly cap,
+this is just a pacing knob. The external cron dispatch (see "Scheduling"
+below) stays exactly as it is — still hourly — the internal checkpoint
+gate (`_CALL_CHECKPOINT_HOURS`/`_current_checkpoint_id`) is what turns that
+into "acts up to 4x/day, plus same-slot retries on failure."
 
 **Two independent hard budget caps**, each stopping this trigger cleanly
 (never erroring) the instant it's reached:

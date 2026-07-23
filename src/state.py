@@ -30,6 +30,7 @@ DEFAULT_STATE = {
         "last_call_checkpoint": None,
         "date": None,
         "calls_today": 0,
+        "checkpoint_attempts": {},
     },
     "story_history": [],
     "reply_manager": {

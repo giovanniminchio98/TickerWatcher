@@ -107,6 +107,7 @@ def _roll_day(state, today_str):
     if state.get("date") != today_str:
         state["date"] = today_str
         state["calls_today"] = 0
+        state["checkpoint_attempts"] = {}
 
 
 def _day_context(ctx):
@@ -135,16 +136,50 @@ def _day_context(ctx):
 _CALL_CHECKPOINT_HOURS = (2, 6, 12, 21)
 
 
+def _current_checkpoint_id(brussels_now):
+    """Which checkpoint 'slot' owns the current hour -- the most recent
+    checkpoint hour at or before now (wrapping to yesterday's last
+    checkpoint before today's first one). A slot spans from its checkpoint
+    hour up to (not including) the next checkpoint hour, so every hourly
+    dispatch in between maps to the same slot -- this is what lets a
+    failed call retry on the very next hourly run instead of only at the
+    next fixed checkpoint (2026-07-23: confirmed live that a noon call
+    failing on an empty/unparseable Claude response otherwise left a
+    ~9-hour hole with no retry until 21:00)."""
+    hour = brussels_now.hour
+    if hour < _CALL_CHECKPOINT_HOURS[0]:
+        owning_hour = _CALL_CHECKPOINT_HOURS[-1]
+        date_str = (brussels_now - timedelta(days=1)).strftime("%Y-%m-%d")
+    else:
+        owning_hour = max(h for h in _CALL_CHECKPOINT_HOURS if h <= hour)
+        date_str = brussels_now.strftime("%Y-%m-%d")
+    return f"{date_str}-{owning_hour:02d}"
+
+
 def _ready_for_call(ctx, cfg, state):
+    """A call is only ever first attempted right at a fixed checkpoint
+    hour, same as before -- but if that attempt (or a subsequent retry)
+    fails, this allows retrying again on every following hourly dispatch
+    within the same slot (up to max_attempts_per_checkpoint total tries)
+    instead of waiting for the next fixed checkpoint. The distinction is
+    exactly "has a prior attempt already failed for this slot": zero
+    attempts + not on the checkpoint hour itself -> wait; one or more
+    failed attempts -> retry on any hour until success or the attempt cap
+    is hit. The real backstop against runaway retry cost is still
+    ctx.claude_budget's absolute monthly cap (checked separately by the
+    caller) plus max_calls_per_day here -- this is a pacing knob, not the
+    cost control."""
     if state["calls_today"] >= cfg["max_calls_per_day"]:
         return False
     brussels_now = ctx.now.astimezone(BRUSSELS_TZ)
-    if brussels_now.hour not in _CALL_CHECKPOINT_HOURS:
-        return False
-    # guards against firing twice for the same checkpoint if a run somehow
-    # executes more than once within that hour (retry, manual trigger, etc.)
-    checkpoint_id = brussels_now.strftime("%Y-%m-%d-%H")
-    return state.get("last_call_checkpoint") != checkpoint_id
+    checkpoint_id = _current_checkpoint_id(brussels_now)
+    if state.get("last_call_checkpoint") == checkpoint_id:
+        return False  # this slot already has a successful call
+    attempts = state.get("checkpoint_attempts", {}).get(checkpoint_id, 0)
+    at_checkpoint_hour = brussels_now.hour in _CALL_CHECKPOINT_HOURS
+    if not at_checkpoint_hour and attempts == 0:
+        return False  # no failed attempt yet this slot -- wait for its own checkpoint hour
+    return attempts < cfg.get("max_attempts_per_checkpoint", 4)
 
 
 # Stopwords stripped before token-overlap comparison in _is_same_story_title
@@ -748,6 +783,7 @@ def run(ctx):
     today_str = ctx.now.strftime("%Y-%m-%d")
     _roll_day(state, today_str)
     state.setdefault("last_call_checkpoint", None)
+    state.setdefault("checkpoint_attempts", {})
 
     if not _ready_for_call(ctx, cfg, state):
         _send_run_summary(ctx, "no new call (cooldown/daily cap)", False)
@@ -778,25 +814,39 @@ def run(ctx):
         "tracked_crypto_symbols": tracked_crypto_symbols,
     }
 
+    checkpoint_id = _current_checkpoint_id(ctx.now.astimezone(BRUSSELS_TZ))
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
     state["calls_today"] += 1
 
     if usage is not None:
         ctx.claude_budget.record_spend(usage, cfg["model"])
     if decision is None:
-        # outright API failure or an unparseable response -- don't mark this
-        # checkpoint as used on a call that produced nothing usable. The
-        # earliest retry is still the next checkpoint (not sooner --
-        # _ready_for_call requires an aligned checkpoint hour regardless),
-        # but at least a persistently broken call doesn't permanently burn
-        # today's checkpoint slot. calls_today still increments either way,
-        # so repeated failures can't retry more than max_calls_per_day times.
-        _send_run_summary(ctx, "new call failed/unparsed, will retry next checkpoint", False)
+        # Outright API failure or an unparseable response -- don't mark
+        # this checkpoint slot as used on a call that produced nothing
+        # usable. checkpoint_attempts tracks how many times THIS slot has
+        # failed, so _ready_for_call can retry it on the very next hourly
+        # dispatch (2026-07-23: confirmed live that a noon call failing
+        # this way otherwise left a ~9-hour hole with no retry until
+        # 21:00) -- up to max_attempts_per_checkpoint total tries before
+        # giving up until the next real checkpoint. calls_today still
+        # increments either way, so a persistently broken API can't retry
+        # more than max_calls_per_day times total across the whole day.
+        attempts = state["checkpoint_attempts"].get(checkpoint_id, 0) + 1
+        state["checkpoint_attempts"][checkpoint_id] = attempts
+        max_attempts = cfg.get("max_attempts_per_checkpoint", 4)
+        _send_run_summary(
+            ctx,
+            f"new call failed/unparsed (attempt {attempts}/{max_attempts} this checkpoint, "
+            f"{'will retry next hour' if attempts < max_attempts else 'giving up until next checkpoint'})",
+            False,
+        )
         return False
 
-    # only a successfully parsed decision marks this checkpoint as used
+    # only a successfully parsed decision marks this checkpoint slot as
+    # used and clears its failure count, if any
     state["last_call_time"] = ctx.now.timestamp()
-    state["last_call_checkpoint"] = ctx.now.astimezone(BRUSSELS_TZ).strftime("%Y-%m-%d-%H")
+    state["last_call_checkpoint"] = checkpoint_id
+    state["checkpoint_attempts"].pop(checkpoint_id, None)
 
     # Full uncapped window, not the prompt's own capped own_recent_posts --
     # cheap local comparison, not prompt tokens, so it can afford to check
