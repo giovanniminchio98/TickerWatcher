@@ -26,14 +26,20 @@ import time
 WINDOW_HOURS = 72
 
 
-def add_entry(state, text, url=None, now_ts=None):
+def add_entry(state, text, url=None, now_ts=None, source_title=None):
     """Records one posted item (from any trigger) into the shared history.
     `text` is what gets shown back to Claude for semantic "is this the same
     story" judgment even when the URL differs or is absent (e.g. a
-    generic/evergreen ai_manager post with no single source article)."""
+    generic/evergreen ai_manager post with no single source article).
+
+    source_title (optional, added 2026-07-23 for ai_manager v2's per-story
+    candidate model) is the original candidate article's own title, used by
+    ai_manager.py's _is_same_story_title token-overlap check -- a backstop
+    the old world-news recap couldn't have, since it had no single source
+    article per post to compare against."""
     ts = now_ts if now_ts is not None else time.time()
     history = state.setdefault("story_history", [])
-    history.append({"text": text, "url": url, "posted_at": ts})
+    history.append({"text": text, "url": url, "posted_at": ts, "source_title": source_title})
     state["story_history"] = _prune(history, ts)
 
 
@@ -69,3 +75,15 @@ def recent_texts(state, now_ts, limit=30):
     judge voice/style, just the deterministic backstop does."""
     history = _prune(state.get("story_history", []), now_ts)
     return [e["text"] for e in reversed(history)][:limit]
+
+
+def recent_source_titles(state, now_ts, limit=None):
+    """Newest-first list of source article titles within the rolling
+    window, skipping entries with no source_title (old-format entries, or
+    posts with no single source article) -- mirrors recent_texts' shape,
+    used by ai_manager.py's _is_same_story_title token-overlap dedup check.
+    Pass limit=None (the default) for the full window, same reasoning as
+    recent_texts: cheap local string comparison, not prompt tokens, so the
+    deterministic check should see everything."""
+    history = _prune(state.get("story_history", []), now_ts)
+    return [e["source_title"] for e in reversed(history) if e.get("source_title")][:limit]

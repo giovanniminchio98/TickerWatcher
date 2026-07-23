@@ -46,3 +46,18 @@ def get_price_on_date(coingecko_id, date_str):
         return float(data["market_data"]["current_price"]["usd"])
     except (KeyError, TypeError):
         return None
+
+
+def get_market_chart(coingecko_id, days=14, vs_currency="usd"):
+    """Returns [[timestamp_ms, price], ...] over the trailing `days` days --
+    used by src/sources/chart_gen.py to render ai_manager's crypto price
+    charts. Same raise-on-HTTP-error/caller-catches shape as
+    get_price_on_date -- this module never swallows its own errors, callers
+    decide how to degrade."""
+    params = {"vs_currency": vs_currency, "days": days}
+    resp = requests.get(
+        f"{BASE_URL}/coins/{coingecko_id}/market_chart", params=params, headers=_headers(), timeout=TIMEOUT
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    return data.get("prices", [])

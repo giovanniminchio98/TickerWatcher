@@ -1,92 +1,89 @@
 """Post type 11 (opt-in via ANTHROPIC_API_KEY presence): a 4x/day
-(02:00/06:00/12:00/21:00 Brussels -- see _CALL_CHECKPOINT_HOURS) world-news
-recap. Each call decides a BATCH of 0 to max_posts_per_call posts (config/
-ai_manager.json, default 4) -- a broad snapshot of the most important
-things that happened since the last recap, world news first, crypto/
-finance/AI folded in only when genuinely notable. See
-src/sources/ai_manager_brain.py for the prompt/parsing.
+(02:00/06:00/12:00/21:00 Brussels -- see _CALL_CHECKPOINT_HOURS) financial-
+intelligence feed. Each call is handed a large pool of candidate crypto/
+finance/AI articles (config/keywords.json's feeds -- see
+_candidate_news_snapshot), and Claude SCORES and FILTERS them, rather than
+just picking a headline to paraphrase. See src/sources/ai_manager_brain.py
+for the full rubric/prompt.
 
-The 02:00 checkpoint was added 2026-07-21, alongside disabling
-news_alerts/price_alerts/historical_flashback (all mechanical, no-context,
-off-persona posts that fired on their own hourly/threshold triggers with
-no checkpoint gate -- news_alerts in particular was the only thing still
-posting overnight, in its old wire-alert voice). Without it, 21:00-06:00
-Brussels was a 9-hour dead zone with zero coverage of anything, including
-a genuinely major story breaking overnight; one checkpoint roughly in the
-middle keeps that gap bounded without turning this into a truly 24/7
-cadence -- 0 posts is still the correct, expected outcome most nights.
+Redesigned entirely (2026-07-23) from the previous "3-4x/day world-news
+recap" design: the account owner's read was that engagement was weak, the
+account read as posting routine "fuzz" rather than content worth reading,
+and asked for "no war, but more finance and useful insight" -- a real
+quality filter instead of "did an article match a keyword." World news
+(config/world_news.json) is dropped entirely as an input; crypto/finance/AI
+news (config/keywords.json) becomes the primary and only news lens, at a
+much larger pool size than before (candidate_pool_size, default 80, vs. the
+old secondary snapshot's limit=6) so there's actually something to filter
+down from.
 
-Replaced the old design entirely (2026-07-20): a batch of up to
-posts_per_batch individually-decided posts on a fixed 3-hour/8-checkpoint
-clock, queued and drained one item per hourly run, weighted toward
-routine crypto/price content with no genuine world-news source feeding it
-at all. The account owner's own honest read: they wouldn't reliably
-follow most of what that produced. This is a full pivot, not a tweak --
-"3x/day, world news as the primary lens" is a different shape of account,
-not the same one turned down. Refined again the same day: an initial
-single-post-only version turned out too narrow for a genuinely busy
-period with several distinct important stories -- forcing everything into
-one 260-char synthesis lost real content. Unlike the old batch design,
-though, there's still no queue: every accepted post in a call's batch
-fires immediately, one after another, in that same run -- nothing spreads
-across subsequent hourly runs anymore, and no two posts in the same batch
-may cover the same story (enforced both in the prompt and, for the
-duplicate-figures case, deterministically -- see run()'s prior_texts).
+Two tiers come out of one call:
+  - Individual posts (score >= individual_post_min_score, default 75): a
+    full "market intelligence card" -- main tweet (category emoji + hook +
+    a pointer to the reply) and a structured reply (why it matters,
+    bullish/bearish tickers, impact score, confidence, time horizon, bottom
+    line), assembled deterministically in code from Claude's structured
+    fields (see _assemble_main_tweet/_assemble_reply_card) -- never trusted
+    as raw prose, same "a prompt rule is a request, not a guarantee"
+    philosophy as every other backstop in this module (cashtag
+    enforcement, category tag enforcement, duplicate detection). A crypto
+    story whose chart_symbol names a tracked coin gets a real price chart
+    attached (see src/sources/chart_gen.py) -- the account's first
+    data-driven image, as opposed to media.py/oracle_media.py's static
+    generic assets.
+  - A digest thread (score band digest_min_score..individual_post_min_score,
+    only if at least digest_min_items qualify after code-side dedup/
+    validation): secondary stories that don't individually clear the full
+    bar, bundled into one numbered reply-thread instead of getting their
+    own mediocre post or being dropped outright. x_client.py has no native
+    thread helper, so _post_digest_thread chains ctx.x.reply() calls
+    manually, each replying to the previous tweet's own returned ID.
 
-Because there's no queue, there's nothing to pace across a day/night
-window either -- the 4 fixed checkpoints ARE the schedule. The external
-cron-job.org dispatch stays exactly as it is (still hourly) --
-_ready_for_call is what turns "hourly dispatch" into "only acts a few
-times a day," same mechanism as before, just with a different set of
-checkpoint hours.
+Every candidate is referenced by its INDEX into the snapshot's candidate
+list (source_index), never by Claude copying back title/URL as free text --
+an LLM asked to echo a string verbatim can still alter it, which would
+silently break both dedup and the real article URL story_history needs.
 
-Primary input is _world_news_snapshot (config/world_news.json's general
-outlets -- Guardian, BBC, Deutsche Welle, France 24, Euronews, plus
-non-English sources translated inline by Claude itself while writing the
-recap: la Repubblica, Corriere della Sera, Le Monde, El Pais, Der
-Spiegel). Unlike the keyword-gated crypto/finance feeds, these are pulled
-unconditionally (news_rss.fetch_latest_articles, no keyword whitelist --
-"what's the latest important news" doesn't fit a keyword filter the way
-a finance alert does). Secondary/supporting inputs -- prices, the
-CryptoScope Oracle, the keyword-gated crypto/finance/AI news, earnings,
-press releases -- are unchanged from the old design but explicitly
-deprioritized in the prompt now.
+Duplicate detection got a second, structurally new layer this redesign:
+alongside the existing _is_likely_duplicate (shared salient dollar-figures/
+percentages), _is_same_story_title does token-overlap comparison against
+recent posts' own SOURCE ARTICLE TITLES -- something only possible now that
+every selected item traces to one real candidate article (the old
+world-news recap had no single source title to compare against, url=None
+always). This directly targets the exact failure that got the old design
+paused: two personnel/political stories, worded completely differently,
+with no shared number to catch on the old check alone. Applied twice: as a
+pre-filter before candidates ever reach Claude (_candidate_news_snapshot),
+and as a deterministic backstop after Claude's own selection
+(_post_individual_item/_prepare_digest_items) -- same dual-layer pattern as
+every other guard in this module.
 
-Reply decisions live in their own, much faster cadence in
-reply_manager.py. Reposting (retweet/quote-tweet) is a manual, human
-decision only -- this trigger never touches X's retweet/quote endpoints.
+The 02:00 checkpoint, the 4x/day cadence, the checkpoint-hour gate
+mechanism, and the two independent budget gates (ctx.claude_budget before
+the call, ctx.budget before posting) all carry over unchanged from the
+previous design -- see _ready_for_call/_CALL_CHECKPOINT_HOURS. The external
+cron-job.org dispatch stays exactly as it is (still hourly); this trigger's
+own checkpoint gate is what turns "hourly dispatch" into "only acts a few
+times a day."
 
-No images, no links on X, by deliberate account-wide choice -- instead,
-every recap's second_part field is mandatory (Claude must always fill it
-in, see ai_manager_brain.py's prompt): a reply posted immediately after
-the main post whose one job is explaining what it actually means in
-clear, simple terms. Carried over unchanged from the old per-story design,
-including the anti-leak hardening (_reasoning_contradicts_post also
-checks second_part, not just reasoning -- confirmed live that Claude's
-own internal second-guessing could otherwise get posted verbatim as a
-reply).
+Reply decisions live in their own, much faster cadence in reply_manager.py.
+Reposting (retweet/quote-tweet) is a manual, human decision only -- this
+trigger never touches X's retweet/quote endpoints.
 
-Two independent hard budget caps gate this trigger, each stopping it
-cleanly rather than erroring when exhausted:
-  - ctx.claude_budget (config/claude_budget.json) -- gates whether a new
-    recap-generating Claude call is even attempted.
-  - ctx.budget (config/budget.json) -- gates whether a decided post/
-    second_part is actually sent to X (same shared pool every other
-    trigger uses).
-
-Every call sends a short Telegram bot-chat status line (whether a new
-call happened and why not if not) plus, on a genuine call, an audit
-message with the post text (or decline reasoning) -- the only review
-mechanism now that nothing is manually approved.
+Every call sends a short Telegram bot-chat status line (whether a new call
+happened and why not if not) plus, on a genuine call, an audit message with
+every post/decline/digest decision -- the only review mechanism now that
+nothing is manually approved.
 """
 import logging
+import random
 import re
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 from src import story_history, telegram_client
 from src.formatting import fmt_pct, fmt_price, truncate
-from src.sources import ai_manager_brain, news_rss, twelvedata
+from src.sources import ai_manager_brain, chart_gen, news_rss, twelvedata
 
 CASHTAG_RE = re.compile(r"\$[A-Za-z]{1,6}\b")
 
@@ -106,7 +103,7 @@ def _roll_day(state, today_str):
     """Rolls over the Claude-call cadence counter -- calendar-day, Brussels
     time (matching _ready_for_call's checkpoint clock), since
     max_calls_per_day is about controlling Claude spend across the 4 fixed
-    checkpoints, not a separate posting cadence anymore."""
+    checkpoints, not a separate posting cadence."""
     if state.get("date") != today_str:
         state["date"] = today_str
         state["calls_today"] = 0
@@ -116,26 +113,25 @@ def _day_context(ctx):
     """A plain-English line telling Claude what day it actually is, so it
     can phrase STOCK price timing correctly -- confirmed live that a post
     said stocks moved 'today' on a weekend, when US markets are closed and
-    that move actually happened in Friday's session. Crypto and world news
-    trade/happen 24/7 so they never have this problem; this is purely a
-    US-stock-market framing issue. Simple weekday/weekend check (via
-    ctx.now, not US-Eastern-exact) -- doesn't account for market holidays,
-    but that's a much rarer edge case than every single weekend."""
+    that move actually happened in Friday's session. Crypto trades 24/7 so
+    it never has this problem; this is purely a US-stock-market framing
+    issue. Simple weekday/weekend check (via ctx.now, not US-Eastern-exact)
+    -- doesn't account for market holidays, but that's a much rarer edge
+    case than every single weekend."""
     day_name = ctx.now.strftime("%A, %B %d, %Y")
     if ctx.now.weekday() >= 5:  # Saturday=5, Sunday=6
         return (
             f"{day_name} -- a weekend. US stock markets are closed; any stock price move "
             "reflects the last trading session (Friday), not something that happened today. "
-            "Crypto trades 24/7 and world news is unaffected."
+            "Crypto trades 24/7 and is unaffected."
         )
     return f"{day_name} -- a weekday. US stock markets are open during their normal trading hours."
 
 
 # Fixed clock checkpoints (Europe/Brussels): morning, midday, evening --
-# three real posting moments a day rather than a high-frequency drip.
-# Deliberately clock-time-based, not elapsed-time+jitter -- same lesson
-# already learned once this session (an elapsed-time cadence drifted over
-# time and produced uneven gaps); a fixed clock is predictable instead.
+# real posting moments a day rather than a high-frequency drip. Deliberately
+# clock-time-based, not elapsed-time+jitter -- an elapsed-time cadence
+# drifted over time and produced uneven gaps; a fixed clock is predictable.
 _CALL_CHECKPOINT_HOURS = (2, 6, 12, 21)
 
 
@@ -151,48 +147,86 @@ def _ready_for_call(ctx, cfg, state):
     return state.get("last_call_checkpoint") != checkpoint_id
 
 
-def _world_news_snapshot(ctx, state, limit=15):
-    """PRIMARY input to the recap (see ai_manager_brain.py's prompt) --
-    latest headlines from config/world_news.json's general world-news
-    outlets, via news_rss.fetch_latest_articles (no keyword gate -- "what's
-    the latest important news" doesn't fit a finance/crypto keyword
-    whitelist the way a JUST IN alert does).
+# Stopwords stripped before token-overlap comparison in _is_same_story_title
+# -- common words that would otherwise inflate apparent overlap between two
+# genuinely unrelated headlines that just happen to share ordinary English.
+_TITLE_STOPWORDS = frozenset(
+    """the a an of in on for to and or is are with at by its as after over amid says said new will
+    has have had was were be been from that this than into out up down more most not but so it he
+    she they his her their who what when where why how can could would should may might also still
+    just now than about all one two three""".split()
+)
 
-    Time-filtered to since the last successful call (state["last_call_time"])
-    -- this, not URL exclusion, is the real dedup mechanism here: a recap
-    synthesizes many articles into one post with no single source URL to
-    log (_post_recap logs url=None), so story_history's usual recent_urls
-    exclusion is a no-op for this feed type. Without the time filter, the
-    same still-top-of-feed articles could keep reappearing in the candidate
-    pool call after call on a quiet news day. First-ever call (no
-    last_call_time yet) passes since_ts=None, so nothing gets filtered out
-    by time on that bootstrap run. already_posted_urls is still passed too,
-    as a cheap secondary guard, same cross-trigger dedup pattern
-    _news_snapshot already uses."""
-    world_cfg = ctx.config["world_news"]
+
+def _title_tokens(title):
+    words = re.findall(r"[A-Za-z0-9']+", (title or "").lower())
+    return {w for w in words if w not in _TITLE_STOPWORDS and len(w) > 2}
+
+
+def _is_same_story_title(candidate_title, prior_titles, min_shared_tokens=3, min_overlap_ratio=0.5):
+    """Flags likely-same-real-world-event coverage even with zero shared
+    numbers, by token overlap between the candidate's own source article
+    title and recent posts' source titles -- catches the exact class of
+    failure the old numeric-only check structurally couldn't (personnel/
+    political stories, worded completely differently, with no shared dollar
+    figure or percentage). min_overlap_ratio=0.5 (not a stricter 0.6): a
+    real reworded repeat of the same event still loses some overlap to
+    plain word-form drift (e.g. "mounting" vs "mounts") without actually
+    being a different story, so the bar is "at least half the smaller
+    title's meaningful words," not "nearly all of them." Deliberately a
+    starting heuristic to tune after live observation, same as every other
+    threshold in this module."""
+    cand_tokens = _title_tokens(candidate_title)
+    if len(cand_tokens) < min_shared_tokens:
+        return False
+    for prior in prior_titles:
+        prior_tokens = _title_tokens(prior)
+        if not prior_tokens:
+            continue
+        shared = cand_tokens & prior_tokens
+        if len(shared) < min_shared_tokens:
+            continue
+        if len(shared) / min(len(cand_tokens), len(prior_tokens)) >= min_overlap_ratio:
+            return True
+    return False
+
+
+def _candidate_news_snapshot(ctx, cfg):
+    """PRIMARY (and only) news input now -- a much larger pool than the old
+    secondary snapshot (candidate_pool_size, default 80, vs. the old
+    limit=6), pulled from config/keywords.json's feeds via the same
+    news_rss.fetch_matching_articles used by news_alerts.py. Pre-filtered
+    by _is_same_story_title against story_history's recent source titles
+    before candidates ever reach the prompt -- saves tokens and removes
+    reliance on Claude's own judgment for the common case; the same check
+    runs again as a deterministic backstop after selection (see
+    _post_individual_item/_prepare_digest_items)."""
+    kw_cfg = ctx.config["keywords"]
+    pool_size = cfg.get("candidate_pool_size", 80)
+    max_per_feed = cfg.get("candidate_pool_max_per_feed", 8)
     already_used = story_history.recent_urls(ctx.state, ctx.now.timestamp())
-    since_ts = state.get("last_call_time")
     try:
-        articles = news_rss.fetch_latest_articles(
-            world_cfg["rss_feeds"], already_used, world_cfg.get("max_articles_per_feed", 3), since_ts=since_ts
+        articles = news_rss.fetch_matching_articles(
+            kw_cfg["rss_feeds"], kw_cfg["keywords"], already_used, pool_size, max_per_feed=max_per_feed
         )
     except Exception:
-        logger.exception("World news fetch failed for ai_manager")
+        logger.exception("Candidate news fetch failed for ai_manager")
         return []
-    return articles[:limit]
+    recent_titles = story_history.recent_source_titles(ctx.state, ctx.now.timestamp())
+    return [a for a in articles if not _is_same_story_title(a["title"], recent_titles)]
 
 
 def _price_snapshot_lines(ctx):
     """Crypto comes from ctx.prices (already fetched once per run by
     main.py). Stocks use watchlist.stocks_broad (30 tickers) via
     twelvedata.get_quotes_batch -- chunked into 5-symbol requests with a
-    full 60s pause between chunks (confirmed live that a shorter 15s
-    pause still hit Twelve Data's free-tier per-minute limit). Adds ~5
-    minutes to a call that needs it, deliberately accepted to get real
-    stock data reliably rather than dropping the feature. Never raises,
-    so no try/except needed here -- a symbol just won't have a line if
-    its chunk didn't come through. Falls back to the smaller 'stocks'
-    list if stocks_broad isn't configured."""
+    full 60s pause between chunks (confirmed live that a shorter 15s pause
+    still hit Twelve Data's free-tier per-minute limit). Adds ~5 minutes to
+    a call that needs it, deliberately accepted to get real stock data
+    reliably rather than dropping the feature. Never raises, so no
+    try/except needed here -- a symbol just won't have a line if its chunk
+    didn't come through. Falls back to the smaller 'stocks' list if
+    stocks_broad isn't configured."""
     lines = []
     for asset in ctx.config["watchlist"]["crypto"]:
         info = ctx.prices.get(asset["coingecko_id"])
@@ -218,8 +252,8 @@ def _oracle_snapshot_lines(ctx):
     src/sources/cryptoscope_oracle.py) -- a real statistical signal, not a
     fabricated number, so Claude can weigh it like any other real data
     point in the prompt. Coins with too little candle history yet
-    (analyze() returned None) are simply omitted rather than padded with
-    a placeholder line."""
+    (analyze() returned None) are simply omitted rather than padded with a
+    placeholder line."""
     lines = []
     for asset in ctx.config["watchlist"]["crypto"]:
         result = ctx.oracle.get(asset["symbol"])
@@ -240,8 +274,8 @@ def _earnings_snapshot(ctx):
     """Today's earnings calendar (Twelve Data, free-tier endpoint), scoped
     to watchlist.stocks_broad -- gives Claude a real, timely "X reports
     earnings today" angle independent of price moves. Same
-    try/except-and-default-to-empty pattern as every other external call
-    in this module."""
+    try/except-and-default-to-empty pattern as every other external call in
+    this module."""
     try:
         entries = twelvedata.get_earnings_calendar()
     except Exception:
@@ -252,8 +286,8 @@ def _earnings_snapshot(ctx):
 
 
 def _press_releases_snapshot(ctx, max_results=10):
-    """Recent official press releases (Twelve Data, free-tier endpoint)
-    for watchlist.stocks_broad -- a primary-source angle distinct from the
+    """Recent official press releases (Twelve Data, free-tier endpoint) for
+    watchlist.stocks_broad -- a primary-source angle distinct from the
     RSS/journalism news already used elsewhere. Same
     try/except-and-default-to-empty pattern as everything else here."""
     symbols = [asset["symbol"] for asset in ctx.config["watchlist"].get("stocks_broad", [])]
@@ -264,28 +298,16 @@ def _press_releases_snapshot(ctx, max_results=10):
         return []
 
 
-def _news_snapshot(ctx, limit=6):
-    """Secondary/supporting input now (world news is primary -- see
-    _world_news_snapshot): the same keyword-gated crypto/finance/AI feeds
-    (config/keywords.json) used by news_alerts.py. Excludes articles
-    already covered by ANY trigger within the shared story_history
-    window."""
-    kw_cfg = ctx.config["keywords"]
-    already_used = story_history.recent_urls(ctx.state, ctx.now.timestamp())
-    try:
-        return news_rss.fetch_matching_articles(kw_cfg["rss_feeds"], kw_cfg["keywords"], already_used, limit)
-    except Exception:
-        logger.exception("News fetch failed for ai_manager")
-        return []
-
-
 def _enforce_single_cashtag(text):
     """X hard-rejects (403 Forbidden) any single post with more than one
     $cashtag -- confirmed live (a post naming both $STRF and $STRC failed
     to send entirely). Keeps the first cashtag intact (genuinely nice to
     have: free, and X renders it with a live price card) and strips just
     the leading '$' from any additional ones, so the post still reads
-    naturally instead of failing to send at all."""
+    naturally instead of failing to send at all. Also what makes it safe
+    for _assemble_reply_card to freely list several bullish/bearish
+    tickers as $cashtags -- this enforcement demotes all but the first to
+    plain text before the card ever reaches ctx.x.post/reply."""
     matches = list(CASHTAG_RE.finditer(text))
     if len(matches) <= 1:
         return text
@@ -320,18 +342,18 @@ def _salient_numbers(text):
 
 def _is_likely_duplicate(text, prior_texts, min_shared=2):
     """Deterministic backstop against the same real-world story getting
-    recapped twice -- confirmed live that Claude can independently
-    regenerate a post covering a topic already sitting right there in its
-    own RECENTLY POSTED context, despite the explicit prompt rule against
-    it ("should_post: false since this was already covered" is a request
-    to Claude, not a guarantee -- same reasoning as every other code-level
-    backstop in this module: cashtag, opening tag). Flags a likely
-    duplicate when a candidate shares min_shared+ distinctive figures (a
-    dollar amount with a scale word, or a percentage) verbatim with any
-    already-posted text -- two unrelated real stories coincidentally
-    sharing two exact figures is rare enough that this stays low on false
-    positives while catching the actual observed failure (the same
-    "$400 million... $20 billion" Citadel/Crypto.com story posted twice)."""
+    posted twice -- confirmed live that Claude can independently regenerate
+    a post covering a topic already sitting right there in its own
+    ALREADY COVERED context, despite the explicit prompt rule against it
+    (a prompt rule is a request, not a guarantee -- same reasoning as every
+    other code-level backstop in this module: cashtag, category tag,
+    _is_same_story_title). Flags a likely duplicate when a candidate shares
+    min_shared+ distinctive figures (a dollar amount with a scale word, or a
+    percentage) verbatim with any already-posted text -- two unrelated real
+    stories coincidentally sharing two exact figures is rare enough that
+    this stays low on false positives while catching the actual observed
+    failure (the same "$400 million... $20 billion" Citadel/Crypto.com
+    story posted twice)."""
     candidate_nums = _salient_numbers(text)
     if len(candidate_nums) < min_shared:
         return False
@@ -341,14 +363,11 @@ def _is_likely_duplicate(text, prior_texts, min_shared=2):
     return False
 
 
-# Confirmed live, verbatim, multiple times now, with different exact
-# phrasing each time -- a decision's reasoning field correctly diagnosed
-# the problem and then contradicted itself in the very next field
-# (should_post stayed true), and once even leaked straight into the
-# published second_part reply itself ("Wait -- this was already covered.
-# Skipping to avoid repeat." -- a real posted reply, not just a reasoning
-# field). When either reasoning or second_part says this plainly, trust it
-# over the boolean.
+# Confirmed live, verbatim, multiple times, with different exact phrasing
+# each time -- a decision's reasoning field correctly diagnosed the problem
+# and then contradicted itself in the very next field, and once leaked
+# straight into a published reply. When published content says this
+# plainly, trust it over the score/tier.
 _NEGATIVE_REASONING_PHRASES = (
     "should not be posted",
     "should not post",
@@ -373,22 +392,70 @@ def _reasoning_contradicts_post(text):
     return any(phrase in lowered for phrase in _NEGATIVE_REASONING_PHRASES)
 
 
-def _enforce_world_tag(text):
-    """Every recap must open with ai_manager_brain.WORLD_TAG directly on the
-    same line as the first word (e.g. "🌍 WORLD: I just read that..."), not
-    a separate announcement line -- same defense-in-depth pattern as
-    _enforce_single_cashtag: the prompt already requires this, but a rule
-    stated in a prompt is a request, not a guarantee, and a post silently
-    missing its tag breaks the profile's visual consistency. Prepends it if
-    it's somehow missing rather than letting the post go out unmarked.
-    (2026-07-21: brought back to replace the inline owl-emoji marker this
-    function used to enforce -- see ai_manager_brain.py's module docstring
-    for the full placement history/reasoning.)"""
+def _enforce_category_tag(text, category):
+    """Every main tweet must open with its category's emoji directly on the
+    same line as the first word -- same defense-in-depth pattern as
+    _enforce_single_cashtag: the prompt already asks for a category, but a
+    rule stated in a prompt is a request, not a guarantee. An unrecognized
+    or missing category falls back to Macro's emoji rather than posting
+    untagged."""
+    emoji = ai_manager_brain.CATEGORY_EMOJI.get(category, ai_manager_brain.CATEGORY_EMOJI["Macro"])
     stripped = text.lstrip()
-    prefix = f"{ai_manager_brain.WORLD_TAG} "
-    if stripped.startswith(prefix):
+    if stripped.startswith(f"{emoji} "):
         return text
-    return f"{prefix}{stripped}"
+    return f"{emoji} {stripped}"
+
+
+# Varied pointer from the main tweet to its reply card -- same "randomly
+# chosen so it doesn't read as the same fixed line every time" reasoning as
+# news_alerts.py's own _REPLY_POINTERS, adapted to this trigger's
+# hook+card shape instead of a headline+explanation shape.
+_REPLY_POINTERS = (
+    "Why it matters below",
+    "Here's the context",
+    "The full picture",
+    "Breaking it down below",
+    "Full breakdown below",
+)
+
+
+def _assemble_main_tweet(hook, category):
+    tagged = _enforce_category_tag(hook, category)
+    pointer = random.choice(_REPLY_POINTERS)
+    return f"{tagged}\n\n📌 {pointer} 👇"
+
+
+def _assemble_reply_card(item):
+    lines = [f"• {b}" for b in (item.get("why_it_matters") or [])[:3]]
+    bullish = item.get("tickers_bullish") or []
+    if bullish:
+        lines.append("🐂 Bullish: " + ", ".join(f"${t}" for t in bullish[:3]))
+    bearish = item.get("tickers_bearish") or []
+    if bearish:
+        lines.append("🐻 Bearish: " + ", ".join(f"${t}" for t in bearish[:3]))
+    if item.get("impact_score") is not None:
+        lines.append(f"📊 Impact: {item['impact_score']}/10")
+    if item.get("confidence"):
+        lines.append(f"🔍 Confidence: {item['confidence']}")
+    if item.get("time_horizon"):
+        lines.append(f"⏳ Horizon: {item['time_horizon']}")
+    lines.append(f"🎯 Bottom line: {(item.get('bottom_line') or '').strip()}")
+    return "\n".join(lines)
+
+
+def _assemble_digest_tweet(item, idx, total):
+    emoji = ai_manager_brain.CATEGORY_EMOJI.get(item.get("category"), ai_manager_brain.CATEGORY_EMOJI["Macro"])
+    tickers = item.get("tickers") or []
+    ticker_suffix = (" " + " ".join(f"${t}" for t in tickers[:2])) if tickers else ""
+    headline = (item.get("headline") or "").strip()
+    why = (item.get("why_it_matters") or "").strip()
+    return f"{emoji} {idx}/{total}: {headline}\n{why}{ticker_suffix}"
+
+
+def _resolve_candidate(candidates, source_index):
+    if isinstance(source_index, int) and 0 <= source_index < len(candidates):
+        return candidates[source_index]
+    return None
 
 
 def _minutes_to_next_checkpoint(ctx):
@@ -421,111 +488,186 @@ def _send_run_summary(ctx, reason, posted_this_run):
     telegram_client.send_message(f"🤖 AI Manager: {reason} · {post_label}{eta_suffix}")
 
 
-def _send_audit_message(posted_items, declined_items):
+def _send_audit_message(posted_items, declined_items, digest_fired, digest_texts):
     """Fires once per genuine Claude call -- the only review mechanism now
-    that nothing is manually approved. Lists every post that actually went
-    out (with its reasoning) and every candidate declined, with why --
-    either Claude's own reasoning (never published) or a deterministic
-    backstop's reason."""
+    that nothing is manually approved. Lists every individual post that
+    went out (with its reasoning), every candidate declined and why, and
+    the digest thread's outcome."""
     lines = ["🤖 AI Manager batch decision:"]
     if posted_items:
-        lines.append(f"\n✅ {len(posted_items)} post(s) published:")
+        lines.append(f"\n✅ {len(posted_items)} individual post(s) published:")
         for item in posted_items:
             lines.append(f"\n- {item['text']}\nReasoning: {item['reasoning'] or '(none given)'}")
     else:
-        lines.append("\n✅ 0 posts published.")
+        lines.append("\n✅ 0 individual posts published.")
     if declined_items:
         lines.append(f"\n🚫 {len(declined_items)} candidate(s) declined:")
         for item in declined_items:
             lines.append(f"\n- [{item['reason']}] {item['reasoning'] or '(none given)'}")
+    if digest_fired:
+        lines.append(f"\n🧵 Digest thread posted ({len(digest_texts)} tweet(s)):")
+        for t in digest_texts:
+            lines.append(f"\n- {t}")
+    else:
+        lines.append("\n🧵 No digest thread this run.")
     telegram_client.send_message("\n".join(lines))
 
 
-def _post_one(ctx, item, prior_texts):
-    """Validates and fires (or declines) a single candidate post from the
-    batch. Returns (fired: bool, detail: str) -- on success detail is the
-    full published text (post + second_part, for the audit log); on decline
-    it's a short machine-readable reason. Every check here is a
-    deterministic backstop on top of what the prompt already asks for (see
-    _reasoning_contradicts_post/_is_likely_duplicate's own docstrings for
-    why a prompt rule alone isn't trusted blindly). prior_texts covers both
-    this account's real recent post history AND every post already accepted
-    earlier in this same batch (the caller extends it after each accept),
-    so within-batch duplicates get caught the same way cross-call ones do."""
-    text = item.get("text")
-    if not text:
-        return False, "empty text"
+def _post_individual_item(ctx, item, candidates, prior_texts, prior_titles, cfg, tracked_crypto_symbols):
+    """Validates and fires (or declines) one Claude-selected candidate as a
+    full individual post. Returns (fired: bool, detail: str, candidate:
+    dict|None) -- on success detail is the full published text (main tweet
+    + reply card, for the audit log) and candidate is the source article
+    (so the caller can extend prior_titles); on decline detail is a short
+    machine-readable reason and candidate is None. Every check here is a
+    deterministic backstop on top of what the prompt already asks for."""
+    score = item.get("score")
+    if not isinstance(score, (int, float)) or score < cfg.get("individual_post_min_score", 75):
+        return False, "score below individual-post bar", None
 
-    second_part = item.get("second_part") or ""
-    if not second_part:
-        return False, "missing mandatory second_part"
+    candidate = _resolve_candidate(candidates, item.get("source_index"))
+    if candidate is None:
+        return False, "invalid source_index", None
 
-    # Only second_part is scanned here, not reasoning -- confirmed live
-    # (2026-07-20) that scanning reasoning produces false positives: Claude
-    # can legitimately narrate its whole batch's selection process in
-    # reasoning ("the Fed story was already covered, so I focused on the UK
-    # PM transition instead"), which is never published (see
-    # ai_manager_brain.py's prompt) and isn't a red flag about the post it
-    # actually chose. second_part has no such ambiguity -- it's published
-    # content with exactly one job (explain this post), so any of these
-    # phrases there is a genuine red flag -- this is the same check that
-    # caught the real leaked-self-doubt bug.
-    if _reasoning_contradicts_post(second_part):
-        logger.warning(
-            "ai_manager: declining post whose second_part contradicts itself: %s", second_part[:120]
-        )
-        return False, "second_part contradicts itself"
+    hook = (item.get("hook") or "").strip()
+    if not hook:
+        return False, "empty hook", None
 
-    if _is_likely_duplicate(text, prior_texts) or _is_likely_duplicate(second_part, prior_texts):
-        logger.warning(
-            "ai_manager: declining likely-duplicate post (shared salient figures with a recent/batch post): %s",
-            text[:80],
-        )
-        return False, "likely duplicate"
+    bottom_line = (item.get("bottom_line") or "").strip()
+    if not bottom_line:
+        return False, "missing mandatory bottom_line", None
+
+    if _is_same_story_title(candidate["title"], prior_titles):
+        return False, "likely same story (title overlap)", None
+    if _is_likely_duplicate(hook, prior_texts) or _is_likely_duplicate(bottom_line, prior_texts):
+        return False, "likely duplicate (shared salient figures)", None
+
+    reply_card = _assemble_reply_card(item)
+    if _reasoning_contradicts_post(reply_card):
+        logger.warning("ai_manager: declining post whose reply card contradicts itself: %s", reply_card[:120])
+        return False, "reply card contradicts itself", None
 
     if not ctx.budget.can_spend(has_link=False):
-        return False, "X budget exhausted this period"
+        return False, "X budget exhausted this period", None
 
-    tagged_text = _enforce_world_tag(text)
-    final_text = _enforce_single_cashtag(truncate(tagged_text, ai_manager_brain.MAX_POST_LEN))
-
-    # truncate() is shared with other (currently disabled) triggers whose
-    # post shape is a single headline+explanation paragraph, where falling
-    # back to "just the first paragraph" when nothing fits is a reasonable
-    # last resort. ai_manager's shape is different -- chunk A and chunk B
-    # (see ai_manager_brain.py's prompt) are BOTH mandatory, so a
-    # truncation that strips chunk B out entirely doesn't produce a
-    # shorter-but-complete post, it produces a broken one (confirmed live:
-    # a 337-char post got silently cut down to just its opening reaction,
-    # dropping the "why it matters" sentence and its pointer to second_part
-    # entirely). Declining and trying again next checkpoint is strictly
-    # better than shipping that -- 0 posts is already a normal, accepted
-    # outcome for this trigger.
-    if len(tagged_text) > ai_manager_brain.MAX_POST_LEN and "\n\n" not in final_text:
+    main_text_raw = _assemble_main_tweet(hook, item.get("category"))
+    final_main = _enforce_single_cashtag(truncate(main_text_raw, ai_manager_brain.MAX_POST_LEN))
+    # Same "decline rather than post broken" rule as the old design's
+    # chunk-A/chunk-B check -- the pointer line is meaningless without a
+    # reply behind it, so a truncation that drops it produces a broken
+    # post, not a shorter-but-complete one.
+    if len(main_text_raw) > ai_manager_brain.MAX_POST_LEN and "\n\n" not in final_main:
         logger.warning(
-            "ai_manager: declining post -- %d chars (limit %d) and truncation would drop the "
-            "mandatory second sentence/pointer entirely: %s",
-            len(tagged_text), ai_manager_brain.MAX_POST_LEN, tagged_text[:80],
+            "ai_manager: declining post -- main tweet %d chars (limit %d), truncation would drop "
+            "the pointer to its reply card: %s",
+            len(main_text_raw), ai_manager_brain.MAX_POST_LEN, main_text_raw[:80],
         )
-        return False, "text over budget, truncation would drop mandatory content"
+        return False, "text over budget, truncation would drop mandatory content", None
 
-    tweet_id = ctx.x.post(final_text)
+    final_card = _enforce_single_cashtag(truncate(reply_card, ai_manager_brain.MAX_POST_LEN))
+
+    media_id = None
+    chart_symbol = item.get("chart_symbol")
+    if chart_symbol in tracked_crypto_symbols:
+        png_bytes = chart_gen.generate_chart_for_symbol(ctx, chart_symbol)
+        if png_bytes:
+            media_id = ctx.x.upload_media(png_bytes)
+
+    tweet_id = ctx.x.post(final_main, media_id=media_id)
     if not tweet_id:
         # ctx.x.post() itself failed -- ops_alerts already fired for this
-        telegram_client.send_message(f"⚠️ AI Manager: post failed to send, dropped: {final_text}")
-        return False, "X post failed"
+        telegram_client.send_message(f"⚠️ AI Manager: post failed to send, dropped: {final_main}")
+        return False, "X post failed", None
 
-    channel_text = f"{tagged_text}\n\n{second_part}"
-    ctx.budget.record_spend(has_link=False, text=final_text, channel_text=channel_text)
+    channel_text = f"{final_main}\n\n{final_card}"
+    ctx.budget.record_spend(has_link=False, text=final_main, channel_text=channel_text)
     if ctx.budget.can_spend(has_link=False):
-        reply_text = _enforce_single_cashtag(truncate(second_part, ai_manager_brain.MAX_POST_LEN))
-        reply_id = ctx.x.reply(reply_text, tweet_id)
+        reply_id = ctx.x.reply(final_card, tweet_id)
         if reply_id:
             # already mirrored to the channel above via channel_text, skip duplicate
-            ctx.budget.record_spend(has_link=False, text=second_part, mirror_to_channel=False)
+            ctx.budget.record_spend(has_link=False, text=final_card, mirror_to_channel=False)
 
-    story_history.add_entry(ctx.state, text=final_text, url=None, now_ts=ctx.now.timestamp())
-    return True, channel_text
+    story_history.add_entry(
+        ctx.state, text=final_main, url=candidate.get("url"), now_ts=ctx.now.timestamp(),
+        source_title=candidate.get("title"),
+    )
+    return True, channel_text, candidate
+
+
+def _prepare_digest_items(ctx, cfg, digest, candidates, prior_texts, prior_titles):
+    """Validates/dedupes Claude's raw digest.items into a final, sorted
+    list ready to post -- ignores digest["should_post"] entirely and
+    decides purely from the surviving count after dedup/validation (a code
+    backstop over trusting the model's own tier judgment, same philosophy
+    as the individual-post score gate). Extends its own local prior_titles
+    as it goes so two digest items covering the same event can't both
+    survive within the same batch."""
+    digest_max_items = cfg.get("digest_max_items", 8)
+    digest_min_score = cfg.get("digest_min_score", 45)
+    seen_titles = list(prior_titles)
+    prepared = []
+    for raw in (digest.get("items") or [])[: digest_max_items * 2]:
+        score = raw.get("score")
+        if not isinstance(score, (int, float)) or score < digest_min_score:
+            continue
+        candidate = _resolve_candidate(candidates, raw.get("source_index"))
+        if candidate is None:
+            continue
+        headline = (raw.get("headline") or "").strip()
+        why = (raw.get("why_it_matters") or "").strip()
+        if not headline or not why:
+            continue
+        if _is_same_story_title(candidate["title"], seen_titles):
+            continue
+        if _is_likely_duplicate(f"{headline} {why}", prior_texts):
+            continue
+        prepared.append({"raw": raw, "candidate": candidate, "score": score})
+        seen_titles.append(candidate["title"])
+    prepared.sort(key=lambda x: x["score"], reverse=True)
+    return prepared[:digest_max_items]
+
+
+def _post_digest_thread(ctx, items, digest_intro):
+    """Posts an intro tweet, then one numbered reply per item, each
+    replying to the previous tweet's own returned ID -- x_client.py has no
+    native thread helper, X has no atomic multi-tweet publish endpoint
+    either, so this chains ctx.x.reply() calls by hand. Stops early
+    (keeping whatever posted so far) the moment budget runs out or a post
+    fails -- a partial thread is an accepted degraded outcome, not an
+    error, since there's nothing to roll back to anyway. Returns (fired:
+    bool, posted_texts: list[str])."""
+    if not items or not ctx.budget.can_spend(has_link=False):
+        return False, []
+
+    intro_text = (digest_intro or "").strip() or f"🧵 {len(items)} more stories worth knowing about today:"
+    final_intro = _enforce_single_cashtag(truncate(intro_text, ai_manager_brain.MAX_POST_LEN))
+    tweet_id = ctx.x.post(final_intro)
+    if not tweet_id:
+        telegram_client.send_message(f"⚠️ AI Manager: digest intro failed to send, dropped: {final_intro}")
+        return False, []
+    ctx.budget.record_spend(has_link=False, text=final_intro, channel_text=final_intro)
+
+    posted_texts = [final_intro]
+    last_id = tweet_id
+    total = len(items)
+    for i, entry in enumerate(items, start=1):
+        if not ctx.budget.can_spend(has_link=False):
+            break
+        candidate = entry["candidate"]
+        text = _assemble_digest_tweet(entry["raw"], i, total)
+        final_text = _enforce_single_cashtag(truncate(text, ai_manager_brain.MAX_POST_LEN))
+        reply_id = ctx.x.reply(final_text, last_id)
+        if not reply_id:
+            break
+        ctx.budget.record_spend(has_link=False, text=final_text, channel_text=final_text)
+        story_history.add_entry(
+            ctx.state, text=final_text, url=candidate.get("url"), now_ts=ctx.now.timestamp(),
+            source_title=candidate.get("title"),
+        )
+        posted_texts.append(final_text)
+        last_id = reply_id
+
+    return True, posted_texts
 
 
 def run(ctx):
@@ -543,17 +685,25 @@ def run(ctx):
         _send_run_summary(ctx, "no new call (Claude budget capped)", False)
         return False
 
-    max_posts_per_call = cfg.get("max_posts_per_call", 4)
+    candidates = _candidate_news_snapshot(ctx, cfg)
+    tracked_crypto_symbols = [a["symbol"] for a in ctx.config["watchlist"]["crypto"]]
+    now_ts = ctx.now.timestamp()
+    max_individual = cfg.get("max_individual_posts_per_call", 3)
     snapshot = {
         "day_context": _day_context(ctx),
-        "world_news": _world_news_snapshot(ctx, state),
-        "news": _news_snapshot(ctx),
+        "candidates": candidates,
         "prices": _price_snapshot_lines(ctx),
         "oracle": _oracle_snapshot_lines(ctx),
         "earnings": _earnings_snapshot(ctx),
         "press_releases": _press_releases_snapshot(ctx),
-        "own_recent_posts": story_history.recent_texts(ctx.state, ctx.now.timestamp()),
-        "max_posts_per_call": max_posts_per_call,
+        "own_recent_posts": story_history.recent_texts(ctx.state, now_ts),
+        "recent_source_titles": story_history.recent_source_titles(ctx.state, now_ts),
+        "individual_post_min_score": cfg.get("individual_post_min_score", 75),
+        "digest_min_score": cfg.get("digest_min_score", 45),
+        "digest_min_items": cfg.get("digest_min_items", 3),
+        "digest_max_items": cfg.get("digest_max_items", 8),
+        "max_individual_posts_per_call": max_individual,
+        "tracked_crypto_symbols": tracked_crypto_symbols,
     }
 
     decision, usage = ai_manager_brain.decide(snapshot, cfg["model"])
@@ -581,20 +731,38 @@ def run(ctx):
     # everything rather than only what fit in the snapshot. Extended below
     # after each accepted post, so a later item in this same batch can't
     # repeat an earlier one in it either.
-    prior_texts = story_history.recent_texts(ctx.state, ctx.now.timestamp(), limit=None)
+    prior_texts = story_history.recent_texts(ctx.state, now_ts, limit=None)
+    prior_titles = story_history.recent_source_titles(ctx.state, now_ts, limit=None)
     posted_items = []
     declined_items = []
+    tracked_set = set(tracked_crypto_symbols)
 
-    for item in (decision.get("posts") or [])[:max_posts_per_call]:
+    for item in (decision.get("posts") or [])[:max_individual]:
         reasoning = item.get("reasoning", "")
-        fired_one, detail = _post_one(ctx, item, prior_texts)
+        fired_one, detail, candidate = _post_individual_item(
+            ctx, item, candidates, prior_texts, prior_titles, cfg, tracked_set
+        )
         if fired_one:
             posted_items.append({"text": detail, "reasoning": reasoning})
-            prior_texts = prior_texts + [item.get("text", ""), item.get("second_part") or ""]
+            prior_texts = prior_texts + [detail]
+            if candidate:
+                prior_titles = prior_titles + [candidate["title"]]
         else:
             declined_items.append({"reason": detail, "reasoning": reasoning})
 
-    fired = bool(posted_items)
-    _send_audit_message(posted_items, declined_items)
-    _send_run_summary(ctx, f"new call ({len(posted_items)} posted, {len(declined_items)} declined)", fired)
+    digest = decision.get("digest") or {}
+    digest_items = _prepare_digest_items(ctx, cfg, digest, candidates, prior_texts, prior_titles)
+    digest_fired = False
+    digest_posted_texts = []
+    if len(digest_items) >= cfg.get("digest_min_items", 3):
+        digest_fired, digest_posted_texts = _post_digest_thread(ctx, digest_items, digest.get("intro"))
+
+    fired = bool(posted_items) or digest_fired
+    _send_audit_message(posted_items, declined_items, digest_fired, digest_posted_texts)
+    _send_run_summary(
+        ctx,
+        f"new call ({len(posted_items)} posted, {len(declined_items)} declined, "
+        f"digest {'posted' if digest_fired else 'skipped'})",
+        fired,
+    )
     return fired

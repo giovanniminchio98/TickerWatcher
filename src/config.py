@@ -22,7 +22,6 @@ def load_all():
         "claude_budget": _load("claude_budget.json"),
         "image_budget": _load("image_budget.json"),
         "ai_manager": _load("ai_manager.json"),
-        "world_news": _load("world_news.json"),
         "reply_manager": _load("reply_manager.json"),
         "reply_suggestions": _load("reply_suggestions.json"),
         "filler": _load("filler.json"),

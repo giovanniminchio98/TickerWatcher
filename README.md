@@ -274,95 +274,95 @@ see the AI Manager prompt below. Code is left intact; flip `filler` back to
 `True` if account growth stalls and you'd rather trade quality for
 guaranteed hourly posting volume again.
 
-### AI Manager (opt-in via ANTHROPIC_API_KEY) — 4x/day world-news recap
+### AI Manager (opt-in via ANTHROPIC_API_KEY) — financial-intelligence feed
 
-`src/triggers/ai_manager.py` is the account's main content engine, rebuilt
-(2026-07-20) around a much narrower, higher-bar design than what it used to
-be: **four fixed posts a day (02:00 / 06:00 / 12:00 / 21:00 Europe/Brussels)**,
-each one a single genuine "take" on the most important things that
-happened since the last recap — not a stream of individual crypto/price
-posts. The account owner's own honest read on the old, higher-frequency
-design was that they wouldn't reliably follow most of what it posted; this
-is a deliberate trade of volume for a real quality bar. **Every post must
-still be genuinely useful and explained in plain, easy-to-follow language —
-never a bare headline, never noise.**
+`src/triggers/ai_manager.py` is the account's main content engine, redesigned
+(2026-07-23) into a real editorial filter rather than a recap generator: the
+account owner's read on the previous world-news-recap design was that
+engagement stayed weak and the account read as posting routine "fuzz"
+rather than content worth reading — the ask was "no war, but more finance
+and useful insight," with an actual quality bar instead of "did an article
+match a keyword."
 
-**World news is the primary lens, not crypto.** `config/world_news.json`
-lists general-interest outlets — The Guardian, BBC, Deutsche Welle, France
-24, Euronews, plus non-English sources (la Repubblica, Corriere della Sera,
-Le Monde, El País, Der Spiegel) whose headlines Claude translates inline
-while writing the recap, no separate translation call needed. Unlike the
-keyword-gated finance feeds, these are pulled unconditionally
-(`news_rss.fetch_latest_articles` — the latest few items per feed, no
-keyword filter) since "what's the latest important news" doesn't fit a
-finance/crypto keyword whitelist the way a JUST IN alert does; Claude
-itself judges what's genuinely important. Prices, the CryptoScope Oracle,
-and the existing keyword-matched crypto/finance/AI news (`config/keywords.json`)
-are still in the snapshot, but explicitly demoted to secondary material —
-folded into a recap only when genuinely notable, never just because a
-price moved.
+**Score first, post only what clears the bar.** Each of the 4 fixed
+checkpoints (02:00 / 06:00 / 12:00 / 21:00 Europe/Brussels — unchanged) pulls
+a large pool of crypto/finance/AI candidate articles (`candidate_pool_size`,
+default 80, from `config/keywords.json`'s feeds — the same feeds
+`news_alerts.py` uses, just a much bigger pull) and hands the whole pool to
+Claude in one call. Claude scores every candidate 0-100 against a concrete
+rubric — market impact, surprise (was it already priced in?), AI relevance,
+retail investor interest, viral/shareability, long-term importance, and the
+practical gut-check "would I send this to a friend right now" — and is
+explicitly told it's a filter, not a wire service: most days, publishing
+little or nothing is the correct, expected outcome. World news is dropped
+entirely as an input; there is no general world-news lens left in this
+design at all.
 
-**Up to 4 posts per call, no queue.** Each Claude call decides a batch of
-0 to `max_posts_per_call` (config/ai_manager.json, default 4) posts — a
-broad snapshot of the most important things since the last checkpoint, not
-forced into a single post. A busy period can genuinely warrant several
-distinct posts (each with its own topic and its own `second_part`); a quiet
-one can just as correctly warrant zero. No two posts in the same batch may
-cover the same story. Every accepted post fires immediately, one after
-another, in that same run — there's still no queue to spread things across
-the day, since the 4 fixed checkpoints already are the schedule. The
-external cron dispatch (see "Scheduling" below) stays exactly as it is —
-still hourly — the internal checkpoint gate (`_CALL_CHECKPOINT_HOURS`) is
-what turns that into "only acts 4x/day," so
-no cron-job.org changes are needed. The 02:00 checkpoint was added
-2026-07-21 to cover the overnight gap once news_alerts, price_alerts, and
-historical_flashback — the only things still posting overnight, in their
-old off-persona, no-context formats — were disabled (see `ENABLED` in
-`src/main.py`).
+**Two tiers come out of one call:**
+- **Individual posts** (score ≥ `individual_post_min_score`, default 75, up
+  to `max_individual_posts_per_call`, default 3): a full "market
+  intelligence card" — a main tweet (category emoji + a punchy hook + a
+  pointer) and a structured reply card (why it matters, bullish/bearish
+  tickers, an impact score, a confidence level, a time horizon, and a
+  bottom line), assembled deterministically in code from Claude's
+  structured fields rather than trusted as raw prose — same "a prompt rule
+  is a request, not a guarantee" philosophy behind every other backstop in
+  this codebase. A crypto story whose `chart_symbol` names a tracked coin
+  gets a real, freshly-rendered price chart attached (see "Charts" below) —
+  the account's first genuinely data-driven image.
+- **Digest thread** (score band `digest_min_score`–`individual_post_min_score`,
+  45–75 by default): secondary stories that don't individually clear the
+  full bar get bundled into one numbered reply-thread instead of getting
+  their own mediocre post — but only if at least `digest_min_items` (default
+  3) survive scoring *and* code-side dedup/validation; otherwise the digest
+  is skipped entirely rather than posting a thin 1-2 item version.
 
-**Post shape.** Written in Mark's own genuine first-person voice (2026-07-21)
-— a real reaction to something he just read, told the way you'd tell a
-friend or colleague, not a sterile wire-alert headline. Every post opens
-with `🌍 WORLD:` directly on the same line as a varied, never-repeated
-reaction (`"🌍 WORLD: I just read that..."`, `"🌍 WORLD: Okay, this is
-big:"`, `"🌍 WORLD: Wait, this actually happened:"`, etc.), leading
-straight into the actual news, then a blank line, then a plain-language
-sentence on why it matters that ends with a short pointer to the reply
-below (`"here's why:"`, `"the context:"`, `"reasoning below:"`, etc.) —
-never optional, both parts of the post must be present every time. Same
-"never assume familiarity, define unfamiliar terms inline" rule the rest
-of the account holds to. The reaction is calibrated to the story's real
-weight: genuine surprise for something striking, calm and measured for
-something serious or tragic — never flippant. `🌍 WORLD:` (2026-07-21: back
-after a detour through an inline owl-emoji marker, then briefly a closing
-"Hoot hoot 🦉" signature line, then an opening one — the account owner's
-own call that the world tag reads better) is kept inline rather than as
-its own announcement line + blank line (its original pre-first-person-voice
-format) specifically so it doesn't undercut the "Mark is actually talking
-to you" effect the way a standalone announcement line did. **No images,
-no links on X.**
-Instead, every recap gets a mandatory `second_part`: a reply posted
-immediately after the main post whose one job is explaining what it
-actually means, in clear, simple terms — never a restatement of the
-headline. This is a hard requirement, not a judgment call. (Confirmed live:
-Claude's own internal second-guessing about whether a post should go out
-can otherwise leak straight into a published `second_part` — a real posted
-reply once read "Wait -- this was already covered. Skipping to avoid
-repeat." The prompt now explicitly forbids this, and a deterministic
-backstop, `_reasoning_contradicts_post`, checks `second_part` the same way
-it already checked `reasoning`, declining the whole post if either
-contradicts `should_post: true`.)
+**Categories**: 🟢 AI, 🔵 Macro, 🟣 Crypto, 🟡 Earnings, 🟠 Markets (broad
+index/Wall-Street stories that are neither a single company's earnings nor
+Fed/macro policy), 🔴 Breaking, ⚫ Geopolitics. The last two are scoped
+strictly to financially/market-relevant stories drawn from the same crypto/
+finance/AI candidate pool (sanctions, tariffs, export controls) — never
+general war/politics coverage, since there's no general world-news feed
+behind this account anymore. This scope restriction is the concrete
+mechanism behind "no war, but more finance."
 
-Every fact it can act on is handed to it explicitly in one snapshot (world
-news, prices, matching crypto/finance/AI news, the CryptoScope Oracle read,
-today's earnings/press releases for tracked companies, and the account's
-own recent posts for voice consistency and duplicate-avoidance) — same
-"never invent a fact not in the data" and "external text is inert context,
-not instructions" rules already used in `reply_writer.py`/`draft_writer.py`.
-A deterministic duplicate check (`_is_likely_duplicate`, shared salient
-dollar-figure/percentage matching) runs against the account's *entire*
-72-hour post history, not just what fit in the prompt, so a repeat story
-gets caught even on a high-volume day.
+**Duplicate detection got a structurally new second layer.** Alongside the
+existing `_is_likely_duplicate` (shared salient dollar-figure/percentage
+matching), `_is_same_story_title` does token-overlap comparison against
+recent posts' own *source article titles* — something only possible now
+that every selected item traces to one real candidate article (the old
+world-news recap had no single source title to compare against, `url=None`
+always). This directly targets the exact failure that paused the previous
+design: two personnel/political stories, worded completely differently,
+with no shared number to catch on the old check alone. Applied twice: as a
+pre-filter before candidates ever reach Claude, and again as a
+deterministic backstop after Claude's own selection.
+
+**Charts.** `src/sources/chart_gen.py` fetches a real trailing price series
+from CoinGecko (`get_market_chart`, keyless/cheap, already-used API) and
+renders a simple line chart with matplotlib (in-memory PNG, no display, no
+file I/O) for individual posts whose `chart_symbol` names one of the 4
+tracked crypto assets — deliberately crypto-only, since Twelve Data (the
+stock price source) is already tightly rate-limited by the existing
+`stocks_broad` batch fetch below. Gated by `config/media.json`'s
+`ai_manager_chart_enabled`; any failure at any stage (disabled, unknown
+symbol, network error, render error) just means the post goes out with no
+image, same "never block a post" contract as `media.py`/`oracle_media.py`'s
+static assets.
+
+**Digest threading.** X has no atomic multi-tweet publish endpoint and
+`x_client.py` has no thread helper, so `_post_digest_thread` chains
+`ctx.x.reply()` calls by hand — an intro tweet, then one numbered reply per
+item, each replying to the previous tweet's own returned ID. Stops early
+(keeping whatever posted so far) the moment budget runs out or a post
+fails — a partial thread is an accepted degraded outcome, not an error.
+
+Prices, the CryptoScope Oracle read, and today's earnings/press releases
+for tracked companies are still in the snapshot as secondary context — used
+for the score/reasoning, never a reason to post on their own. Candidates
+are referenced by index into the snapshot's own list (`source_index`),
+never by Claude copying back a title/URL as free text, since an LLM asked
+to echo a string verbatim can still alter it — an index is unambiguous.
 
 Requires `ANTHROPIC_API_KEY` — without it, this trigger does nothing (same
 "no safe fallback" reasoning as every other Claude-backed trigger).
@@ -370,33 +370,38 @@ Requires `ANTHROPIC_API_KEY` — without it, this trigger does nothing (same
 checkpoints so every one can actually fire; a call that fails outright or
 comes back unparseable doesn't burn its checkpoint — retried at the next
 one instead, though `calls_today` still increments either way so a
-persistently broken call can't retry indefinitely.
+persistently broken call can't retry indefinitely. The external cron
+dispatch (see "Scheduling" below) stays exactly as it is — still hourly —
+the internal checkpoint gate (`_CALL_CHECKPOINT_HOURS`) is what turns that
+into "only acts 4x/day."
 
 **Two independent hard budget caps**, each stopping this trigger cleanly
 (never erroring) the instant it's reached:
 
 - `config/claude_budget.json`'s `monthly_usd_cap` (default $20) — gates
-  whether a new recap-generating Claude call is even attempted, tracked
-  from each response's *real* token usage (`src/claude_budget.py`), not an
-  estimate.
+  whether a new scoring call is even attempted, tracked from each
+  response's *real* token usage (`src/claude_budget.py`), not an estimate.
 - `config/budget.json`'s `monthly_usd_cap` (default $30) — gates whether a
-  decided post/`second_part` actually gets sent to X, same shared pool
-  every other trigger already uses.
+  decided post/reply card/digest tweet actually gets sent to X, same
+  shared pool every other trigger already uses.
 
 **These caps are sized so their sum is the account-wide monthly ceiling.**
 $20 + $30 = $50: if the target total spend changes, split it the same way
 rather than just raising one cap — that's what makes "never above $X/month
 total" a structural guarantee instead of an estimate that could be wrong.
-At 4 calls/day this pipeline now uses a small fraction of either cap — see
-"Cost math" below.
 
 Since nothing here is manually approved before it posts, every genuine call
-sends one audit message to your **private Telegram bot chat** — the actual
-post text (or the decline reasoning if it chose not to post), plus a short
-per-run status line every hour showing whether a new call happened and,
-when it didn't, the exact time to the next checkpoint. This is the only
-review mechanism for an otherwise fully autonomous pipeline, so it's worth
-skimming periodically even if you never intervene.
+sends one audit message to your **private Telegram bot chat** — every
+individual post and decline reason, the digest thread's outcome, plus a
+short per-run status line every hour showing whether a new call happened
+and, when it didn't, the exact time to the next checkpoint. This is the
+only review mechanism for an otherwise fully autonomous pipeline, so it's
+worth skimming periodically even if you never intervene.
+
+**`news_alerts`/`price_alerts`/`scheduled_daily` are disabled again** now
+that this redesign is live (see `ENABLED` in `src/main.py`) — they were
+only re-enabled while `ai_manager` was paused, specifically so two engines
+wouldn't double-post the same crypto/finance stories.
 
 ### Reply Manager (disabled by default — X's reply restriction isn't a per-account setting)
 
@@ -575,31 +580,34 @@ if you want more headroom before that point (with filler re-enabled):
 Enabling 2-3 moderately active retweet accounts adds roughly 60-150 more
 actions/month (~$1-2) on top of the total above.
 
-**AI Manager's posts specifically — 4 calls/day, up to 4 posts each
-(2026-07-20 redesign, 4th call added 2026-07-21 for overnight coverage).**
-Every post is a plain, link-free tweet at the base $0.015 rate, plus its
-mandatory `second_part` explainer reply, also $0.015 — so each post is
-really 2 tweets. Theoretical worst case (every one of the 4 daily calls
-maxes out at 4 posts):
+**AI Manager's posts specifically — 4 calls/day, up to
+`max_individual_posts_per_call` (3) individual posts each, plus an optional
+digest thread capped at `digest_max_items` (8) items + 1 intro tweet
+(2026-07-23 redesign).** Every individual post is a main tweet plus its
+structured reply card — 2 tweets at the base $0.015 rate. A digest thread,
+if it fires, is up to 9 tweets at the same rate. Theoretical worst case
+(every one of the 4 daily checkpoints maxes out both tiers simultaneously):
 
-4 calls × 4 posts × 2 tweets × $0.015 ≈ $0.48/day → **~$14.40/month worst case**
+4 calls × (3 posts × 2 tweets + 9 digest tweets) × $0.015 ≈ $0.90/day → **~$27/month worst case**
 
-In practice, an empty batch (0 posts) is explicitly correct whenever
-nothing clears the bar — especially at the 02:00 checkpoint, where most
-nights should return zero — and there's no pressure to pad up toward the
-max, so real usage should land well under that ceiling most days, likely
-closer to 1-2 posts/call than 4. Either way it's bounded by the same $30 X
-cap, with real headroom versus the worst case. Reposts (retweet/quote,
-capped at 3/day) add on top of this at the same ~$0.015/action rate if
-ever re-enabled (currently disabled — reposting is manual-only).
+In practice, this assumes every single checkpoint hits its full individual-
+post cap *and* a full 8-item digest fires — the score gates
+(`individual_post_min_score`=75, and the digest needing at least
+`digest_min_items`=3 qualifying stories to fire at all) are designed so most
+days land well under this, closer to 0-2 individual posts/call and an
+occasional or no digest, not the daily maximum. Either way it's bounded by
+the same $30 X cap — the budget guard is the real backstop on a genuinely
+unusual news day. Reposts (retweet/quote, capped at 3/day) add on top of
+this at the same ~$0.015/action rate if ever re-enabled (currently disabled
+— reposting is manual-only).
 
-**Claude call cost** — 4 calls/day instead of the old ~6-7, each with a
-larger prompt (world news added) and output sized for up to `max_posts_per_call`
-full posts (same shape as the old per-call output, just fewer calls/day).
-At Sonnet 5's full post-intro pricing ($3/$15 per 1M tokens), expect
-roughly **~$7-13/month**, comfortably inside the $20 Claude cap — worth
-keeping an eye on the Telegram budget recap for the first week or two to
-confirm real token usage lands where expected.
+**Claude call cost** — 4 calls/day, each with a much larger candidate pool
+(up to `candidate_pool_size`=80 articles) and a larger structured output
+schema (up to 3 full posts plus up to 8 digest items) than the previous
+per-call output. At Sonnet 5's full post-intro pricing ($3/$15 per 1M
+tokens), expect roughly **~$6-10/month**, comfortably inside the $20 Claude
+cap — worth keeping an eye on the Telegram budget recap for the first week
+or two to confirm real token usage lands where expected.
 
 ### Two-budget design: X API + Claude API summing to one account-wide ceiling, plus a separate image budget
 
@@ -622,13 +630,15 @@ exactly the sum, never more), not just a hopeful estimate. The daily recap
 time to your **cost-tracking Telegram chat** (see below), so drift in any
 direction shows up quickly.
 
-**A third budget exists but is currently unused by AI Manager**: image
-generation (`config/image_budget.json`, default $10/month cap,
-`src/image_budget.py`) — DALL-E is a different provider (OpenAI) with its
-own bill, sitting *outside* the $50 X+Claude structure. AI Manager doesn't
-use images right now (see "AI Manager" above), so this stays at $0 unless
-that changes later — the code (`src/sources/image_gen.py`) is untouched
-and ready if it does.
+**A third budget exists but is currently unused**: image generation
+(`config/image_budget.json`, default $10/month cap, `src/image_budget.py`)
+— DALL-E is a different provider (OpenAI) with its own bill, sitting
+*outside* the $50 X+Claude structure. AI Manager's crypto price charts
+(see "AI Manager" above) don't touch this budget at all — they're rendered
+locally with matplotlib from a free CoinGecko API call, not generated by
+DALL-E — so this stays at $0 unless OpenAI-generated images are wired in
+later; the code (`src/sources/image_gen.py`) is untouched and ready if it
+is.
 
 Note: `claude-sonnet-5`'s introductory pricing ($2/$10 per 1M input/output
 tokens) runs through 2026-08-31, after which it reverts to $3/$15 — a ~50%
@@ -652,7 +662,7 @@ counting posts instead of dollars.
 ## Repo structure
 
 ```
-config/           watchlist.json, keywords.json, world_news.json, accounts.json,
+config/           watchlist.json, keywords.json, accounts.json,
                    reply_targets.json, thresholds.json, budget.json, claude_budget.json,
                    ai_manager.json, media.json
 state/state.json  dedup/budget state, committed back to the repo after every run
@@ -671,12 +681,14 @@ src/
                   draft_writer, ai_manager_brain, feargreed), plus
                   cryptoscope_oracle.py (Python port of crypto-scope's
                   oracle.js quant engine, see "CryptoScope Oracle" above)
+                  and chart_gen.py (AI Manager's crypto price charts --
+                  CoinGecko market_chart data rendered with matplotlib)
   triggers/       one file per post type (whale_alerts, news_alerts,
                   price_alerts, oracle_alerts, scheduled_daily,
                   historical_flashback, polls, self_reply, filler, retweets,
                   comment_engagement, content_drafts, ai_manager,
                   reply_manager, budget_report)
-  image_budget.py     third, independent budget cap for image generation (OpenAI/DALL-E) -- currently unused by AI Manager, kept ready if that changes
+  image_budget.py     third, independent budget cap for image generation (OpenAI/DALL-E) -- currently unused (AI Manager's charts use CoinGecko + local matplotlib rendering instead, no OpenAI cost), kept ready if that changes
   telegram_client.py  bot-chat + channel + cost-chat message senders, free, independent of the X budget
 .github/workflows/tickerwatch.yml   cron schedule + secret wiring + state commit
 ```
@@ -901,8 +913,7 @@ ever blocks or breaks the rest of the run.
 - **`config/budget.json`** — the monthly X API cap (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/claude_budget.json`** — the monthly Claude API cap, sized alongside `budget.json`'s to sum to the account-wide ceiling (see [Cost math](#cost-math-and-the-budget-cap)).
 - **`config/image_budget.json`** — the monthly image-generation (DALL-E) cap, a separate provider/bill outside the X+Claude $50 structure (see [Cost math](#cost-math-and-the-budget-cap)).
-- **`config/ai_manager.json`** — AI Manager's model and `max_calls_per_day` (4, matching the fixed 02:00/06:00/12:00/21:00 Brussels checkpoints) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--4xday-world-news-recap). Every recap's `second_part` explainer reply is mandatory (enforced in the prompt, not a config knob).
-- **`config/world_news.json`** — general world-news RSS feeds (Guardian, BBC, DW, France 24, Euronews, plus non-English outlets translated inline) that feed AI Manager's recap as its primary input, separate from `config/keywords.json`'s finance/crypto feeds since these are pulled unconditionally, not keyword-gated.
+- **`config/ai_manager.json`** — AI Manager's model, `max_calls_per_day` (4, matching the fixed 02:00/06:00/12:00/21:00 Brussels checkpoints), candidate pool size/per-feed cap, and the score thresholds that gate individual posts vs. the digest thread (`individual_post_min_score`, `digest_min_score`, `digest_min_items`, `digest_max_items`) — see [AI Manager](#ai-manager-opt-in-via-anthropic_api_key--financial-intelligence-feed).
 - **`config/reply_manager.json`** — Reply Manager's model, call cadence, and daily reply cap — see [Reply Manager](#reply-manager-disabled-by-default--xs-reply-restriction-isnt-a-per-account-setting).
 - **`config/media.json`** — the on/off switch for attaching the news trend-icon (see [News trend-line images](#news-trend-line-images)).
 

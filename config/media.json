@@ -2,5 +2,7 @@
   "_comment": "Attaches the coin's official CoinGecko-hosted logo to whale/price alert posts. No extra API key needed -- the image URL now comes back for free in the same /coins/markets call already used for prices every run. Set enabled=false to instantly stop attaching media without a code change, e.g. if a live billing check shows X charges extra for posts with media (same style of test used to confirm cashtags were free).",
   "enabled": false,
   "_oracle_comment": "Separate gate for oracle_alerts.py's own image pairing (a static per-coin logo + a static green/red trend chart, both checked into assets/oracle/ -- user-supplied images, not CoinGecko-fetched). Independent of 'enabled' above since it's a different mechanism and a different decision -- flip oracle_enabled=false to stop attaching images to Oracle posts without touching this file's other flag.",
-  "oracle_enabled": true
+  "oracle_enabled": true,
+  "_ai_manager_chart_comment": "Gate for ai_manager.py's individual crypto posts attaching a real, freshly-rendered price chart (src/sources/chart_gen.py, CoinGecko market_chart data, matplotlib -- not a static asset like the two flags above). Independent of both other flags -- flip ai_manager_chart_enabled=false to stop attaching charts to ai_manager posts without touching anything else in this file.",
+  "ai_manager_chart_enabled": true
 }

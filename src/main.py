@@ -87,25 +87,24 @@ ENABLED = {
     # covers genuinely notable market moves with real explanation attached.
     # Code kept intact -- flip back to True to resume.
     "whale_alerts": False,
-    # re-enabled (2026-07-22): ai_manager is temporarily paused (see below)
-    # after it repeated the same two stories across consecutive batches
-    # (its own dedup missed a personnel/political story with no shared
-    # dollar figure/percentage to match on). news_alerts and price_alerts
-    # were disabled specifically because ai_manager covered this ground in
-    # its voice -- with ai_manager off, that reasoning doesn't apply, so
-    # these go back to being the account's news/finance coverage. Not
-    # crypto-scoped (unlike whale_alerts/oracle_alerts/historical_flashback
-    # below, which stay off).
-    "news_alerts": True,
-    "price_alerts": True,
+    # disabled again (2026-07-23): ai_manager is back on (see below) with a
+    # redesigned scoring/filtering engine that covers this same crypto/
+    # finance/AI news ground with real context attached -- news_alerts/
+    # price_alerts/scheduled_daily were only re-enabled while ai_manager
+    # was paused, specifically to avoid two engines double-posting the same
+    # stories. That's the risk again if these stayed on now that ai_manager
+    # is back. Not crypto-scoped (unlike whale_alerts/oracle_alerts/
+    # historical_flashback below, which stay off).
+    "news_alerts": False,
+    "price_alerts": False,
     # still off -- CryptoScope quant-signal alerts, explicitly kept
     # crypto-scoped and disabled. Code kept intact -- flip back to True to
     # resume.
     "oracle_alerts": False,
-    # re-enabled (2026-07-22): same reasoning as news_alerts/price_alerts
-    # above -- a market snapshot, not crypto-scoped, disabled only because
-    # ai_manager (now paused) covered this ground.
-    "scheduled_daily": True,
+    # disabled again (2026-07-23): same reasoning as news_alerts/price_alerts
+    # above -- a market snapshot, not crypto-scoped, disabled again now that
+    # ai_manager (redesigned) covers this ground.
+    "scheduled_daily": False,
     # still off -- crypto-only (see its own docstring), explicitly kept
     # crypto-scoped and disabled alongside oracle_alerts/whale_alerts above.
     # Code kept intact -- flip back to True to resume.
@@ -126,16 +125,21 @@ ENABLED = {
     # equally. Code kept intact -- flip back to True if that ever changes.
     "comment_engagement": False,
     "content_drafts": True,
-    # paused (2026-07-22): repeated the same two stories (Zelensky firing
-    # his army chief, France's under-15 social media ban) across two
-    # consecutive batches 6 hours apart, worded differently enough that
-    # neither the salient-figures dedup check nor the prompt's own
-    # "already covered" context caught it -- both stories are
-    # personnel/political/legal with no shared dollar figure or percentage
-    # to match on. news_alerts/price_alerts/scheduled_daily re-enabled
-    # above to cover news/finance in the meantime. Code kept intact --
-    # flip back to True to resume once the dedup gap is fixed.
-    "ai_manager": False,
+    # re-enabled (2026-07-23) with a redesigned engine: was paused after
+    # repeating the same two stories (Zelensky firing his army chief,
+    # France's under-15 social media ban) across two consecutive batches 6
+    # hours apart, worded differently enough that neither the
+    # salient-figures dedup check nor the prompt's own "already covered"
+    # context caught it -- both stories were personnel/political/legal with
+    # no shared dollar figure or percentage to match on. The redesign adds
+    # a second, structurally new dedup layer (_is_same_story_title, token
+    # overlap against recent posts' own source article titles -- see
+    # ai_manager.py) that directly targets that failure, on top of a much
+    # narrower editorial scope (score/filter a large crypto/finance/AI pool
+    # instead of a world-news recap) the account owner asked for after
+    # engagement stayed weak. news_alerts/price_alerts/scheduled_daily
+    # disabled again above -- see their own comments.
+    "ai_manager": True,
     # disabled by default: X's "you must be mentioned or otherwise engaged
     # by the author" reply restriction hit every account we tried,
     # including the smaller reply_only ones added specifically on the
@@ -181,7 +185,12 @@ ENABLED = {
 # - 1 gaps of that length would blow through the 120s default well before
 # real work even finishes.
 _TRIGGER_TIMEOUT_SECONDS = 120
-_TRIGGER_TIMEOUTS = {"ai_manager": 600, "news_alerts": 500}
+# ai_manager bumped 600 -> 700 (2026-07-23): the redesign adds up to 3
+# chart-generation + upload_media round trips and up to 9 chained digest
+# reply() calls on top of the existing ~5-minute stocks_broad fetch that
+# justified 600s originally -- still comfortably under the 15-minute job
+# ceiling.
+_TRIGGER_TIMEOUTS = {"ai_manager": 700, "news_alerts": 500}
 
 
 class _TriggerTimeout(Exception):
