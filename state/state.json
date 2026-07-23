@@ -217,7 +217,8 @@
   "market_snapshot_telegram": {
     "last_template_index": {
       "GOOGL": 0,
-      "TSLA": 0
+      "MSTR": 0,
+      "TSLA": 3
     }
   },
   "monthly_calendar": {
