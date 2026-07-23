@@ -62,6 +62,7 @@ DEFAULT_STATE = {
     "telegram": {"last_report_date": None},
     "monthly_calendar": {"last_posted_month": None},
     "run": {"any_trigger_fired_today": False, "last_run_date": None},
+    "market_snapshot_telegram": {"last_template_index": {}},
 }
 
 

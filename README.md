@@ -498,6 +498,19 @@ the whole job's 15-minute ceiling, especially on the 4 checkpoint hours
 where `ai_manager`'s own 30-symbol fetch runs in the same job — round-robin
 a larger list across runs instead if broader coverage is wanted later.
 
+**Message templating** (added 2026-07-23, replacing one fixed format):
+each message is picked from a bank of several phrasings for its move-size
+scenario (strong/mild gain, flat, mild/strong loss — `_scenario_templates`),
+so consecutive hourly posts covering the same stock don't all read
+identically. Per-symbol state tracks the last template used and excludes
+it from the next pick, so the same phrasing never fires twice in a row for
+the same symbol. Also **session-phase aware**: converts to US/Eastern to
+tag pre-market/after-hours moves distinctly (🌅/🌙 — regular session gets
+no extra tag, the common case), and **skips the entire run on weekends**
+(no US equity session at all) rather than repeating Friday's now-stale
+close every hour — the main defense against sending the same message
+over and over.
+
 Deliberately **unconditional**, not gated on a notable move (unlike
 `price_alerts`/`content_drafts`) — this is a proof-of-concept meant to
 produce real, visible output every run so the format can actually be
