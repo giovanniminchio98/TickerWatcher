@@ -84,7 +84,7 @@ MAX_POST_LEN = 260
 # emoji in ai_manager.py rather than posting untagged.
 CATEGORY_EMOJI = {
     "AI": "\U0001F7E2",  # 🟢
-    "Macro": "\U0001F535",  # 🔵
+    "Macro": "⚪",  # ⚪
     "Crypto": "\U0001F7E3",  # 🟣
     "Earnings": "\U0001F7E1",  # 🟡
     "Markets": "\U0001F7E0",  # 🟠

@@ -317,7 +317,7 @@ design at all.
   3) survive scoring *and* code-side dedup/validation; otherwise the digest
   is skipped entirely rather than posting a thin 1-2 item version.
 
-**Categories**: 🟢 AI, 🔵 Macro, 🟣 Crypto, 🟡 Earnings, 🟠 Markets (broad
+**Categories**: 🟢 AI, ⚪ Macro, 🟣 Crypto, 🟡 Earnings, 🟠 Markets (broad
 index/Wall-Street stories that are neither a single company's earnings nor
 Fed/macro policy), 🔴 Breaking, ⚫ Geopolitics. The last two are scoped
 strictly to financially/market-relevant stories drawn from the same crypto/
