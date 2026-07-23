@@ -62,13 +62,14 @@ logger = logging.getLogger("tickerwatch.triggers.news")
 # sentence. Randomly chosen (2026-07-22) so it doesn't read as the same
 # fixed line every time; only appended if it actually fits without
 # truncating away real content (headline or source) to make room -- see
-# run()'s use below.
+# run()'s use below. Ends in an arrow-down emoji rather than a colon
+# (2026-07-22) -- visually points straight at the reply below it.
 _REPLY_POINTERS = (
-    "Explanation below:",
-    "Why it matters:",
-    "Context below:",
-    "More on this below:",
-    "The details:",
+    "Explanation below 👇",
+    "Why it matters 👇",
+    "Context below 👇",
+    "More on this below 👇",
+    "The details 👇",
 )
 
 # Gap between successive articles' main posts within the same run (not
