@@ -132,7 +132,7 @@ def _day_context(ctx):
 # real posting moments a day rather than a high-frequency drip. Deliberately
 # clock-time-based, not elapsed-time+jitter -- an elapsed-time cadence
 # drifted over time and produced uneven gaps; a fixed clock is predictable.
-_CALL_CHECKPOINT_HOURS = (2, 6, 12, 21)
+_CALL_CHECKPOINT_HOURS = (2, 6, 10, 12, 21)  # TEMP: 10 added for a live test, revert after
 
 
 def _ready_for_call(ctx, cfg, state):
