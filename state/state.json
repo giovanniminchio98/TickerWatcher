@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-23",
-      "posts_used": 43,
-      "usd_used": 0.645
+      "posts_used": 49,
+      "usd_used": 0.735
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 367,
-    "usd_used": 9.945
+    "posts_used": 373,
+    "usd_used": 10.035
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -217,7 +217,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 21,
+    "posted_count_today": 24,
     "posted_date": "2026-07-23",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -300,7 +300,10 @@
       "http://www.euronews.com/my-europe/2026/07/22/could-gianni-infantino-really-become-un-secretary-general-if-trump-puts-him-forward",
       "https://www.cnbc.com/2026/07/13/chinese-humanoid-startups-ipo-limx-unitree.html",
       "https://www.theguardian.com/world/2026/jul/23/total-solar-eclipse-new-zealand-2028-dunedin",
-      "http://www.euronews.com/2026/07/22/trump-threatens-to-bomb-tehran-back-for-every-iranian-attack-in-hormuz"
+      "http://www.euronews.com/2026/07/22/trump-threatens-to-bomb-tehran-back-for-every-iranian-attack-in-hormuz",
+      "https://www.cnbc.com/2026/07/13/-a-july-rate-hike-from-the-fed-the-odds-are-rising.html",
+      "https://www.theguardian.com/australia-news/live/2026/jul/23/australia-news-live-china-penny-wong-asean-labor-conference-anthony-albanese-one-nation-pauline-hanson-ntwnfb",
+      "http://www.euronews.com/my-europe/2026/07/23/europe-today-latvian-pm-andris-kulbergs-speaks-exclusively-to-euronews-as-rubio-meets-lavr"
     ]
   },
   "oracle_alerts": {
@@ -529,11 +532,6 @@
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784530857.651972,
-      "text": "\ud83d\udcb0 CRYPTO: Citadel Securities' $400M bet on Crypto.com wasn't a one-off -- Stripe is reportedly making a $53 billion move that could crown a stablecoin king.\n\nHere's the mechanism behind why Wall Street and payment giants keep circling stablecoins:",
-      "url": "https://decrypt.co/373636/morning-minute-base-hands-its-app-over-to-cobie"
-    },
     {
       "posted_at": 1784535719.188184,
       "text": "\ud83c\udf0d WORLD: US carries out ninth straight night of strikes on Iran, hitting the city of Bushehr. Iran fired back at bases in Syria, Kuwait and Jordan, and says it hit two tankers in the Strait of Hormuz.\n\nOil jumped over $91/barrel on the news.",
@@ -928,6 +926,21 @@
       "posted_at": 1784786460.099671,
       "text": "\ud83d\udea8 JUST IN: Trump stated the US would destroy Iranian civilian infrastructure near Tehran in response to each Iranian attack on ships in the Strait of Hormuz.\n(via Euronews)\nExplanation below:",
       "url": "http://www.euronews.com/2026/07/22/trump-threatens-to-bomb-tehran-back-for-every-iranian-attack-in-hormuz"
+    },
+    {
+      "posted_at": 1784790060.262481,
+      "text": "\ud83d\udea8 JUST IN: Oil price increases tied to Strait of Hormuz developments have raised the probability of a Federal Reserve rate increase in July.\n(via CNBC Markets)\nMore on this below:",
+      "url": "https://www.cnbc.com/2026/07/13/-a-july-rate-hike-from-the-fed-the-odds-are-rising.html"
+    },
+    {
+      "posted_at": 1784790060.262481,
+      "text": "\ud83d\udea8 JUST IN: Origin Energy disclosed a data breach exposing partial banking details of some customers, while a Western Australian court rejected Woodside's legal challenge against environmental activists.\n(via The Guardian)\nExplanation below:",
+      "url": "https://www.theguardian.com/australia-news/live/2026/jul/23/australia-news-live-china-penny-wong-asean-labor-conference-anthony-albanese-one-nation-pauline-hanson-ntwnfb"
+    },
+    {
+      "posted_at": 1784790060.262481,
+      "text": "\ud83d\udea8 JUST IN: Latvia's newly elected PM discusses regional security concerns while the US and Russia hold diplomatic talks on Ukraine.\n(via Euronews)\nThe details:",
+      "url": "http://www.euronews.com/my-europe/2026/07/23/europe-today-latvian-pm-andris-kulbergs-speaks-exclusively-to-euronews-as-rubio-meets-lavr"
     }
   ],
   "telegram": {
