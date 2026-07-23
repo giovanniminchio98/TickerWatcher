@@ -27,4 +27,5 @@ def load_all():
         "filler": _load("filler.json"),
         "media": _load("media.json"),
         "financial_calendar": _load("financial_calendar.json"),
+        "seasonality": _load("seasonality.json"),
     }

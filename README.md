@@ -471,6 +471,31 @@ Requires `ANTHROPIC_API_KEY` — like comment-engagement's replies, there's no
 safe mechanical fallback for "curated insight" text, so this trigger simply
 does nothing without it.
 
+### Market snapshot (Telegram-only, POC)
+
+`src/triggers/market_snapshot_telegram.py` — added 2026-07-23 while the
+account owner manually curates X posts for a while (external cron
+stopped). Every hourly run, sends up to `thresholds.market_snapshot.max_posts_per_run`
+(default 2) standalone messages (never a reply/thread) to the public-ish
+Telegram channel: real, live price + % change for the biggest movers among
+`thresholds.market_snapshot.symbols` (default `SPY`/`QQQ`/`AAPL`), tagged
+🟢/🟡/🔴/⚪ by move size, paired with a general seasonal-pattern note
+(`config/seasonality.json` — well-known calendar tendencies like the
+"Santa Claus rally" or "Sell in May", by current month and weekday; general
+historical context, never a prediction for that specific stock). No
+Claude cost — this is pure live data + a canned historical note, no LLM
+call involved.
+
+Deliberately **unconditional**, not gated on a notable move (unlike
+`price_alerts`/`content_drafts`) — this is a proof-of-concept meant to
+produce real, visible output every run so the format can actually be
+evaluated and tuned, rather than possibly staying silent for hours. Add a
+real notability gate, widen the symbol list, or fold in crypto once the
+format is dialed in.
+
+This trigger never imports `ctx.x`/`ctx.budget` at all — there is no code
+path here that can post to X, by construction, independent of `ENABLED`.
+
 ### Reply suggestions (Telegram-only)
 
 `src/triggers/reply_suggestions.py` is the only reply path now that Reply
@@ -695,7 +720,7 @@ src/
                   price_alerts, oracle_alerts, scheduled_daily,
                   historical_flashback, polls, self_reply, filler, retweets,
                   comment_engagement, content_drafts, ai_manager,
-                  reply_manager, budget_report)
+                  reply_manager, budget_report, market_snapshot_telegram)
   image_budget.py     third, independent budget cap for image generation (OpenAI/DALL-E) -- currently unused (AI Manager's charts use CoinGecko + local matplotlib rendering instead, no OpenAI cost), kept ready if that changes
   telegram_client.py  bot-chat + channel + cost-chat message senders, free, independent of the X budget
 .github/workflows/tickerwatch.yml   cron schedule + secret wiring + state commit

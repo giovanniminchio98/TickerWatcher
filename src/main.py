@@ -61,6 +61,7 @@ from src.triggers import (
     content_drafts,
     filler,
     historical_flashback,
+    market_snapshot_telegram,
     monthly_calendar,
     news_alerts,
     oracle_alerts,
@@ -162,6 +163,13 @@ ENABLED = {
     "filler": False,
     "budget_report": True,
     "monthly_calendar": True,
+    # POC (2026-07-23): Telegram-only hourly stock snapshot + seasonal note,
+    # while the account owner manually curates X posts for a while (external
+    # cron stopped, ai_manager's ENABLED flag deliberately left untouched --
+    # it just isn't firing automatically right now). This trigger never
+    # imports ctx.x/ctx.budget at all, so there's no code path here that can
+    # post to X regardless of this flag. Flip to False to stop it.
+    "market_snapshot_telegram": True,
 }
 
 
@@ -303,6 +311,11 @@ def main():
     # earnings calendar, never touches X, same "never affects filler"
     # reasoning as content_drafts/reply_suggestions above
     _safe_run("monthly_calendar", monthly_calendar.run, ctx)
+
+    # Telegram channel only (POC, 2026-07-23) -- hourly stock snapshot +
+    # seasonal note, never touches X, same "never affects filler" reasoning
+    # as content_drafts/reply_suggestions/monthly_calendar above
+    _safe_run("market_snapshot_telegram", market_snapshot_telegram.run, ctx)
 
     # independent of the X pipeline/budget above -- always attempted, since
     # this is what tells you when to top up X credits

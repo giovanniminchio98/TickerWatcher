@@ -1,0 +1,24 @@
+{
+  "_comment": "General, well-known historical calendar tendencies for broad US equity indices (not specific to any one stock, not a prediction, not financial advice) -- used by src/triggers/market_snapshot_telegram.py to add background context alongside real, live price data. These are widely-cited seasonal patterns (e.g. 'Santa Claus rally', 'Sell in May'), phrased as historical averages, not guarantees.",
+  "months": {
+    "1": "Historically mixed -- early strength in small caps (the \"January effect\") often fades; can set an early tone for sentiment.",
+    "2": "Historically one of the weaker months on average, following January's moves.",
+    "3": "Quarter-end rebalancing and Fed-meeting volatility are common; historically close to average.",
+    "4": "Historically one of the stronger months for US equities, aided by Q1 earnings season.",
+    "5": "\"Sell in May and go away\" -- a historically softer stretch begins, though the effect has weakened in recent decades.",
+    "6": "Historically mixed to soft, often on lower volume ahead of summer; quarter-end rebalancing.",
+    "7": "Historically decent on average, but summer volume can be thin and moves exaggerated.",
+    "8": "Historically one of the more volatile months -- lower summer liquidity can amplify moves.",
+    "9": "Historically the weakest month of the year on average across major indices.",
+    "10": "Historically volatile (several major crash anniversaries fall here), but also often marks the start of a Q4 rebound.",
+    "11": "Historically one of the stronger months, often the start of the \"Santa Claus rally\" run-up.",
+    "12": "Historically bullish (\"Santa Claus rally\"), though the final trading days matter more than the month as a whole; tax-loss selling can weigh on individual laggards early on."
+  },
+  "weekdays": {
+    "Monday": "Historically the weakest day of the week on average (the \"Monday effect\"), though modern data shows this has weakened.",
+    "Tuesday": "Historically middling -- not a standout day in either direction in most studies.",
+    "Wednesday": "Historically middling -- often digests the week's earlier moves.",
+    "Thursday": "Historically decent on average; pre-Friday positioning can add movement.",
+    "Friday": "Options/futures expiration (\"triple witching\" on the third Friday of Mar/Jun/Sep/Dec) can add volatility; historically a slightly stronger day on average."
+  }
+}
