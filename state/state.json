@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-23",
-      "posts_used": 31,
-      "usd_used": 0.465
+      "posts_used": 37,
+      "usd_used": 0.555
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 355,
-    "usd_used": 9.765
+    "posts_used": 361,
+    "usd_used": 9.855
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -217,7 +217,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 15,
+    "posted_count_today": 18,
     "posted_date": "2026-07-23",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -294,7 +294,10 @@
       "https://www.theguardian.com/us-news/live/2026/jul/21/donald-trump-tariffs-canada-mark-carney-lebanon-republicans-gop-spending-bill-latest-news-updates",
       "https://www.cnbc.com/2026/07/14/watch-fed-chairman-kevin-warsh-testify-live-to-house-financial-services-committee.html",
       "https://www.theguardian.com/us-news/2026/jul/21/trump-defends-tariff-canada",
-      "http://www.euronews.com/business/2026/07/22/eu-gives-conditional-green-light-to-paramounts-warner-bros-discovery-deal"
+      "http://www.euronews.com/business/2026/07/22/eu-gives-conditional-green-light-to-paramounts-warner-bros-discovery-deal",
+      "https://www.cnbc.com/2026/07/14/warsh-promises-inflation-will-be-a-thing-of-the-past-cites-benefits-of-ai-investment-boom.html",
+      "https://www.theguardian.com/world/2026/jul/22/restaurant-owner-south-korea-dried-ants-dessert",
+      "http://www.euronews.com/my-europe/2026/07/22/could-gianni-infantino-really-become-un-secretary-general-if-trump-puts-him-forward"
     ]
   },
   "oracle_alerts": {
@@ -892,6 +895,21 @@
       "posted_at": 1784779262.034236,
       "text": "\ud83d\udea8 JUST IN: The European Union conditionally approved Paramount's merger with Warner Bros. Discovery, though a U.S. judge ordered a temporary pause on the deal this week.\n(via Euronews)\nWhy it matters:",
       "url": "http://www.euronews.com/business/2026/07/22/eu-gives-conditional-green-light-to-paramounts-warner-bros-discovery-deal"
+    },
+    {
+      "posted_at": 1784782865.93032,
+      "text": "\ud83d\udea8 JUST IN: Kevin Warsh committed to implementing monetary policy changes to combat persistent inflation affecting Americans.\n(via CNBC Markets)\nMore on this below:",
+      "url": "https://www.cnbc.com/2026/07/14/warsh-promises-inflation-will-be-a-thing-of-the-past-cites-benefits-of-ai-investment-boom.html"
+    },
+    {
+      "posted_at": 1784782865.93032,
+      "text": "\ud83d\udea8 JUST IN: A South Korean Michelin-starred restaurant owner faces potential jail time and fines for serving a dessert garnished with unapproved insects.\n(via The Guardian)\nThe details:",
+      "url": "https://www.theguardian.com/world/2026/jul/22/restaurant-owner-south-korea-dried-ants-dessert"
+    },
+    {
+      "posted_at": 1784782865.93032,
+      "text": "\ud83d\udea8 JUST IN: Trump could nominate FIFA President Infantino for UN Secretary General, but the Security Council's permanent members would need to approve him.\n(via Euronews)\nWhy it matters:",
+      "url": "http://www.euronews.com/my-europe/2026/07/22/could-gianni-infantino-really-become-un-secretary-general-if-trump-puts-him-forward"
     }
   ],
   "telegram": {
