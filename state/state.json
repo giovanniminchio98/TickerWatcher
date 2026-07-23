@@ -7,14 +7,14 @@
   },
   "budget": {
     "daily": {
-      "date": "2026-07-22",
-      "posts_used": 73,
-      "usd_used": 1.095
+      "date": "2026-07-23",
+      "posts_used": 7,
+      "usd_used": 0.105
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 324,
-    "usd_used": 9.3
+    "posts_used": 331,
+    "usd_used": 9.405
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -87,7 +87,9 @@
       "https://cointelegraph.com/markets/ether-breaks-the-1900-resistance-is-2100-the-next-target-for-eth-bulls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/pakistan-crypto-enforcement-dedicated-unit-crimes?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "https://cointelegraph.com/news/openai-models-hacked-hugging-face-to-cheat-on-a-test?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "https://cointelegraph.com/news/bis-study-says-stablecoins-bypass-capital-controls-more-easily-than-bank-deposits?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "https://cointelegraph.com/news/bis-study-says-stablecoins-bypass-capital-controls-more-easily-than-bank-deposits?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "https://www.cnbc.com/2026/07/22/john-paulson-says-we-are-in-early-stages-of-a-long-term-bull-market-for-gold.html",
+      "https://www.marketwatch.com/story/i-have-children-from-my-first-marriage-should-my-second-husband-inherit-my-house-if-i-die-d9bd8687?mod=mw_rss_topstories"
     ],
     "last_drafted_time": {
       "AAPL": 1784160090.229353,
@@ -96,8 +98,8 @@
       "SOL": 1784073678.717217,
       "XRP": 1784073678.717217
     },
-    "posted_count_today": 8,
-    "posted_date": "2026-07-22"
+    "posted_count_today": 2,
+    "posted_date": "2026-07-23"
   },
   "filler": {
     "posted_count_today": 2,
@@ -209,8 +211,8 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 28,
-    "posted_date": "2026-07-22",
+    "posted_count_today": 3,
+    "posted_date": "2026-07-23",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
       "https://www.coindesk.com/policy/2026/07/13/wall-street-transfer-agents-lobby-sec-warning-that-third-party-tokens-pose-risks-to-market-integrity",
@@ -271,7 +273,10 @@
       "https://www.cnbc.com/2026/07/16/dallas-fed-president-logan-calls-for-modestly-higher-interest-rates.html",
       "https://www.cnbc.com/2026/07/22/john-paulson-says-we-are-in-early-stages-of-a-long-term-bull-market-for-gold.html",
       "https://www.cnbc.com/2026/07/16/short-sellers-load-up-against-spacex-as-stock-retreats-back-to-ipo-price.html",
-      "https://www.cnbc.com/2026/07/15/anthropic-ipo-banks-investor-meetings.html"
+      "https://www.cnbc.com/2026/07/15/anthropic-ipo-banks-investor-meetings.html",
+      "https://www.cnbc.com/2026/07/15/watch-fed-chairman-kevin-warsh-testify-live-before-senate-banking-committee.html",
+      "https://www.marketwatch.com/story/i-have-children-from-my-first-marriage-should-my-second-husband-inherit-my-house-if-i-die-d9bd8687?mod=mw_rss_topstories",
+      "https://www.theguardian.com/us-news/2026/jul/21/gordie-howe-bridge-opening-celebration-canceled"
     ]
   },
   "oracle_alerts": {
@@ -493,23 +498,13 @@
     "last_run_date": null
   },
   "scheduled_daily": {
-    "last_posted_date": "2026-07-22",
-    "rotate_index": 8
+    "last_posted_date": "2026-07-23",
+    "rotate_index": 9
   },
   "self_reply": {
     "pending": []
   },
   "story_history": [
-    {
-      "posted_at": 1784505669.413637,
-      "text": "\ud83d\udea8 JUST IN: Zcash developed a new node designed to achieve privacy capabilities while processing transactions at speeds comparable to Visa's 50,000 per second capacity.\n(via CoinDesk)",
-      "url": "https://www.coindesk.com/tech/2026/07/16/inside-zcash-s-new-node-that-targets-visa-scale-privacy-at-50-000-transactions-per-second"
-    },
-    {
-      "posted_at": 1784505669.413637,
-      "text": "\ud83d\udea8 JUST IN: A comparison review examines differences between OpenAI's GPT-5.6 and Anthropic's Claude Fable 5 to help users select the appropriate model.\n(via Decrypt)",
-      "url": "https://decrypt.co/373770/openai-gpt-5-6-vs-anthropic-fable-5-review"
-    },
     {
       "posted_at": 1784509260.129113,
       "text": "\ud83d\udea8 JUST IN: Visa just launched a Stablecoin Platform letting banks and fintech firms plug dollar-pegged crypto tokens straight into Visa's payment network.",
@@ -814,6 +809,21 @@
       "posted_at": 1784761261.624065,
       "text": "\ud83d\udea8 JUST IN: Anthropic is preparing for a potential public offering as soon as October, with bankers organizing investor meetings ahead of the move.\n(via CNBC Markets)\nWhy it matters:",
       "url": "https://www.cnbc.com/2026/07/15/anthropic-ipo-banks-investor-meetings.html"
+    },
+    {
+      "posted_at": 1784764873.915482,
+      "text": "\ud83d\udea8 JUST IN: Fed Chair Kevin Warsh testified before Congress on economic conditions and monetary policy.\n(via CNBC Markets)\nMore on this below:",
+      "url": "https://www.cnbc.com/2026/07/15/watch-fed-chairman-kevin-warsh-testify-live-before-senate-banking-committee.html"
+    },
+    {
+      "posted_at": 1784764873.915482,
+      "text": "\ud83d\udea8 JUST IN: A woman seeks guidance on whether to leave her pre-marital home to her current husband or children from prior relationships upon her death.\n(via MarketWatch Top Stories)\nContext below:",
+      "url": "https://www.marketwatch.com/story/i-have-children-from-my-first-marriage-should-my-second-husband-inherit-my-house-if-i-die-d9bd8687?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784764873.915482,
+      "text": "\ud83d\udea8 JUST IN: Canada postponed the Gordie Howe International Bridge opening ceremony with the US following Trump's announcement of 50% tariffs on Canadian goods.\n(via The Guardian)\nExplanation below:",
+      "url": "https://www.theguardian.com/us-news/2026/jul/21/gordie-howe-bridge-opening-celebration-canceled"
     }
   ],
   "telegram": {
