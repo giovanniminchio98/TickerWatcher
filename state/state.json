@@ -8,13 +8,13 @@
   "budget": {
     "daily": {
       "date": "2026-07-23",
-      "posts_used": 49,
-      "usd_used": 0.735
+      "posts_used": 51,
+      "usd_used": 0.765
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 373,
-    "usd_used": 10.035
+    "posts_used": 375,
+    "usd_used": 10.065
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
@@ -217,7 +217,7 @@
     "last_posted_month": null
   },
   "news": {
-    "posted_count_today": 24,
+    "posted_count_today": 25,
     "posted_date": "2026-07-23",
     "posted_urls": [
       "https://www.coindesk.com/business/2026/07/13/mizuho-says-circle-bank-approval-doesn-t-solve-usdc-growth-stablecoin-competition-risks",
@@ -303,7 +303,8 @@
       "http://www.euronews.com/2026/07/22/trump-threatens-to-bomb-tehran-back-for-every-iranian-attack-in-hormuz",
       "https://www.cnbc.com/2026/07/13/-a-july-rate-hike-from-the-fed-the-odds-are-rising.html",
       "https://www.theguardian.com/australia-news/live/2026/jul/23/australia-news-live-china-penny-wong-asean-labor-conference-anthony-albanese-one-nation-pauline-hanson-ntwnfb",
-      "http://www.euronews.com/my-europe/2026/07/23/europe-today-latvian-pm-andris-kulbergs-speaks-exclusively-to-euronews-as-rubio-meets-lavr"
+      "http://www.euronews.com/my-europe/2026/07/23/europe-today-latvian-pm-andris-kulbergs-speaks-exclusively-to-euronews-as-rubio-meets-lavr",
+      "https://www.theguardian.com/australia-news/2026/jul/23/personal-and-banking-details-among-customer-data-stolen-in-origin-energy-hack"
     ]
   },
   "oracle_alerts": {
@@ -941,6 +942,11 @@
       "posted_at": 1784790060.262481,
       "text": "\ud83d\udea8 JUST IN: Latvia's newly elected PM discusses regional security concerns while the US and Russia hold diplomatic talks on Ukraine.\n(via Euronews)\nThe details:",
       "url": "http://www.euronews.com/my-europe/2026/07/23/europe-today-latvian-pm-andris-kulbergs-speaks-exclusively-to-euronews-as-rubio-meets-lavr"
+    },
+    {
+      "posted_at": 1784793662.618902,
+      "text": "\ud83d\udea8 JUST IN: Hackers accessed personal and banking information for millions of Origin Energy customers in Australia.\n(via The Guardian)\nMore on this below:",
+      "url": "https://www.theguardian.com/australia-news/2026/jul/23/personal-and-banking-details-among-customer-data-stolen-in-origin-energy-hack"
     }
   ],
   "telegram": {
