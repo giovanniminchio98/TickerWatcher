@@ -678,6 +678,26 @@ def _prepare_digest_items(ctx, cfg, digest, candidates, prior_texts, prior_title
     return prepared[:digest_max_items]
 
 
+_THREAD_MARKER = " 🧵👇"
+
+
+def _enforce_thread_marker(text):
+    """A digest intro read alone in a feed (not clicked into) gives no
+    visual cue that a reply thread follows -- confirmed live, a real intro
+    ("Today's secondary movers across AI, crypto and markets:") read as a
+    complete, standalone tweet with nothing signaling "see replies."
+    Appends a thread marker if the text doesn't already end with one --
+    same "a prompt rule is a request, not a guarantee" backstop pattern as
+    every other enforcement in this module. Truncates first and reserves
+    room for the marker so it always survives, rather than risking
+    truncate()'s own fallback eating it."""
+    stripped = text.rstrip()
+    if stripped.endswith(("🧵", "👇")):
+        return stripped
+    budget = ai_manager_brain.MAX_POST_LEN - len(_THREAD_MARKER)
+    return truncate(stripped, budget).rstrip() + _THREAD_MARKER
+
+
 def _post_digest_thread(ctx, items, digest_intro):
     """Posts an intro tweet, then one numbered reply per item, each
     replying to the previous tweet's own returned ID -- x_client.py has no
@@ -690,7 +710,8 @@ def _post_digest_thread(ctx, items, digest_intro):
     if not items or not ctx.budget.can_spend(has_link=False):
         return False, []
 
-    intro_text = (digest_intro or "").strip() or f"🧵 {len(items)} more stories worth knowing about today:"
+    intro_text = (digest_intro or "").strip() or f"{len(items)} more stories worth knowing about today"
+    intro_text = _enforce_thread_marker(intro_text)
     final_intro = _enforce_single_cashtag(truncate(intro_text, ai_manager_brain.MAX_POST_LEN))
     tweet_id = ctx.x.post(final_intro)
     if not tweet_id:

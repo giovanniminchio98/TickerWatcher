@@ -260,6 +260,41 @@ class TestPostDigestThread(unittest.TestCase):
         self.assertEqual(texts, [])
         ctx.x.post.assert_not_called()
 
+    def test_intro_gets_a_thread_marker(self):
+        # Confirmed live: a real digest intro ("Today's secondary movers
+        # across AI, crypto and markets:") posted with no visual cue that
+        # a reply thread followed it.
+        ctx = _make_ctx()
+        ctx.x.post.return_value = "intro-1"
+        ctx.x.reply.side_effect = ["reply-1", "reply-2"]
+        ai_manager._post_digest_thread(ctx, self._items(), "Today's secondary movers across AI, crypto:")
+        posted_intro = ctx.x.post.call_args[0][0]
+        self.assertTrue(posted_intro.endswith("🧵👇"))
+
+    def test_intro_marker_not_duplicated_if_claude_already_added_one(self):
+        ctx = _make_ctx()
+        ctx.x.post.return_value = "intro-1"
+        ctx.x.reply.side_effect = ["reply-1", "reply-2"]
+        ai_manager._post_digest_thread(ctx, self._items(), "More stories worth knowing 🧵")
+        posted_intro = ctx.x.post.call_args[0][0]
+        self.assertEqual(posted_intro.count("🧵"), 1)
+
+
+class TestEnforceThreadMarker(unittest.TestCase):
+    def test_appends_marker_when_missing(self):
+        text = ai_manager._enforce_thread_marker("A few more things:")
+        self.assertTrue(text.endswith("🧵👇"))
+
+    def test_leaves_existing_marker_alone(self):
+        text = ai_manager._enforce_thread_marker("A few more things 👇")
+        self.assertEqual(text, "A few more things 👇")
+
+    def test_reserves_room_so_marker_survives_a_long_intro(self):
+        long_intro = "X" * 300
+        text = ai_manager._enforce_thread_marker(long_intro)
+        self.assertTrue(text.endswith("🧵👇"))
+        self.assertLessEqual(len(text), ai_manager_brain.MAX_POST_LEN)
+
 
 class TestRunIntegration(unittest.TestCase):
     def _base_config(self):
