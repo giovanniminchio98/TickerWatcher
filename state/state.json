@@ -214,6 +214,12 @@
     "period": "2026-07",
     "usd_used": 0.0
   },
+  "market_snapshot_telegram": {
+    "last_template_index": {
+      "GOOGL": 0,
+      "TSLA": 0
+    }
+  },
   "monthly_calendar": {
     "last_posted_month": null
   },
