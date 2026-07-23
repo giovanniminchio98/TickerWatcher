@@ -126,6 +126,30 @@ class TestAssembly(unittest.TestCase):
         self.assertLessEqual(len(text), ai_manager_brain.MAX_POST_LEN)
         self.assertIn("H" * 150, text)  # headline is never truncated except as an absolute last resort
 
+    def test_digest_tweet_never_mangles_a_ticker_mid_symbol(self):
+        # Confirmed live: a real digest tweet ended with "...next catalyst
+        # $…" because truncate() cut the combined why+ticker string right
+        # through the middle of the ticker symbol. The ticker suffix must
+        # be dropped whole, never truncated into.
+        item = {
+            "category": "Crypto",
+            "headline": "Bitcoin trades near a key level ahead of next week's Fed meeting",
+            "why_it_matters": (
+                "A break below this level historically signals capitulation risk; Fed meeting "
+                "on July 28-29 is the next catalyst"
+            ),
+            "tickers": ["BTC"],
+        }
+        text = ai_manager._assemble_digest_tweet(item, 5, 5)
+        self.assertLessEqual(len(text), ai_manager_brain.MAX_POST_LEN)
+        self.assertNotIn("$…", text)
+        self.assertNotIn("$ ", text)
+        # a ticker present in the output must always be the whole symbol
+        for line in text.splitlines():
+            for token in line.split():
+                if token.startswith("$"):
+                    self.assertRegex(token, r"^\$[A-Za-z0-9]+$")
+
 
 class TestDuplicateDetection(unittest.TestCase):
     def test_is_likely_duplicate_catches_unit_normalized_repeat(self):

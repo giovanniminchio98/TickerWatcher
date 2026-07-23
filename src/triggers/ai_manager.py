@@ -514,10 +514,13 @@ def _assemble_digest_tweet(item, idx, total):
     _assemble_reply_card: the numbered headline is what makes this line
     legible as part of a thread, so it's kept whole except as an absolute
     last resort. The "why it matters" clause and ticker suffix degrade
-    first if there's no room -- dropped, then truncated at a sentence
-    boundary, rather than the whole line getting an ugly mid-word
-    ellipsis cut (confirmed live this shape can overflow 260 chars too,
-    same root cause as the reply card)."""
+    first if there's no room -- the ticker suffix is dropped whole (never
+    truncated into, since a mangled ticker like "$…" is worse than no
+    ticker at all -- confirmed live, a real digest tweet ended with
+    "...next catalyst $…" because truncate() cut the combined why+ticker
+    string right through the middle of the ticker symbol), then the
+    why-clause itself is truncated at a sentence boundary only as a
+    further fallback."""
     emoji = ai_manager_brain.CATEGORY_EMOJI.get(item.get("category"), ai_manager_brain.CATEGORY_EMOJI["Macro"])
     headline = (item.get("headline") or "").strip()
     why = (item.get("why_it_matters") or "").strip()
@@ -530,9 +533,14 @@ def _assemble_digest_tweet(item, idx, total):
         return prefix[: budget - 1].rstrip() + "…"
 
     remaining = budget - len(prefix) - 1  # -1 for the newline before line 2
-    second_line = f"{why}{ticker_suffix}"
-    if len(second_line) > remaining:
-        second_line = truncate(second_line, remaining) if remaining >= 20 else ""
+    if len(why) + len(ticker_suffix) <= remaining:
+        second_line = f"{why}{ticker_suffix}"
+    elif len(why) <= remaining:
+        second_line = why  # ticker suffix dropped whole, never truncated into
+    elif remaining >= 20:
+        second_line = truncate(why, remaining)
+    else:
+        second_line = ""
     if not second_line:
         return prefix
     return f"{prefix}\n{second_line}"
