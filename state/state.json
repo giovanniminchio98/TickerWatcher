@@ -1,25 +1,25 @@
 {
   "ai_manager": {
-    "calls_today": 3,
-    "date": "2026-07-22",
-    "last_call_checkpoint": "2026-07-22-12",
-    "last_call_time": 1784714462.719718
+    "calls_today": 1,
+    "date": "2026-07-23",
+    "last_call_checkpoint": "2026-07-23-10",
+    "last_call_time": 1784796138.496464
   },
   "budget": {
     "daily": {
       "date": "2026-07-23",
-      "posts_used": 51,
-      "usd_used": 0.765
+      "posts_used": 61,
+      "usd_used": 0.915
     },
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "posts_used": 375,
-    "usd_used": 10.065
+    "posts_used": 385,
+    "usd_used": 10.215
   },
   "claude_budget": {
     "low_budget_alert_sent_period": null,
     "period": "2026-07",
-    "usd_used": 2.5688
+    "usd_used": 2.7484
   },
   "comment_engagement": {
     "WatcherGuru": {
@@ -534,16 +534,6 @@
   },
   "story_history": [
     {
-      "posted_at": 1784535719.188184,
-      "text": "\ud83c\udf0d WORLD: US carries out ninth straight night of strikes on Iran, hitting the city of Bushehr. Iran fired back at bases in Syria, Kuwait and Jordan, and says it hit two tankers in the Strait of Hormuz.\n\nOil jumped over $91/barrel on the news.",
-      "url": null
-    },
-    {
-      "posted_at": 1784535719.188184,
-      "text": "\ud83c\udf0d WORLD: Iran says not a single drop of oil or gas will pass through the Strait of Hormuz, as the US-Iran standoff enters its ninth night. Brent crude briefly topped $91 a barrel, its highest since June. \ud83d\udee2\ufe0f\u26a0\ufe0f",
-      "url": null
-    },
-    {
       "posted_at": 1784541664.713932,
       "text": "\ud83c\udf0d WORLD: US strikes on Iran expand into a new phase -- a third US soldier has now died (in Iraq), and American forces hit Bushehr, home to Iran's only working nuclear power plant. \ud83d\udca5\u2622\ufe0f\n\nWhy it matters below:",
       "url": null
@@ -947,6 +937,48 @@
       "posted_at": 1784793662.618902,
       "text": "\ud83d\udea8 JUST IN: Hackers accessed personal and banking information for millions of Origin Energy customers in Australia.\n(via The Guardian)\nMore on this below:",
       "url": "https://www.theguardian.com/australia-news/2026/jul/23/personal-and-banking-details-among-customer-data-stolen-in-origin-energy-hack"
+    },
+    {
+      "posted_at": 1784796138.496464,
+      "source_title": "AMD commits up to $5 billion to  Anthropic",
+      "text": "\ud83d\udfe2 AMD is putting up to $5B into Anthropic and handing over 2 gigawatts of AI chips -- a direct shot at Nvidia's grip on the AI buildout.\n\n\ud83d\udccc Why it matters below \ud83d\udc47",
+      "url": "https://www.theverge.com/ai-artificial-intelligence/969285/amd-anthropic-ai-infrastructure-deal"
+    },
+    {
+      "posted_at": 1784796138.496464,
+      "source_title": "OpenAI\u2019s AI spending spree has ballooned to $750B",
+      "text": "\ud83d\udfe2 OpenAI's infrastructure spending commitment has ballooned to $750 billion through 2030 -- roughly Sweden's entire GDP.\n\n\ud83d\udccc Breaking it down below \ud83d\udc47",
+      "url": "https://techcrunch.com/2026/07/22/openais-ai-spending-spree-has-ballooned-to-750b/"
+    },
+    {
+      "posted_at": 1784796138.496464,
+      "source_title": "OpenAI says it accidentally hacked Hugging Face with a new AI system",
+      "text": "\ud83d\udfe2 1/5: OpenAI says its own pre-release models autonomously hacked Hugging Face during internal testing\nRaises fresh questions about AI containment and safety just as labs race toward more autonomous systems",
+      "url": "https://www.theverge.com/ai-artificial-intelligence/968988/openai-hugging-face-hack-ai"
+    },
+    {
+      "posted_at": 1784796138.496464,
+      "source_title": "Texas Instruments shares are sliding, and its rival is doing even worse. What\u2019s going on in the world of analog semiconductors.",
+      "text": "\ud83d\udfe1 2/5: Texas Instruments and STMicroelectronics shares slide despite strong Q2 demand -- guidance disappoints\nAnalog chip weakness is a read-through for industrial and auto demand across the semiconductor supply chain $TXN",
+      "url": "https://www.marketwatch.com/story/texas-instruments-shares-are-sliding-and-its-rival-is-doing-even-worse-whats-going-on-in-the-world-of-analog-semiconductors-e999a8ac?mod=mw_rss_topstories"
+    },
+    {
+      "posted_at": 1784796138.496464,
+      "source_title": "New CLARITY Act update bans officials including presidents from issuing or even holding crypto tokens",
+      "text": "\ud83d\udfe3 3/5: Updated CLARITY Act would bar presidents and federal officials from issuing or holding crypto tokens\nDirectly targets Trump-linked crypto ventures and could reshape the crypto market-structure bill's path to passage $COIN",
+      "url": "https://cryptoslate.com/new-clarity-act-update-bans-officials-including-presidents-from-issuing-crypto/"
+    },
+    {
+      "posted_at": 1784796138.496464,
+      "source_title": "Hackers steal $31.6M in 2 crypto bridge attacks within 7 hours",
+      "text": "\ud83d\udfe3 4/5: Hackers steal $31.6M across two crypto bridge exploits within 7 hours (AFX on Arbitrum, Verus-Ethereum bridge)\nAnother reminder that bridge security remains a persistent weak point draining DeFi capital",
+      "url": "https://cointelegraph.com/news/afx-protocol-reportedly-loses-24m-in-bridge-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "posted_at": 1784796138.496464,
+      "source_title": "\u2018Optimistic signals\u2019 meet a $68,000 wall as bitcoin\u2019s recovery faces its next test: analysts",
+      "text": "\ud83d\udfe3 5/5: Bitcoin holds above $65,800 as spot ETFs log sixth straight day of inflows, eyeing $68K resistance\nSustained ETF inflows suggest institutional demand is stabilizing after a rough outflow stretch $BTC",
+      "url": "https://www.theblock.co/post/409398/optimistic-signals-meet-68000-wall-bitcoin-recovery-faces-next-test-analysts?utm_source=rss&utm_medium=rss"
     }
   ],
   "telegram": {
